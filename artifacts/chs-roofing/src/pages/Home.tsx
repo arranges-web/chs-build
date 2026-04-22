@@ -169,11 +169,11 @@ function BeforeAfterGallery() {
             <div className="relative">
               <div className="grid grid-cols-2">
                 <div className="relative">
-                  <img src={project.before} alt={`Before: ${project.label}`} className="w-full h-48 object-cover" />
+                  <img loading="lazy" decoding="async" src={project.before} alt={`Before: ${project.label}`} className="w-full h-48 object-cover" />
                   <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs font-bold px-2 py-0.5 rounded">BEFORE</div>
                 </div>
                 <div className="relative">
-                  <img src={project.after} alt={`After: ${project.label}`} className="w-full h-48 object-cover" />
+                  <img loading="lazy" decoding="async" src={project.after} alt={`After: ${project.label}`} className="w-full h-48 object-cover" />
                   <div className="absolute bottom-2 right-2 bg-primary text-white text-xs font-bold px-2 py-0.5 rounded">AFTER</div>
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function HomePage() {
               </FadeIn>
               <FadeIn delay={0.2}>
                 <div className="relative h-[400px] rounded-xl overflow-hidden shadow-2xl border border-white/10">
-                  <img src="/images/metal-roof.png" alt="Roof Inspection" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src="/images/metal-roof.png" alt="Roof Inspection" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6">
                     <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-lg text-white font-semibold">
@@ -448,7 +448,7 @@ export default function HomePage() {
                   <div className="group relative bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
                     <div className="h-48 overflow-hidden relative">
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={service.image}
                         alt={service.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -480,7 +480,7 @@ export default function HomePage() {
         {/* VIDEO SHOWCASE SECTION */}
         <section className="py-24 bg-secondary relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-5">
-            <img src="/images/hero-roof.png" alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src="/images/hero-roof.png" alt="" className="w-full h-full object-cover" />
           </div>
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
@@ -499,7 +499,7 @@ export default function HomePage() {
               <FadeIn>
                 <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 group relative bg-black">
                   <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src="/images/metal-roof.png"
                       alt="Residential Metal Roofing Installation"
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
@@ -522,7 +522,7 @@ export default function HomePage() {
               <FadeIn delay={0.2}>
                 <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 group relative bg-black">
                   <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src="/images/flat-roof.png"
                       alt="Commercial Flat Roofing"
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
@@ -559,8 +559,8 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <FadeIn>
                 <div className="grid grid-cols-2 gap-4">
-                  <img src="/images/tile-roof.png" alt="Tile Roof" className="rounded-xl shadow-lg w-full h-[300px] object-cover" />
-                  <img src="/images/flat-roof.png" alt="Flat Roof" className="rounded-xl shadow-lg w-full h-[300px] object-cover mt-8" />
+                  <img loading="lazy" decoding="async" src="/images/tile-roof.png" alt="Tile Roof" className="rounded-xl shadow-lg w-full h-[300px] object-cover" />
+                  <img loading="lazy" decoding="async" src="/images/flat-roof.png" alt="Flat Roof" className="rounded-xl shadow-lg w-full h-[300px] object-cover mt-8" />
                 </div>
               </FadeIn>
 
@@ -678,7 +678,7 @@ export default function HomePage() {
                 <FadeIn key={i} delay={i * 0.2}>
                   <div className="bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all group">
                     <div className="h-64 overflow-hidden relative">
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={member.image}
                         alt={member.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
@@ -756,7 +756,7 @@ export default function HomePage() {
         {/* FINAL CTA & CONTACT FORM */}
         <section id="contact" className="py-24 bg-secondary relative">
           <div className="absolute inset-0 z-0 opacity-10">
-            <img src="/images/hero-roof.png" alt="Background" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src="/images/hero-roof.png" alt="Background" className="w-full h-full object-cover" />
           </div>
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 items-center">

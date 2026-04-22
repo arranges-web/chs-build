@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <Monogram className="w-14 h-14" />
-            <img src={chsLogo} alt="CHS Roofing" className="h-12 w-auto object-contain" />
+            <img loading="lazy" decoding="async" src={chsLogo} alt="CHS Roofing" className="h-12 w-auto object-contain" />
           </div>
           <p className="text-sm text-secondary-foreground/80 leading-relaxed max-w-xs">
             Southwest Florida's trusted family-owned roofing contractor since 2010. Specializing in premium residential and commercial roofing systems designed to withstand Florida's toughest weather.
