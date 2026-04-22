@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import useEmblaCarousel from "embla-carousel-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
@@ -191,6 +191,10 @@ function BeforeAfterGallery() {
 }
 
 export default function HomePage() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollY } = useScroll();
+  const parallaxY = useTransform(scrollY, [0, 600], [0, 180]);
+
   const scrollToContact = () => {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -243,11 +247,12 @@ export default function HomePage() {
 
       <main>
         {/* HERO SECTION */}
-        <section className="relative pt-24 pb-32 lg:pt-32 lg:pb-48 overflow-hidden">
+        <section ref={heroRef} className="relative pt-24 pb-32 lg:pt-32 lg:pb-48 overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img
+            <motion.img
               src="/images/hero-roof.png"
               alt="Premium Florida Roofing"
+              style={{ y: parallaxY, scale: 1.15 }}
               className="w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/80 to-transparent"></div>
@@ -290,20 +295,20 @@ export default function HomePage() {
 
                 <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="flex flex-col gap-1 text-white">
+                    <span className="font-display text-3xl font-bold text-primary">15+</span>
+                    <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Years in Business</span>
+                  </div>
+                  <div className="flex flex-col gap-1 text-white">
+                    <span className="font-display text-3xl font-bold text-primary">500+</span>
+                    <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Projects Completed</span>
+                  </div>
+                  <div className="flex flex-col gap-1 text-white">
                     <span className="font-display text-3xl font-bold text-primary">5★</span>
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Google Rated</span>
                   </div>
                   <div className="flex flex-col gap-1 text-white">
-                    <span className="font-display text-3xl font-bold text-primary">A+</span>
-                    <span className="text-xs uppercase tracking-wider font-semibold opacity-80">BBB Accredited</span>
-                  </div>
-                  <div className="flex flex-col gap-1 text-white">
-                    <span className="font-display text-3xl font-bold text-primary">100%</span>
-                    <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Licensed</span>
-                  </div>
-                  <div className="flex flex-col gap-1 text-white">
                     <span className="font-display text-3xl font-bold text-primary">24/7</span>
-                    <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Response</span>
+                    <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Emergency Response</span>
                   </div>
                 </div>
               </motion.div>
