@@ -317,7 +317,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                className="hidden lg:block relative"
+                className="relative"
               >
                 <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full"></div>
                 <div className="relative" id="hero-form">
@@ -666,14 +666,69 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* PARTNERS LOGO STRIP */}
-        <section className="py-12 bg-white border-y border-border/50">
+        {/* TRUST BADGES & PARTNERS */}
+        <section className="py-14 bg-white border-y border-border/50">
           <div className="container mx-auto max-w-7xl px-4">
-            <p className="text-center text-sm font-bold text-muted-foreground uppercase tracking-widest mb-8">Trusted By Industry Leaders</p>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-              {['Carlisle', 'GAF', 'Metal Alliance', 'ABC Supply', 'CertainTeed', 'TAMKO', 'Westlake Royal'].map((partner, i) => (
-                <span key={i} className="font-display text-xl md:text-2xl font-bold text-foreground uppercase tracking-wider">{partner}</span>
-              ))}
+            <p className="text-center text-sm font-bold text-muted-foreground uppercase tracking-widest mb-10">Certifications, Ratings & Supplier Partnerships</p>
+
+            {/* Trust Badges Row */}
+            <div className="flex flex-wrap justify-center items-center gap-6 mb-10">
+              {/* Google 5-Star Badge */}
+              <div className="flex items-center gap-3 border border-border rounded-xl px-5 py-3 shadow-sm bg-card hover:shadow-md transition-shadow">
+                <svg className="w-6 h-6" viewBox="0 0 48 48" fill="none">
+                  <path d="M43.6 20.5H24v7h11.1c-1.1 5.4-5.8 9-11.1 9a12.5 12.5 0 010-25c3.1 0 5.9 1.1 8.1 3l5-5A21 21 0 003 24a21 21 0 0021 21 21 21 0 0020.6-25.5z" fill="#4285F4"/>
+                  <path d="M6.3 14.7l5.8 4.3A12.5 12.5 0 0124 11.5c3.1 0 5.9 1.1 8.1 3l5-5A21 21 0 006.3 14.7z" fill="#EA4335"/>
+                  <path d="M24 45a21 21 0 0014.6-5.8l-6.7-5.5A12.5 12.5 0 0124 36.5a12.4 12.4 0 01-11.7-8.2l-5.9 4.5A21 21 0 0024 45z" fill="#34A853"/>
+                  <path d="M43.6 20.5H24v7h11.1a11.3 11.3 0 01-4.2 5.7l6.7 5.5C41.5 35 44 30 44 24c0-1.2-.1-2.4-.4-3.5z" fill="#FBBC05"/>
+                </svg>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Google Rating</p>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />)}
+                    <span className="text-sm font-bold text-foreground ml-1">5.0</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* BBB A+ Badge */}
+              <div className="flex items-center gap-3 border border-border rounded-xl px-5 py-3 shadow-sm bg-card hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 rounded-lg bg-[#006DA6] flex items-center justify-center text-white font-display font-bold text-lg">BBB</div>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Accredited Business</p>
+                  <p className="text-lg font-display font-bold text-[#006DA6]">A+ Rating</p>
+                </div>
+              </div>
+
+              {/* Licensed Badge */}
+              <div className="flex items-center gap-3 border border-border rounded-xl px-5 py-3 shadow-sm bg-card hover:shadow-md transition-shadow">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">FL State Licensed</p>
+                  <p className="text-sm font-bold text-foreground">#CCC1333902</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Manufacturer Partners */}
+            <div className="border-t border-border/50 pt-8">
+              <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">Authorized Manufacturer Partners</p>
+              <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10">
+                {[
+                  { name: "GAF", color: "#003087" },
+                  { name: "CertainTeed", color: "#0054A5" },
+                  { name: "Carlisle", color: "#B22234" },
+                  { name: "TAMKO", color: "#1A1A1A" },
+                  { name: "ABC Supply", color: "#E31E24" },
+                  { name: "Westlake Royal", color: "#2D5F2E" },
+                  { name: "Metal Alliance", color: "#6B6B6B" },
+                ].map((p, i) => (
+                  <div key={i} className="flex items-center justify-center px-4 py-2 rounded-lg border border-border/60 bg-card min-w-[110px] h-12 shadow-sm hover:shadow-md transition-shadow grayscale hover:grayscale-0 transition-all duration-300">
+                    <span className="font-display text-sm font-bold uppercase tracking-wide" style={{ color: p.color }}>{p.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
