@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { Search, FileText, CalendarCheck, Hammer, ShieldCheck } from "lucide-react";
-import SectionDivider from "./SectionDivider";
 
 const steps = [
   { icon: Search, title: "Free Inspection", desc: "We climb the roof, document every detail, and assess damage with drone photography when needed." },
@@ -12,15 +11,14 @@ const steps = [
 
 export default function ProcessTimeline() {
   return (
-    <section className="py-24 bg-background relative overflow-hidden">
+    <section className="py-28 bg-background bg-wash-cool relative overflow-hidden">
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h4 className="text-primary font-bold tracking-wider uppercase mb-2 text-sm">How We Work</h4>
-          <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">How We Work</h4>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
             Five Steps. Zero Surprises.
           </h2>
-          <SectionDivider />
-          <p className="text-muted-foreground mt-4 text-lg">
+          <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
             A straightforward process built on transparency, craftsmanship, and respect for your home.
           </p>
         </div>
@@ -48,7 +46,7 @@ export default function ProcessTimeline() {
                     {i + 1}
                   </div>
                 </div>
-                <h3 className="font-display font-bold uppercase tracking-tight text-foreground text-lg mb-2">{s.title}</h3>
+                <h3 className="font-display font-bold tracking-tight text-foreground text-lg mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed px-2">{s.desc}</p>
               </motion.div>
             ))}

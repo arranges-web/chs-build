@@ -33,8 +33,8 @@ export default function Header() {
       </div>
 
       {/* Main Sticky Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-sm">
-        <div className="container mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-50 glass-surface border-b border-border/60">
+        <div className="container mx-auto max-w-7xl px-4 py-3.5 flex items-center justify-between">
           <a href="#" className="flex items-center gap-3 group" aria-label="CHS Roofing - Cordova Home Services">
             <Monogram className="w-11 h-11 md:w-12 md:h-12 transition-transform group-hover:scale-105 drop-shadow-sm" />
             <div className="flex flex-col">
@@ -61,9 +61,9 @@ export default function Header() {
               </a>
             </div>
 
-            <button 
+            <button
               onClick={scrollToContact}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-md font-bold tracking-wide transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-5 md:px-6 py-2.5 md:py-3 rounded-full font-semibold tracking-tight transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               Get a Free Quote
             </button>

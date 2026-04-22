@@ -17,21 +17,21 @@ export default function StickyMobileBar() {
 
   return (
     <div
-      className={`md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${show ? "translate-y-0" : "translate-y-full"}`}
+      className={`md:hidden fixed bottom-3 left-3 right-3 z-50 transition-all duration-500 ease-out ${show ? "translate-y-0 opacity-100" : "translate-y-[120%] opacity-0"}`}
       role="region"
       aria-label="Quick contact actions"
     >
-      <div className="bg-secondary border-t-2 border-primary shadow-[0_-10px_30px_rgba(0,0,0,0.25)] flex">
+      <div className="glass-surface-dark rounded-2xl border border-white/10 shadow-2xl flex overflow-hidden p-1.5 gap-1.5">
         <a
           href="tel:+12390000000"
-          className="flex-1 flex items-center justify-center gap-2 py-4 text-white font-display font-bold uppercase tracking-wide text-sm border-r border-white/10 active:bg-white/5"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold tracking-tight text-sm active:bg-white/10 transition-colors"
         >
           <Phone className="w-4 h-4 text-primary" />
           Call Now
         </a>
         <button
           onClick={scrollToContact}
-          className="flex-1 flex items-center justify-center gap-2 py-4 bg-primary text-white font-display font-bold uppercase tracking-wide text-sm active:bg-primary/80"
+          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-white font-semibold tracking-tight text-sm shadow-md shadow-primary/40 active:bg-primary/80 transition-colors"
         >
           Free Quote
           <ArrowRight className="w-4 h-4" />

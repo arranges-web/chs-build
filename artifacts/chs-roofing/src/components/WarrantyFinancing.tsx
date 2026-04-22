@@ -3,14 +3,14 @@ import { ShieldCheck, CreditCard, CheckCircle, BadgeDollarSign, FileCheck, Walle
 
 export default function WarrantyFinancing() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-28 bg-background bg-wash-warm">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h4 className="text-primary font-bold tracking-wider uppercase mb-2 text-sm">Peace of Mind</h4>
-          <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Peace of Mind</h4>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
             Backed By Warranty. <br className="hidden sm:block"/>Made Affordable.
           </h2>
-          <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
+          
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -19,7 +19,7 @@ export default function WarrantyFinancing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="relative bg-card border border-border rounded-xl p-8 shadow-sm overflow-hidden"
+            className="relative bg-card border border-border/60 rounded-2xl p-8 md:p-10 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-[hsl(var(--accent-gold))]" />
             <div className="flex items-center gap-3 mb-6">
@@ -65,7 +65,7 @@ export default function WarrantyFinancing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="relative bg-card border border-border rounded-xl p-8 shadow-sm overflow-hidden"
+            className="relative bg-card border border-border/60 rounded-2xl p-8 md:p-10 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[hsl(var(--accent-gold))] to-primary" />
             <div className="flex items-center gap-3 mb-6">

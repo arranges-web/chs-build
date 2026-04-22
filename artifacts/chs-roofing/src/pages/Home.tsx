@@ -268,11 +268,11 @@ export default function HomePage() {
               style={{ y: parallaxY, scale: 1.15 }}
               className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/80 to-transparent"></div>
-            <div className="absolute inset-0 bg-black/40"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/30"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-secondary/40"></div>
             {/* Subtle brand pattern overlay */}
-            <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay" style={{
-              backgroundImage: "repeating-linear-gradient(45deg, white 0 1px, transparent 1px 24px)"
+            <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay" style={{
+              backgroundImage: "repeating-linear-gradient(45deg, white 0 1px, transparent 1px 28px)"
             }} />
             <Monogram className="hidden lg:block absolute top-1/3 right-[8%] w-72 h-72 opacity-10 text-white" variant="outline" />
           </div>
@@ -285,34 +285,35 @@ export default function HomePage() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="max-w-2xl"
               >
-                <div className="flex flex-wrap items-center gap-3 mb-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-sm font-bold tracking-wide uppercase shadow-lg backdrop-blur-sm border border-white/20">
-                    <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                <div className="flex flex-wrap items-center gap-3 mb-7">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold tracking-wide uppercase shadow-lg backdrop-blur-md border border-white/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                     Southwest Florida's #1 Roofer
                   </div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-[hsl(var(--accent-gold))]/40 text-[hsl(var(--accent-gold))] text-xs font-bold tracking-wider uppercase">
+                  <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-[hsl(var(--accent-gold))]/40 text-[hsl(var(--accent-gold))] text-[11px] font-semibold tracking-wider uppercase">
                     <Award className="w-3.5 h-3.5" />
                     Family-Owned · Est. 2010
                   </div>
                 </div>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.05] tracking-tight mb-6 uppercase drop-shadow-lg">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.02] tracking-tight mb-6 drop-shadow-lg">
                   Protect Your Home With A <span className="text-primary drop-shadow-md">Roof Built To Last</span>
                 </h1>
-                <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed max-w-xl font-medium">
+                <p className="text-lg md:text-xl text-gray-200/90 mb-10 leading-relaxed max-w-xl font-normal">
                   Licensed, insured, and family-owned. From quick hurricane repairs to premium full replacements, CHS Roofing delivers battle-tested quality you can trust.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={scrollToContact}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-md font-bold text-lg tracking-wide transition-all shadow-[0_0_40px_rgba(200,20,50,0.4)] hover:shadow-[0_0_60px_rgba(200,20,50,0.6)] hover:-translate-y-1 flex items-center justify-center gap-2"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-7 py-4 rounded-full font-semibold text-base tracking-tight transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
                   >
-                    Get Your Free Quote <ArrowRight className="w-5 h-5" />
+                    Get Your Free Quote <ArrowRight className="w-4 h-4" />
                   </button>
                   <a
                     href="tel:+12390000000"
-                    className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-md font-bold text-lg tracking-wide transition-all flex items-center justify-center gap-2"
+                    className="bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/25 text-white px-7 py-4 rounded-full font-semibold text-base tracking-tight transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
                   >
+                    <Phone className="w-4 h-4" />
                     Call (239) XXX-XXXX
                   </a>
                 </div>
@@ -353,7 +354,7 @@ export default function HomePage() {
         </section>
 
         {/* TRUST BAR */}
-        <section className="bg-white border-b border-border py-8 relative z-20 -mt-8 shadow-xl mx-4 rounded-xl lg:mx-auto lg:max-w-7xl">
+        <section className="bg-white/95 backdrop-blur-xl border border-border/60 py-7 relative z-20 -mt-10 shadow-xl mx-4 rounded-2xl lg:mx-auto lg:max-w-7xl">
           <div className="container mx-auto px-6">
             <div className="flex flex-wrap justify-center md:justify-between items-center gap-6 md:gap-4 text-center">
               <div className="flex items-center gap-2 text-foreground font-bold">
@@ -385,8 +386,8 @@ export default function HomePage() {
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <FadeIn>
-                <div className="bg-primary/10 border-l-4 border-primary p-8 rounded-r-xl">
-                  <h2 className="text-3xl md:text-4xl font-display font-bold uppercase tracking-tight text-white mb-4">
+                <div className="bg-primary/10 border-l-4 border-primary p-10 rounded-r-2xl backdrop-blur-sm">
+                  <h2 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-white mb-4">
                     Storm Damage? Don't Wait.
                   </h2>
                   <p className="text-lg text-gray-300 mb-6">
@@ -429,15 +430,14 @@ export default function HomePage() {
         </section>
 
         {/* SERVICES SECTION */}
-        <section className="py-24 bg-background">
+        <section className="py-28 bg-background bg-wash-warm">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-bold tracking-wider uppercase mb-2">Our Expertise</h4>
-              <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Our Expertise</h4>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Premium Roofing Solutions
               </h2>
-              <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
-              <p className="text-muted-foreground mt-6 text-lg">
+              <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
                 We specialize in installing and repairing high-quality roofing systems for Southwest Florida's unique climate demands.
               </p>
             </div>
@@ -445,8 +445,8 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {services.map((service, index) => (
                 <FadeIn key={index} delay={index * 0.1}>
-                  <div className="group relative bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full flex flex-col">
-                    <div className="h-48 overflow-hidden relative">
+                  <div className="group relative bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg lift-on-hover h-full flex flex-col">
+                    <div className="h-52 overflow-hidden relative">
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
                       <img loading="lazy" decoding="async"
                         src={service.image}
@@ -456,14 +456,14 @@ export default function HomePage() {
                       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
                       <service.icon className="absolute bottom-4 left-4 w-8 h-8 text-white z-20" />
                     </div>
-                    <div className="p-6 flex-grow flex flex-col">
-                      <h3 className="text-xl font-display font-bold uppercase tracking-tight text-foreground mb-3 group-hover:text-primary transition-colors">
+                    <div className="p-7 flex-grow flex flex-col">
+                      <h3 className="text-xl font-display font-bold tracking-tight text-foreground mb-3 group-hover:text-primary transition-colors">
                         {service.title}
                       </h3>
-                      <p className="text-muted-foreground flex-grow mb-4">
+                      <p className="text-muted-foreground flex-grow mb-5 leading-relaxed">
                         {service.desc}
                       </p>
-                      <button onClick={scrollToContact} className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-1 group-hover:text-primary transition-colors mt-auto">
+                      <button onClick={scrollToContact} className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1 group-hover:text-primary group-hover:gap-2 transition-all mt-auto">
                         Learn More <ChevronRight className="w-4 h-4" />
                       </button>
                     </div>
@@ -484,12 +484,11 @@ export default function HomePage() {
           </div>
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-bold tracking-wider uppercase mb-2">See Our Work</h4>
-              <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-white">
+              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">See Our Work</h4>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white leading-[1.05]">
                 Metal & Commercial Roofing Excellence
               </h2>
-              <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
-              <p className="text-gray-300 mt-6 text-lg">
+              <p className="text-gray-300 mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
                 Watch how our expert crews deliver flawless standing seam metal installations and commercial flat roofing — on time, every time.
               </p>
             </div>
@@ -497,7 +496,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 gap-8">
               {/* Residential Metal Roofing Video */}
               <FadeIn>
-                <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 group relative bg-black">
+                <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 group relative bg-black lift-on-hover">
                   <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
                     <img loading="lazy" decoding="async"
                       src="/images/metal-roof.png"
@@ -505,13 +504,13 @@ export default function HomePage() {
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-[0_0_40px_rgba(200,20,50,0.6)] group-hover:scale-110 transition-transform">
+                      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform duration-300">
                         <Play className="w-7 h-7 text-white ml-1" fill="white" />
                       </div>
                     </div>
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <span className="text-xs font-bold uppercase tracking-widest text-primary">Residential</span>
-                      <h3 className="text-xl font-display font-bold uppercase mt-1">Standing Seam Metal Roofing</h3>
+                    <div className="absolute bottom-5 left-5 right-5 text-white">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Residential</span>
+                      <h3 className="text-xl font-display font-bold tracking-tight mt-1">Standing Seam Metal Roofing</h3>
                       <p className="text-sm text-gray-300 mt-1">Hurricane-rated, lifetime warranty installation</p>
                     </div>
                   </div>
@@ -520,7 +519,7 @@ export default function HomePage() {
 
               {/* Commercial Flat Roofing Video */}
               <FadeIn delay={0.2}>
-                <div className="rounded-xl overflow-hidden shadow-2xl border border-white/10 group relative bg-black">
+                <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 group relative bg-black lift-on-hover">
                   <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
                     <img loading="lazy" decoding="async"
                       src="/images/flat-roof.png"
@@ -528,13 +527,13 @@ export default function HomePage() {
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-[0_0_40px_rgba(200,20,50,0.6)] group-hover:scale-110 transition-transform">
+                      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform duration-300">
                         <Play className="w-7 h-7 text-white ml-1" fill="white" />
                       </div>
                     </div>
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <span className="text-xs font-bold uppercase tracking-widest text-primary">Commercial</span>
-                      <h3 className="text-xl font-display font-bold uppercase mt-1">Flat & TPO Roofing Systems</h3>
+                    <div className="absolute bottom-5 left-5 right-5 text-white">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Commercial</span>
+                      <h3 className="text-xl font-display font-bold tracking-tight mt-1">Flat & TPO Roofing Systems</h3>
                       <p className="text-sm text-gray-300 mt-1">Energy-efficient, code-compliant installations</p>
                     </div>
                   </div>
@@ -542,35 +541,35 @@ export default function HomePage() {
               </FadeIn>
             </div>
 
-            <div className="text-center mt-10">
+            <div className="text-center mt-12">
               <button
                 onClick={scrollToContact}
-                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-md font-bold text-lg tracking-wide transition-all hover:-translate-y-1 shadow-lg"
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-7 py-3.5 rounded-full font-semibold text-base tracking-tight transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
               >
-                Schedule a Free Walkthrough <ArrowRight className="w-5 h-5" />
+                Schedule a Free Walkthrough <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         </section>
 
         {/* WHY CHOOSE US / VALUE PROPS */}
-        <section className="py-24 bg-muted border-y border-border relative">
+        <section className="py-28 bg-muted bg-wash-cool relative">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <FadeIn>
                 <div className="grid grid-cols-2 gap-4">
-                  <img loading="lazy" decoding="async" src="/images/tile-roof.png" alt="Tile Roof" className="rounded-xl shadow-lg w-full h-[300px] object-cover" />
-                  <img loading="lazy" decoding="async" src="/images/flat-roof.png" alt="Flat Roof" className="rounded-xl shadow-lg w-full h-[300px] object-cover mt-8" />
+                  <img loading="lazy" decoding="async" src="/images/tile-roof.png" alt="Tile Roof" className="rounded-2xl shadow-md w-full h-[300px] object-cover" />
+                  <img loading="lazy" decoding="async" src="/images/flat-roof.png" alt="Flat Roof" className="rounded-2xl shadow-md w-full h-[300px] object-cover mt-8" />
                 </div>
               </FadeIn>
 
               <FadeIn delay={0.2}>
                 <div>
-                  <h4 className="text-primary font-bold tracking-wider uppercase mb-2">The CHS Difference</h4>
-                  <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground mb-6">
+                  <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">The CHS Difference</h4>
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground mb-6 leading-[1.05]">
                     We Treat Every Client Like Family
                   </h2>
-                  <p className="text-lg text-muted-foreground mb-8">
+                  <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
                     We don't just build roofs; we build lasting partnerships based on trust, security, and transparent communication. No hidden surprises.
                   </p>
 
@@ -612,25 +611,24 @@ export default function HomePage() {
         </section>
 
         {/* BEFORE / AFTER GALLERY */}
-        <section className="py-24 bg-background">
+        <section className="py-28 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-bold tracking-wider uppercase mb-2">Real Results</h4>
-              <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Real Results</h4>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Before & After Transformations
               </h2>
-              <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
-              <p className="text-muted-foreground mt-6 text-lg">
+              <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
                 See the dramatic difference a quality CHS Roofing project makes for Southwest Florida homeowners.
               </p>
             </div>
             <BeforeAfterGallery />
-            <div className="text-center mt-12">
+            <div className="text-center mt-14">
               <button
                 onClick={scrollToContact}
-                className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-8 py-4 rounded-md font-bold text-lg tracking-wide transition-all hover:-translate-y-1"
+                className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-7 py-3.5 rounded-full font-semibold text-base tracking-tight transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-secondary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Get Your Free Estimate <ArrowRight className="w-5 h-5" />
+                Get Your Free Estimate <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -646,11 +644,10 @@ export default function HomePage() {
 
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-bold tracking-wider uppercase mb-2">5-Star Reviews</h4>
-              <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">5-Star Reviews</h4>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Don't Just Take Our Word For It
               </h2>
-              <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
             </div>
             <TestimonialsCarousel />
           </div>
@@ -660,15 +657,14 @@ export default function HomePage() {
         <ServiceArea />
 
         {/* MEET THE TEAM */}
-        <section className="py-24 bg-background">
+        <section className="py-28 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-bold tracking-wider uppercase mb-2">People You Can Trust</h4>
-              <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">People You Can Trust</h4>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Meet Your Roofing Team
               </h2>
-              <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
-              <p className="text-muted-foreground mt-6 text-lg">
+              <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
                 Family-owned means you deal with the owners directly — not a call center.
               </p>
             </div>
@@ -676,7 +672,7 @@ export default function HomePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {team.map((member, i) => (
                 <FadeIn key={i} delay={i * 0.2}>
-                  <div className="bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all group">
+                  <div className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg lift-on-hover group">
                     <div className="h-64 overflow-hidden relative">
                       <img loading="lazy" decoding="async"
                         src={member.image}
@@ -685,11 +681,11 @@ export default function HomePage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-transparent to-transparent"></div>
                       <div className="absolute bottom-4 left-4">
-                        <span className="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{member.role}</span>
+                        <span className="bg-primary text-white text-[11px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-[0.15em] shadow-md shadow-primary/30">{member.role}</span>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-2xl font-display font-bold uppercase tracking-tight text-foreground mb-1">{member.name}</h3>
+                    <div className="p-7">
+                      <h3 className="text-2xl font-display font-bold tracking-tight text-foreground mb-2">{member.name}</h3>
                       <p className="text-muted-foreground leading-relaxed">{member.bio}</p>
                     </div>
                   </div>
@@ -706,14 +702,14 @@ export default function HomePage() {
         <FAQ />
 
         {/* TRUST BADGES & PARTNERS */}
-        <section className="py-14 bg-white border-y border-border/50">
+        <section className="py-16 bg-white border-y border-border/40">
           <div className="container mx-auto max-w-7xl px-4">
-            <p className="text-center text-sm font-bold text-muted-foreground uppercase tracking-widest mb-10">Verified Ratings & Licenses</p>
+            <p className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-[0.2em] mb-10">Verified Ratings & Licenses</p>
 
             {/* Trust Badges Row */}
-            <div className="flex flex-wrap justify-center items-center gap-6 mb-10">
+            <div className="flex flex-wrap justify-center items-center gap-4 mb-2">
               {/* Google 5-Star Badge */}
-              <div className="flex items-center gap-3 border border-border rounded-xl px-5 py-3 shadow-sm bg-card hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 border border-border/60 rounded-2xl px-5 py-3.5 shadow-sm bg-card hover:shadow-md transition-all hover:-translate-y-0.5">
                 <svg className="w-6 h-6" viewBox="0 0 48 48" fill="none">
                   <path d="M43.6 20.5H24v7h11.1c-1.1 5.4-5.8 9-11.1 9a12.5 12.5 0 010-25c3.1 0 5.9 1.1 8.1 3l5-5A21 21 0 003 24a21 21 0 0021 21 21 21 0 0020.6-25.5z" fill="#4285F4"/>
                   <path d="M6.3 14.7l5.8 4.3A12.5 12.5 0 0124 11.5c3.1 0 5.9 1.1 8.1 3l5-5A21 21 0 006.3 14.7z" fill="#EA4335"/>
@@ -730,7 +726,7 @@ export default function HomePage() {
               </div>
 
               {/* BBB A+ Badge */}
-              <div className="flex items-center gap-3 border border-border rounded-xl px-5 py-3 shadow-sm bg-card hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 border border-border/60 rounded-2xl px-5 py-3.5 shadow-sm bg-card hover:shadow-md transition-all hover:-translate-y-0.5">
                 <div className="w-10 h-10 rounded-lg bg-[#006DA6] flex items-center justify-center text-white font-display font-bold text-lg">BBB</div>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Accredited Business</p>
@@ -739,7 +735,7 @@ export default function HomePage() {
               </div>
 
               {/* Licensed Badge */}
-              <div className="flex items-center gap-3 border border-border rounded-xl px-5 py-3 shadow-sm bg-card hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 border border-border/60 rounded-2xl px-5 py-3.5 shadow-sm bg-card hover:shadow-md transition-all hover:-translate-y-0.5">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                   <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
@@ -754,41 +750,42 @@ export default function HomePage() {
         </section>
 
         {/* FINAL CTA & CONTACT FORM */}
-        <section id="contact" className="py-24 bg-secondary relative">
+        <section id="contact" className="py-28 bg-secondary relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-10">
             <img loading="lazy" decoding="async" src="/images/hero-roof.png" alt="Background" className="w-full h-full object-cover" />
           </div>
+          <div className="absolute inset-0 z-0 bg-gradient-to-br from-secondary via-secondary to-primary/15"></div>
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <FadeIn>
                 <div className="text-white max-w-xl">
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold uppercase tracking-tight mb-6 leading-tight">
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-6 leading-[1.05]">
                     Ready For A <span className="text-primary">Better Roof?</span>
                   </h2>
-                  <p className="text-xl text-gray-300 mb-8">
+                  <p className="text-xl text-gray-300/90 mb-10 leading-relaxed">
                     Get a free, honest assessment of your roof. No high-pressure sales tactics, just straight talk from local experts.
                   </p>
 
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-lg backdrop-blur-sm">
-                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shrink-0">
-                        <Phone className="w-6 h-6 text-white" />
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4 glass-surface-dark border border-white/10 p-5 rounded-2xl">
+                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shrink-0 shadow-md shadow-primary/30">
+                        <Phone className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400 font-semibold uppercase tracking-wider">Call Us Directly</p>
-                        <a href="tel:+12390000000" className="text-2xl font-bold text-white hover:text-primary transition-colors">
+                        <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-[0.2em]">Call Us Directly</p>
+                        <a href="tel:+12390000000" className="text-2xl font-bold text-white hover:text-primary transition-colors tracking-tight">
                           (239) XXX-XXXX
                         </a>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-lg backdrop-blur-sm">
+                    <div className="flex items-center gap-4 glass-surface-dark border border-white/10 p-5 rounded-2xl">
                       <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center shrink-0">
-                        <CheckCircle className="w-6 h-6 text-primary" />
+                        <CheckCircle className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400 font-semibold uppercase tracking-wider">Our Promise</p>
-                        <p className="text-lg font-bold text-white">
+                        <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-[0.2em]">Our Promise</p>
+                        <p className="text-lg font-semibold text-white tracking-tight">
                           Transparent pricing. Quality materials.
                         </p>
                       </div>

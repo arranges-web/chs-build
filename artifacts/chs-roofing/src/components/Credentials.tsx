@@ -34,15 +34,14 @@ const credentials = [
 
 export default function Credentials() {
   return (
-    <section className="py-24 bg-background relative">
+    <section className="py-28 bg-background relative">
       <div className="container mx-auto max-w-7xl px-4">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h4 className="text-primary font-bold tracking-wider uppercase mb-2 text-sm">Industry Recognized</h4>
-          <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Industry Recognized</h4>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
             Manufacturer Credentials
           </h2>
-          <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
-          <p className="text-muted-foreground mt-6 text-lg">
+          <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
             We earn — and maintain — the highest installer certifications from the industry's leading manufacturers,
             unlocking premium warranties available only through credentialed contractors.
           </p>
@@ -58,7 +57,7 @@ export default function Credentials() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="relative bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all overflow-hidden group"
+                className="relative bg-card border border-border/60 rounded-2xl p-7 shadow-sm hover:shadow-md lift-on-hover overflow-hidden group"
               >
                 <div className={`absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-10 group-hover:opacity-20 transition-opacity ${isGold ? "bg-[hsl(var(--accent-gold))]" : "bg-primary"}`} />
                 <div className="relative">
@@ -71,7 +70,7 @@ export default function Credentials() {
                       <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Certified</p>
                     </div>
                   </div>
-                  <h3 className="font-display font-bold uppercase tracking-tight text-foreground text-base mb-2 leading-tight">
+                  <h3 className="font-display font-bold tracking-tight text-foreground text-base mb-2 leading-tight">
                     {c.label}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{c.desc}</p>

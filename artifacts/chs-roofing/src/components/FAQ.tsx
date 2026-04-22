@@ -38,16 +38,15 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <section className="py-24 bg-muted/30">
+    <section className="py-28 bg-muted/40">
       <div className="container mx-auto max-w-4xl px-4">
-        <div className="text-center mb-12">
-          <h4 className="text-primary font-bold tracking-wider uppercase mb-2 text-sm flex items-center justify-center gap-2">
-            <HelpCircle className="w-4 h-4" /> Frequently Asked
+        <div className="text-center mb-14">
+          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs flex items-center justify-center gap-2">
+            <HelpCircle className="w-3.5 h-3.5" /> Frequently Asked
           </h4>
-          <h2 className="text-4xl md:text-5xl font-display font-bold uppercase tracking-tight text-foreground">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
             Answers Before You Call
           </h2>
-          <div className="w-24 h-1.5 bg-primary mx-auto mt-6"></div>
         </div>
 
         <Accordion type="single" collapsible className="space-y-3">
@@ -55,12 +54,12 @@ export default function FAQ() {
             <AccordionItem
               key={i}
               value={`item-${i}`}
-              className="bg-card border border-border rounded-xl px-6 shadow-sm data-[state=open]:shadow-md data-[state=open]:border-primary/30 transition-all"
+              className="bg-card border border-border/60 rounded-2xl px-6 md:px-7 shadow-sm data-[state=open]:shadow-md data-[state=open]:border-primary/30 transition-all"
             >
-              <AccordionTrigger className="font-display font-bold uppercase tracking-tight text-foreground text-left text-base md:text-lg hover:no-underline py-5">
+              <AccordionTrigger className="font-display font-bold tracking-tight text-foreground text-left text-base md:text-lg hover:no-underline py-5">
                 {f.q}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground leading-relaxed pb-5 text-base">
+              <AccordionContent className="text-muted-foreground leading-relaxed pb-6 text-base">
                 {f.a}
               </AccordionContent>
             </AccordionItem>

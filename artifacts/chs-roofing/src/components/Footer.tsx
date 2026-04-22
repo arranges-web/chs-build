@@ -29,7 +29,7 @@ export default function Footer() {
 
         {/* Contact Col */}
         <div>
-          <h4 className="font-display text-xl font-bold mb-6 text-white tracking-wide uppercase">Contact Us</h4>
+          <h4 className="font-display text-xs font-semibold mb-6 text-white tracking-[0.2em] uppercase">Contact Us</h4>
           <ul className="space-y-4">
             <li className="flex items-start gap-3">
               <Phone className="w-5 h-5 text-primary mt-0.5" />
@@ -65,7 +65,7 @@ export default function Footer() {
 
         {/* Services Col */}
         <div>
-          <h4 className="font-display text-xl font-bold mb-6 text-white tracking-wide uppercase">Our Services</h4>
+          <h4 className="font-display text-xs font-semibold mb-6 text-white tracking-[0.2em] uppercase">Our Services</h4>
           <ul className="space-y-3">
             <li><a href="#" className="hover:text-primary transition-colors flex items-center gap-2"><span className="text-primary text-xs">▶</span> Asphalt Shingles</a></li>
             <li><a href="#" className="hover:text-primary transition-colors flex items-center gap-2"><span className="text-primary text-xs">▶</span> Metal Roofing</a></li>
@@ -78,27 +78,27 @@ export default function Footer() {
 
         {/* Trust Col */}
         <div>
-          <h4 className="font-display text-xl font-bold mb-6 text-white tracking-wide uppercase">Why Choose Us</h4>
-          <ul className="space-y-4">
-            <li className="bg-background/5 border border-white/10 p-3 rounded flex items-center gap-3">
-              <div className="bg-primary/20 p-2 rounded text-primary font-bold">FL</div>
+          <h4 className="font-display text-xs font-semibold mb-6 text-white tracking-[0.2em] uppercase">Why Choose Us</h4>
+          <ul className="space-y-3">
+            <li className="bg-white/[0.03] border border-white/10 p-3.5 rounded-xl flex items-center gap-3 hover:bg-white/[0.06] transition-colors">
+              <div className="bg-primary/20 px-2.5 py-1.5 rounded-lg text-primary font-bold text-xs">FL</div>
               <div className="text-sm">
-                <span className="block text-white font-bold">Fully Licensed</span>
-                <span className="text-secondary-foreground/70">#CCC1333902</span>
+                <span className="block text-white font-semibold">Fully Licensed</span>
+                <span className="text-secondary-foreground/70 text-xs">#CCC1333902</span>
               </div>
             </li>
-            <li className="bg-background/5 border border-white/10 p-3 rounded flex items-center gap-3">
-              <div className="bg-primary/20 p-2 rounded text-primary font-bold">Insured</div>
+            <li className="bg-white/[0.03] border border-white/10 p-3.5 rounded-xl flex items-center gap-3 hover:bg-white/[0.06] transition-colors">
+              <div className="bg-primary/20 px-2.5 py-1.5 rounded-lg text-primary font-bold text-xs">INS</div>
               <div className="text-sm">
-                <span className="block text-white font-bold">Fully Insured</span>
-                <span className="text-secondary-foreground/70">For your protection</span>
+                <span className="block text-white font-semibold">Fully Insured</span>
+                <span className="text-secondary-foreground/70 text-xs">For your protection</span>
               </div>
             </li>
-            <li className="bg-background/5 border border-white/10 p-3 rounded flex items-center gap-3">
-              <div className="bg-primary/20 p-2 rounded text-primary font-bold">$$</div>
+            <li className="bg-white/[0.03] border border-white/10 p-3.5 rounded-xl flex items-center gap-3 hover:bg-white/[0.06] transition-colors">
+              <div className="bg-primary/20 px-2.5 py-1.5 rounded-lg text-primary font-bold text-xs">$0</div>
               <div className="text-sm">
-                <span className="block text-white font-bold">Free Estimates</span>
-                <span className="text-secondary-foreground/70">Transparent pricing</span>
+                <span className="block text-white font-semibold">Free Estimates</span>
+                <span className="text-secondary-foreground/70 text-xs">Transparent pricing</span>
               </div>
             </li>
           </ul>

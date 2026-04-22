@@ -124,16 +124,16 @@
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
   --app-font-display: 'Oswald', sans-serif;
-  --radius: .25rem; /* Sharp edges for contractor feel */
-  
-  --shadow-2xs: 0px 2px 0px 0px hsl(220 10% 15% / 0.05);
-  --shadow-xs: 0px 2px 0px 0px hsl(220 10% 15% / 0.05);
-  --shadow-sm: 0px 2px 0px 0px hsl(220 10% 15% / 0.05), 0px 1px 2px -1px hsl(220 10% 15% / 0.05);
-  --shadow: 0px 2px 0px 0px hsl(220 10% 15% / 0.05), 0px 1px 2px -1px hsl(220 10% 15% / 0.05);
-  --shadow-md: 0px 2px 0px 0px hsl(220 10% 15% / 0.05), 0px 2px 4px -1px hsl(220 10% 15% / 0.05);
-  --shadow-lg: 0px 2px 0px 0px hsl(220 10% 15% / 0.05), 0px 4px 6px -1px hsl(220 10% 15% / 0.05);
-  --shadow-xl: 0px 2px 0px 0px hsl(220 10% 15% / 0.05), 0px 8px 10px -1px hsl(220 10% 15% / 0.05);
-  --shadow-2xl: 0px 2px 0px 0px hsl(220 10% 15% / 0.05);
+  --radius: 1rem; /* Apple-inspired generous rounding */
+
+  --shadow-2xs: 0 1px 2px 0 hsl(220 15% 20% / 0.04);
+  --shadow-xs: 0 1px 3px 0 hsl(220 15% 20% / 0.05);
+  --shadow-sm: 0 2px 6px -1px hsl(220 15% 20% / 0.06), 0 1px 2px 0 hsl(220 15% 20% / 0.04);
+  --shadow: 0 4px 12px -2px hsl(220 15% 20% / 0.08), 0 2px 4px -1px hsl(220 15% 20% / 0.04);
+  --shadow-md: 0 8px 20px -4px hsl(220 15% 20% / 0.10), 0 3px 6px -2px hsl(220 15% 20% / 0.05);
+  --shadow-lg: 0 16px 32px -8px hsl(220 15% 20% / 0.12), 0 6px 12px -4px hsl(220 15% 20% / 0.06);
+  --shadow-xl: 0 24px 48px -12px hsl(220 15% 20% / 0.18), 0 10px 20px -6px hsl(220 15% 20% / 0.08);
+  --shadow-2xl: 0 36px 72px -16px hsl(220 15% 20% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
@@ -217,14 +217,14 @@
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
 
-  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.2);
-  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.2);
-  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.2);
-  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 1px 2px -1px hsl(0 0% 0% / 0.2);
-  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 2px 4px -1px hsl(0 0% 0% / 0.2);
-  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 4px 6px -1px hsl(0 0% 0% / 0.2);
-  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.2), 0px 8px 10px -1px hsl(0 0% 0% / 0.2);
-  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.2);
+  --shadow-2xs: 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+  --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.25);
+  --shadow-sm: 0 2px 6px -1px hsl(0 0% 0% / 0.3), 0 1px 2px 0 hsl(0 0% 0% / 0.2);
+  --shadow: 0 4px 12px -2px hsl(0 0% 0% / 0.35), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
+  --shadow-md: 0 8px 20px -4px hsl(0 0% 0% / 0.4), 0 3px 6px -2px hsl(0 0% 0% / 0.25);
+  --shadow-lg: 0 16px 32px -8px hsl(0 0% 0% / 0.45), 0 6px 12px -4px hsl(0 0% 0% / 0.3);
+  --shadow-xl: 0 24px 48px -12px hsl(0 0% 0% / 0.5), 0 10px 20px -6px hsl(0 0% 0% / 0.35);
+  --shadow-2xl: 0 36px 72px -16px hsl(0 0% 0% / 0.55);
 }
 
 @layer base {
@@ -234,11 +234,55 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
   }
-  
+
+  /* Base heading defaults — Oswald display font, but no blanket uppercase.
+     Components opt-in to uppercase via the `uppercase` utility where appropriate. */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  /* Soft frosted glass surface */
+  .glass-surface {
+    background-color: hsl(var(--background) / 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+  .glass-surface-dark {
+    background-color: hsl(220 10% 12% / 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  /* Soft hover lift used on interactive cards */
+  .lift-on-hover {
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .lift-on-hover:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Subtle background washes */
+  .bg-wash-warm {
+    background-image: radial-gradient(ellipse 80% 60% at 50% 0%, hsl(var(--accent-gold) / 0.06), transparent 70%),
+                      radial-gradient(ellipse 60% 50% at 90% 100%, hsl(var(--primary) / 0.04), transparent 70%);
+  }
+  .bg-wash-cool {
+    background-image: radial-gradient(ellipse 70% 50% at 0% 0%, hsl(var(--primary) / 0.05), transparent 70%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lift-on-hover {
+      transition: none;
+    }
+    .lift-on-hover:hover {
+      transform: none;
+    }
   }
 }
 

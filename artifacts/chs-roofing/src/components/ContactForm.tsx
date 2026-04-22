@@ -51,13 +51,13 @@ export default function ContactForm() {
 
   if (isSuccess) {
     return (
-      <div className="bg-primary/5 border border-primary/20 p-8 rounded-xl text-center flex flex-col items-center justify-center space-y-4">
+      <div className="bg-card border border-border/60 p-10 rounded-3xl text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
           <CheckCircle2 className="w-8 h-8 text-primary" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-foreground">Request Received!</h3>
-          <p className="text-muted-foreground mt-2">
+          <h3 className="text-2xl font-bold text-foreground tracking-tight">Request Received!</h3>
+          <p className="text-muted-foreground mt-2 leading-relaxed">
             Thank you for choosing CHS Roofing. Our team will contact you shortly to schedule your free estimate.
           </p>
         </div>
@@ -69,12 +69,12 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="bg-card p-8 rounded-xl shadow-xl border border-border/50 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
-      
-      <div className="mb-6">
-        <h3 className="text-2xl font-bold font-display uppercase tracking-tight text-foreground">Get a Free Quote</h3>
-        <p className="text-muted-foreground mt-1 text-sm">
+    <div className="bg-card p-8 md:p-10 rounded-3xl shadow-xl border border-border/60 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-primary to-primary/60"></div>
+
+      <div className="mb-7">
+        <h3 className="text-2xl md:text-3xl font-bold font-display tracking-tight text-foreground">Get a Free Quote</h3>
+        <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
           Fill out the form below and we'll get back to you within 24 hours.
         </p>
       </div>
@@ -168,9 +168,10 @@ export default function ContactForm() {
             )}
           />
 
-          <Button 
-            type="submit" 
-            className="w-full h-12 text-base font-bold tracking-wide mt-2 hover-elevate" 
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full h-14 text-base font-semibold tracking-tight mt-3 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
