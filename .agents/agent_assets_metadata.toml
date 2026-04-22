@@ -24,3 +24,57 @@ id = "EqAV3y5Zr6gvMdyqVnSo3"
 uri = "file://artifacts/chs-roofing/public/images/flat-roof.png"
 type = "image"
 title = "Commercial flat roof"
+
+[[generated]]
+id = "U7QStvHPTuq1FLicbDwSY"
+uri = "file://artifacts/chs-roofing/public/images/team-gustavo.png"
+type = "image"
+title = "gustavo headshot"
+
+[[generated]]
+id = "Tf3NQb3ljnyOjde6QW0Lk"
+uri = "file://artifacts/chs-roofing/public/images/team-melissa.png"
+type = "image"
+title = "melissa headshot"
+
+[[generated]]
+id = "rlnyyugrzGkxUtbbTYqYL"
+uri = "file://artifacts/chs-roofing/public/images/team-foreman.png"
+type = "image"
+title = "foreman headshot"
+
+[[generated]]
+id = "VbszP2ujNgFj5CtstVNBk"
+uri = "file://artifacts/chs-roofing/public/images/before-storm.png"
+type = "image"
+title = "storm damage before"
+
+[[generated]]
+id = "nEUXUank5M-RuGOgufS2L"
+uri = "file://artifacts/chs-roofing/public/images/after-storm.png"
+type = "image"
+title = "storm damage after"
+
+[[generated]]
+id = "D6ISEW3KstnQ0ttX_xMEI"
+uri = "file://artifacts/chs-roofing/public/images/before-shingle.png"
+type = "image"
+title = "old shingle before"
+
+[[generated]]
+id = "M-1zHfWQ10Bln-o1_DrAO"
+uri = "file://artifacts/chs-roofing/public/images/after-shingle.png"
+type = "image"
+title = "new shingle after"
+
+[[generated]]
+id = "N_1b4pAA_3jqHzzuTF2H8"
+uri = "file://artifacts/chs-roofing/public/images/before-flat.png"
+type = "image"
+title = "old flat roof before"
+
+[[generated]]
+id = "EEsMi0aPntmPUkC9Fyfz0"
+uri = "file://artifacts/chs-roofing/public/images/after-metal.png"
+type = "image"
+title = "new metal roof after"

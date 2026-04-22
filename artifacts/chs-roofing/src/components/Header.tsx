@@ -1,5 +1,5 @@
-import { Phone, Shield, ShieldCheck, Star, Clock } from "lucide-react";
-import chsLogo from "@assets/image_1776870295916.png";
+import { Phone, ShieldCheck, Star, Home as HomeIcon } from "lucide-react";
+import Monogram from "./Monogram";
 
 export default function Header() {
   const scrollToContact = () => {
@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <>
       {/* Top Utility Bar */}
-      <div className="bg-secondary text-secondary-foreground py-2 px-4 text-xs font-medium hidden md:block">
+      <div className="bg-secondary text-secondary-foreground py-2 px-4 text-xs font-medium hidden md:block border-b border-white/5">
         <div className="container mx-auto max-w-7xl flex justify-between items-center">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5">
@@ -17,36 +17,32 @@ export default function Header() {
               Licensed #CCC1333902 & Insured
             </span>
             <span className="flex items-center gap-1.5">
-              <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+              <Star className="w-3.5 h-3.5 text-[hsl(var(--accent-gold))] fill-[hsl(var(--accent-gold))]" />
               Google 5-Star Rated
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-primary" />
-              Fast Response Times
+              <HomeIcon className="w-3.5 h-3.5 text-primary" />
+              Family-Owned Since 2010
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span>Bilingual Service (English/Español)</span>
-            <span>Serving Southwest Florida</span>
+            <span>Bilingual Service (English / Español)</span>
+            <span className="text-[hsl(var(--accent-gold))] font-semibold">Serving All of SWFL</span>
           </div>
         </div>
       </div>
 
       {/* Main Sticky Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-sm">
-        <div className="container mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-3 group">
-            <img 
-              src={chsLogo} 
-              alt="CHS Roofing Logo" 
-              className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105" 
-            />
-            <div className="hidden sm:flex flex-col">
-              <span className="font-display text-xl font-bold tracking-tight text-foreground leading-none">
+        <div className="container mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+          <a href="#" className="flex items-center gap-3 group" aria-label="CHS Roofing - Cordova Home Services">
+            <Monogram className="w-11 h-11 md:w-12 md:h-12 transition-transform group-hover:scale-105 drop-shadow-sm" />
+            <div className="flex flex-col">
+              <span className="font-display text-lg md:text-xl font-bold tracking-tight text-foreground leading-none">
                 CHS ROOFING
               </span>
-              <span className="text-xs text-muted-foreground font-semibold tracking-wider">
-                CORDOVA HOME SERVICES
+              <span className="text-[9px] md:text-[10px] text-muted-foreground font-semibold tracking-[0.18em] uppercase mt-1">
+                Cordova Home Services
               </span>
             </div>
           </a>

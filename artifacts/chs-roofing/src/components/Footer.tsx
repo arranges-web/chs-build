@@ -1,20 +1,28 @@
 import chsLogo from "@assets/image_1776870295916.png";
 import { Facebook, MapPin, Phone, Mail, Clock } from "lucide-react";
+import Monogram from "./Monogram";
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-secondary-foreground border-t border-border/10 pt-16 pb-8">
+    <footer className="bg-secondary text-secondary-foreground border-t border-border/10 pt-16 pb-24 md:pb-8">
       <div className="container mx-auto max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-        
+
         {/* Brand Col */}
         <div className="space-y-6">
-          <img src={chsLogo} alt="CHS Roofing" className="h-16 w-auto object-contain bg-white/10 p-2 rounded-lg" />
+          <div className="flex items-center gap-3">
+            <Monogram className="w-14 h-14" />
+            <img src={chsLogo} alt="CHS Roofing" className="h-12 w-auto object-contain" />
+          </div>
           <p className="text-sm text-secondary-foreground/80 leading-relaxed max-w-xs">
-            Southwest Florida's trusted family-owned roofing contractor. Specializing in premium residential and commercial roofing systems designed to withstand Florida's toughest weather.
+            Southwest Florida's trusted family-owned roofing contractor since 2010. Specializing in premium residential and commercial roofing systems designed to withstand Florida's toughest weather.
           </p>
           <div className="flex gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors">
-              <Facebook className="w-5 h-5" />
+            <a
+              href="#"
+              aria-label="Visit CHS Roofing on Facebook"
+              className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
+            >
+              <Facebook className="w-5 h-5" aria-hidden="true" />
             </a>
           </div>
         </div>

@@ -3,6 +3,13 @@ import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Awar
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
+import Monogram from "@/components/Monogram";
+import ProcessTimeline from "@/components/ProcessTimeline";
+import ServiceArea from "@/components/ServiceArea";
+import WarrantyFinancing from "@/components/WarrantyFinancing";
+import FAQ from "@/components/FAQ";
+import Credentials from "@/components/Credentials";
+import StickyMobileBar from "@/components/StickyMobileBar";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -136,20 +143,20 @@ function BeforeAfterGallery() {
   const projects = [
     {
       label: "Hurricane Damage Restoration",
-      before: "/images/hero-roof.png",
-      after: "/images/metal-roof.png",
+      before: "/images/before-storm.png",
+      after: "/images/after-storm.png",
       location: "Cape Coral, FL"
     },
     {
       label: "Full Shingle Replacement",
-      before: "/images/flat-roof.png",
-      after: "/images/tile-roof.png",
+      before: "/images/before-shingle.png",
+      after: "/images/after-shingle.png",
       location: "Fort Myers, FL"
     },
     {
       label: "Commercial Flat to Metal",
-      before: "/images/tile-roof.png",
-      after: "/images/flat-roof.png",
+      before: "/images/before-flat.png",
+      after: "/images/after-metal.png",
       location: "Bonita Springs, FL"
     }
   ];
@@ -231,13 +238,19 @@ export default function HomePage() {
       name: "Gustavo Cordova",
       role: "Owner & Master Roofer",
       bio: "With over 15 years of hands-on roofing experience across Southwest Florida, Gustavo founded CHS Roofing on a simple principle: treat every client like family.",
-      image: "/images/metal-roof.png"
+      image: "/images/team-gustavo.png"
     },
     {
       name: "Melissa Blayman",
       role: "Customer Relations Manager",
       bio: "Melissa is the heartbeat of our customer experience. She ensures every project runs smoothly from first call to final inspection, with zero surprises.",
-      image: "/images/tile-roof.png"
+      image: "/images/team-melissa.png"
+    },
+    {
+      name: "Carlos Rivera",
+      role: "Lead Project Foreman",
+      bio: "Carlos leads our in-house installation crew with a decade of Florida roofing under his belt. He's on every job site to guarantee every detail meets CHS standards.",
+      image: "/images/team-foreman.png"
     }
   ];
 
@@ -257,6 +270,11 @@ export default function HomePage() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/80 to-transparent"></div>
             <div className="absolute inset-0 bg-black/40"></div>
+            {/* Subtle brand pattern overlay */}
+            <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay" style={{
+              backgroundImage: "repeating-linear-gradient(45deg, white 0 1px, transparent 1px 24px)"
+            }} />
+            <Monogram className="hidden lg:block absolute top-1/3 right-[8%] w-72 h-72 opacity-10 text-white" variant="outline" />
           </div>
 
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
@@ -267,9 +285,15 @@ export default function HomePage() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="max-w-2xl"
               >
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-sm font-bold tracking-wide uppercase mb-6 shadow-lg backdrop-blur-sm border border-white/20">
-                  <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-                  Southwest Florida's #1 Roofer
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-sm font-bold tracking-wide uppercase shadow-lg backdrop-blur-sm border border-white/20">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                    Southwest Florida's #1 Roofer
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-[hsl(var(--accent-gold))]/40 text-[hsl(var(--accent-gold))] text-xs font-bold tracking-wider uppercase">
+                    <Award className="w-3.5 h-3.5" />
+                    Family-Owned · Est. 2010
+                  </div>
                 </div>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white leading-[1.05] tracking-tight mb-6 uppercase drop-shadow-lg">
                   Protect Your Home With A <span className="text-primary drop-shadow-md">Roof Built To Last</span>
@@ -450,6 +474,9 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* PROCESS TIMELINE */}
+        <ProcessTimeline />
+
         {/* VIDEO SHOWCASE SECTION */}
         <section className="py-24 bg-secondary relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-5">
@@ -609,6 +636,9 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* MANUFACTURER CREDENTIALS */}
+        <Credentials />
+
         {/* TESTIMONIALS CAROUSEL */}
         <section className="py-24 bg-muted overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
@@ -626,6 +656,9 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* SERVICE AREA */}
+        <ServiceArea />
+
         {/* MEET THE TEAM */}
         <section className="py-24 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
@@ -640,7 +673,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {team.map((member, i) => (
                 <FadeIn key={i} delay={i * 0.2}>
                   <div className="bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all group">
@@ -666,10 +699,16 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* WARRANTY & FINANCING */}
+        <WarrantyFinancing />
+
+        {/* FAQ */}
+        <FAQ />
+
         {/* TRUST BADGES & PARTNERS */}
         <section className="py-14 bg-white border-y border-border/50">
           <div className="container mx-auto max-w-7xl px-4">
-            <p className="text-center text-sm font-bold text-muted-foreground uppercase tracking-widest mb-10">Certifications, Ratings & Supplier Partnerships</p>
+            <p className="text-center text-sm font-bold text-muted-foreground uppercase tracking-widest mb-10">Verified Ratings & Licenses</p>
 
             {/* Trust Badges Row */}
             <div className="flex flex-wrap justify-center items-center gap-6 mb-10">
@@ -711,25 +750,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Manufacturer Partners */}
-            <div className="border-t border-border/50 pt-8">
-              <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">Authorized Manufacturer Partners</p>
-              <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10">
-                {[
-                  { name: "GAF", color: "#003087" },
-                  { name: "CertainTeed", color: "#0054A5" },
-                  { name: "Carlisle", color: "#B22234" },
-                  { name: "TAMKO", color: "#1A1A1A" },
-                  { name: "ABC Supply", color: "#E31E24" },
-                  { name: "Westlake Royal", color: "#2D5F2E" },
-                  { name: "Metal Alliance", color: "#6B6B6B" },
-                ].map((p, i) => (
-                  <div key={i} className="flex items-center justify-center px-4 py-2 rounded-lg border border-border/60 bg-card min-w-[110px] h-12 shadow-sm hover:shadow-md transition-shadow grayscale hover:grayscale-0 transition-all duration-300">
-                    <span className="font-display text-sm font-bold uppercase tracking-wide" style={{ color: p.color }}>{p.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </section>
 
@@ -787,6 +807,7 @@ export default function HomePage() {
       </main>
 
       <Footer />
+      <StickyMobileBar />
     </div>
   );
 }
