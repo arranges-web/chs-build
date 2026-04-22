@@ -1,0 +1,79 @@
+import { Phone, Shield, ShieldCheck, Star, Clock } from "lucide-react";
+import chsLogo from "@assets/image_1776870295916.png";
+
+export default function Header() {
+  const scrollToContact = () => {
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <>
+      {/* Top Utility Bar */}
+      <div className="bg-secondary text-secondary-foreground py-2 px-4 text-xs font-medium hidden md:block">
+        <div className="container mx-auto max-w-7xl flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+              Licensed #CCC1333902 & Insured
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+              Google 5-Star Rated
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-primary" />
+              Fast Response Times
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span>Bilingual Service (English/Español)</span>
+            <span>Serving Southwest Florida</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Sticky Header */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-sm">
+        <div className="container mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
+          <a href="#" className="flex items-center gap-3 group">
+            <img 
+              src={chsLogo} 
+              alt="CHS Roofing Logo" 
+              className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105" 
+            />
+            <div className="hidden sm:flex flex-col">
+              <span className="font-display text-xl font-bold tracking-tight text-foreground leading-none">
+                CHS ROOFING
+              </span>
+              <span className="text-xs text-muted-foreground font-semibold tracking-wider">
+                CORDOVA HOME SERVICES
+              </span>
+            </div>
+          </a>
+
+          <div className="flex items-center gap-4 md:gap-8">
+            <div className="hidden md:flex flex-col items-end">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Call for emergency service
+              </span>
+              <a 
+                href="tel:+12390000000" 
+                className="font-display text-2xl font-bold text-foreground hover:text-primary transition-colors flex items-center gap-2"
+              >
+                <Phone className="w-5 h-5 text-primary" />
+                (239) XXX-XXXX
+              </a>
+            </div>
+
+            <button 
+              onClick={scrollToContact}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-md font-bold tracking-wide transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2 text-sm md:text-base"
+            >
+              Get a Free Quote
+            </button>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+}

@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "lKPxUJC2f0sI5-f0csq8O"
+uri = "file://artifacts/chs-roofing/public/images/hero-roof.png"
+type = "image"
+title = "Dramatic hero shingle roof"
+
+[[generated]]
+id = "ahE5u_IRK5yL68TMrwkxR"
+uri = "file://artifacts/chs-roofing/public/images/metal-roof.png"
+type = "image"
+title = "Metal roof installation"
+
+[[generated]]
+id = "rqH4-2SVyugoWK-vCebar"
+uri = "file://artifacts/chs-roofing/public/images/tile-roof.png"
+type = "image"
+title = "Terracotta tile roof"
+
+[[generated]]
+id = "EqAV3y5Zr6gvMdyqVnSo3"
+uri = "file://artifacts/chs-roofing/public/images/flat-roof.png"
+type = "image"
+title = "Commercial flat roof"

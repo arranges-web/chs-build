@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "CHS Roofing"
+version = "1.0.0"
+id = "artifacts/chs-roofing"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 3000
+
+[services.development]
+run = "pnpm --filter @workspace/chs-roofing run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/chs-roofing", "run", "build" ]
+publicDir = "artifacts/chs-roofing/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "3000"
+BASE_PATH = "/"
