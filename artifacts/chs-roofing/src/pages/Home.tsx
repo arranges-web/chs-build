@@ -659,6 +659,9 @@ export default function HomePage() {
         {/* FAQ */}
         <FAQ />
 
+        {/* MANUFACTURER PARTNERS */}
+        <Partners />
+
         {/* TRUST BADGES & PARTNERS */}
         <section className="py-16 bg-white border-y border-border/40">
           <div className="container mx-auto max-w-7xl px-4">
