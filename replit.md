@@ -25,3 +25,12 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+## Artifacts
+
+- `artifacts/chs-roofing` — Multi-page React + Vite marketing site for CHS Roofing
+  (Cordova Home Services). Routing via wouter; central data in
+  `src/lib/site-config.ts`; shared chrome via `src/components/SiteLayout.tsx`.
+  Routes: `/`, `/services/{installation,repair,maintenance,storm-damage,specialty-roofing}`,
+  `/materials/{asphalt-shingles,metal,tile,flat}`, `/gallery/{residential,commercial}`,
+  `/about`, `/contact`.

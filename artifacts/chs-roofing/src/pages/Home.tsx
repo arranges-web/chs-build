@@ -1,7 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { Link } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import Monogram from "@/components/Monogram";
 import ProcessTimeline from "@/components/ProcessTimeline";
@@ -9,7 +8,8 @@ import ServiceArea from "@/components/ServiceArea";
 import WarrantyFinancing from "@/components/WarrantyFinancing";
 import FAQ from "@/components/FAQ";
 import Credentials from "@/components/Credentials";
-import StickyMobileBar from "@/components/StickyMobileBar";
+import Partners from "@/components/Partners";
+import { TEAM, SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -233,31 +233,10 @@ export default function HomePage() {
     }
   ];
 
-  const team = [
-    {
-      name: "Gustavo Cordova",
-      role: "Owner & Master Roofer",
-      bio: "With over 15 years of hands-on roofing experience across Southwest Florida, Gustavo founded CHS Roofing on a simple principle: treat every client like family.",
-      image: "/images/team-gustavo.png"
-    },
-    {
-      name: "Melissa Blayman",
-      role: "Customer Relations Manager",
-      bio: "Melissa is the heartbeat of our customer experience. She ensures every project runs smoothly from first call to final inspection, with zero surprises.",
-      image: "/images/team-melissa.png"
-    },
-    {
-      name: "Carlos Rivera",
-      role: "Lead Project Foreman",
-      bio: "Carlos leads our in-house installation crew with a decade of Florida roofing under his belt. He's on every job site to guarantee every detail meets CHS standards.",
-      image: "/images/team-foreman.png"
-    }
-  ];
+  const team = TEAM.slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30">
-      <Header />
-
+    <>
       <main>
         {/* HERO SECTION */}
         <section ref={heroRef} className="relative pt-24 pb-32 lg:pt-32 lg:pb-48 overflow-hidden">
@@ -802,9 +781,6 @@ export default function HomePage() {
         </section>
 
       </main>
-
-      <Footer />
-      <StickyMobileBar />
-    </div>
+    </>
   );
 }
