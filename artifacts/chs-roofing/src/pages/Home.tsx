@@ -2,7 +2,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play } from "lucide-react";
 import { Link } from "wouter";
 import ContactForm from "@/components/ContactForm";
-import Monogram from "@/components/Monogram";
 import ProcessTimeline from "@/components/ProcessTimeline";
 import ServiceArea from "@/components/ServiceArea";
 import WarrantyFinancing from "@/components/WarrantyFinancing";
@@ -207,33 +206,13 @@ export default function HomePage() {
   };
 
   const services = [
-    {
-      title: "Asphalt Shingles",
-      desc: "Durable, cost-effective, and beautiful architectural shingles for your home.",
-      icon: Home,
-      image: "/images/hero-roof.png"
-    },
-    {
-      title: "Metal Roofing",
-      desc: "Premium standing seam metal roofs built to withstand Florida hurricanes.",
-      icon: Shield,
-      image: "/images/metal-roof.png"
-    },
-    {
-      title: "Tile Roofs",
-      desc: "Classic Southwest Florida terracotta and concrete tile roofing solutions.",
-      icon: HardHat,
-      image: "/images/tile-roof.png"
-    },
-    {
-      title: "Flat & TPO Roofing",
-      desc: "Energy-efficient flat roofing for commercial buildings and modern homes.",
-      icon: Building2,
-      image: "/images/flat-roof.png"
-    }
+    { title: "Asphalt Shingles", desc: "Durable, cost-effective, and beautiful architectural shingles for your home.", icon: Home, image: "/images/hero-roof.png", href: "/materials/asphalt-shingles" },
+    { title: "Metal Roofing", desc: "Premium standing seam metal roofs built to withstand Florida hurricanes.", icon: Shield, image: "/images/metal-roof.png", href: "/materials/metal" },
+    { title: "Tile Roofs", desc: "Classic Southwest Florida terracotta and concrete tile roofing solutions.", icon: HardHat, image: "/images/tile-roof.png", href: "/materials/tile" },
+    { title: "Flat & TPO Roofing", desc: "Energy-efficient flat roofing for commercial buildings and modern homes.", icon: Building2, image: "/images/flat-roof.png", href: "/materials/flat" }
   ];
 
-  const team = TEAM.slice(0, 3);
+  const team = TEAM;
 
   return (
     <>
@@ -253,7 +232,7 @@ export default function HomePage() {
             <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay" style={{
               backgroundImage: "repeating-linear-gradient(45deg, white 0 1px, transparent 1px 28px)"
             }} />
-            <Monogram className="hidden lg:block absolute top-1/3 right-[8%] w-72 h-72 opacity-10 text-white" variant="outline" />
+            <img src={SITE.logo} alt="" aria-hidden="true" className="hidden lg:block absolute top-1/3 right-[8%] w-72 h-72 opacity-10 object-contain" />
           </div>
 
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
@@ -282,18 +261,18 @@ export default function HomePage() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={scrollToContact}
+                  <Link
+                    href="/contact"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground px-7 py-4 rounded-full font-semibold text-base tracking-tight transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
                   >
                     Get Your Free Quote <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                   <a
-                    href="tel:+12390000000"
+                    href={`tel:${SITE.phoneTel}`}
                     className="bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/25 text-white px-7 py-4 rounded-full font-semibold text-base tracking-tight transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
                   >
                     <Phone className="w-4 h-4" />
-                    Call (239) XXX-XXXX
+                    Call {SITE.phoneDisplay}
                   </a>
                 </div>
 
@@ -442,9 +421,9 @@ export default function HomePage() {
                       <p className="text-muted-foreground flex-grow mb-5 leading-relaxed">
                         {service.desc}
                       </p>
-                      <button onClick={scrollToContact} className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1 group-hover:text-primary group-hover:gap-2 transition-all mt-auto">
+                      <Link href={service.href} className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1 group-hover:text-primary group-hover:gap-2 transition-all mt-auto">
                         Learn More <ChevronRight className="w-4 h-4" />
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </FadeIn>
@@ -650,7 +629,7 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {team.map((member, i) => (
-                <FadeIn key={i} delay={i * 0.2}>
+                <FadeIn key={i} delay={(i % 3) * 0.15}>
                   <div className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg lift-on-hover group">
                     <div className="h-64 overflow-hidden relative">
                       <img loading="lazy" decoding="async"
