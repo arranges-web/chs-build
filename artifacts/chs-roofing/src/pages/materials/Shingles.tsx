@@ -10,7 +10,7 @@ export default function Shingles() {
             Architectural asphalt shingles are the most popular roofing choice in Southwest Florida — and for good reason. They balance affordability, durability, and aesthetics, with dozens of color and profile options to match any home style.
           </p>
           <p>
-            CHS Roofing installs premium architectural and luxury designer shingles from GAF, CertainTeed, TAMKO, and Owens Corning, with wind ratings up to 130 MPH and lifetimes of 25–30+ years.
+            CHS Roofing installs premium architectural and luxury designer shingles from GAF, TAMKO, and Owens Corning, with wind ratings up to 130 MPH and lifetimes of 25–30+ years.
           </p>
         </>
       }
@@ -35,7 +35,7 @@ export default function Shingles() {
         "Homeowners planning to sell within 10–15 years",
         "HOA neighborhoods that don't allow metal or tile",
       ]}
-      manufacturers={["GAF", "CertainTeed", "TAMKO", "Owens Corning"]}
+      manufacturers={["GAF", "TAMKO", "Owens Corning"]}
       galleryImages={[
         { src: "/images/hero-roof.png", alt: "Architectural shingle roof" },
         { src: "/images/after-shingle.png", alt: "Replacement shingle install" },

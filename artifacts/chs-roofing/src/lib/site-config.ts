@@ -4,7 +4,6 @@ import teamSaul from "@assets/image_1776908337861.png";
 import teamGustavo from "@assets/image_1776908399820.png";
 import teamDaniel from "@assets/image_1776908406154.png";
 import teamRoberto from "@assets/image_1776908417253.png";
-import teamMelissa from "@assets/image_1776908426120.png";
 
 export const SITE = {
   brand: "CHS Roofing",
@@ -52,12 +51,6 @@ export const TEAM = [
     bio: "Leads our installation crews with safety, speed, and quality top of mind. Every job he runs gets done right.",
     image: teamRoberto,
   },
-  {
-    name: "Melissa",
-    role: "Customer Relations Manager",
-    bio: "The heartbeat of our customer experience. Melissa makes sure every project runs smoothly from first call to final inspection.",
-    image: teamMelissa,
-  },
 ] as const;
 
 export const SERVICES = [
@@ -101,7 +94,7 @@ export const MATERIALS = [
     href: "/materials/asphalt-shingles",
     image: "/images/hero-roof.png",
     lifespan: "25–30 years",
-    manufacturers: ["GAF", "CertainTeed", "TAMKO"],
+    manufacturers: ["GAF", "TAMKO", "Owens Corning"],
   },
   {
     slug: "metal",
@@ -137,7 +130,7 @@ export const PARTNERS = [
   { name: "GAF", url: "https://www.gaf.com/en-us/residential" },
   { name: "Metal Alliance", url: "https://www.metalalliance.com/" },
   { name: "ABC Supply", url: "https://www.abcsupply.com/" },
-  { name: "CertainTeed", url: "https://www.certainteed.com/" },
+  { name: "Owens Corning", url: "https://www.owenscorning.com/" },
   { name: "TAMKO", url: "https://www.tamko.com/" },
   { name: "Westlake Royal Roofing", url: "https://westlakeroyalroofing.com/" },
 ] as const;
@@ -145,9 +138,7 @@ export const PARTNERS = [
 export const TESTIMONIALS = [
   { name: "Melissa L.", date: "Apr 2025", text: "I hired Cordova to replace my roof. I dealt directly with Gustavo, he was great. He really worked with me and went out of his way to help me & answer all my questions. His crew did an awesome job!" },
   { name: "Angela", date: "Jan 2025", text: "Definitely a 5 star! Excellent contractor for all your roof needs. Fast, efficient, excellent customer service, quality materials, responds to calls and questions in a timely manner, always on top of things, and no problems with clean up." },
-  { name: "Petra", date: "Jan 2025", text: "Our experience working with Melissa from Cordova has been nothing but great. As honest as you can get a contractor these days. Highly recommend." },
   { name: "Karen", date: "Apr 2025", text: "Just had my roof done by Cordova after hurricane damage. They were so easy to work with. The job was completed so quickly and done well. The site was left clean. I couldn't have asked for better." },
-  { name: "Rudy", date: "Jan 2025", text: "Melissa Blayman with Cordova is one of the most capable, reliable, and trustworthy business people we have ever met. She consistently keeps her promises, delivers on time, and prioritizes her customers above all else." },
   { name: "Brian", date: "Apr 2025", text: "Cordova was the only one who showed up on time as promised and delivered an actual quote on their first visit. They've been excellent. Resolved issues without complaint or undue expense. I would recommend them to anyone." },
   { name: "Christine", date: "Apr 2025", text: "Needed my roof repaired after the hurricane and CHS was the only one that came out quickly. Punctual, professional and experienced with metal roofs which is hard to find. Highly recommended." },
   { name: "Jennifer", date: "Apr 2025", text: "Highly recommend to anyone needing home services! Very professional, quick, and you can tell they have a lot of experience! Very pleased with the work." },

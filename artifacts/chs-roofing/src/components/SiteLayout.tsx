@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import Header from "./Header";
 import Footer from "./Footer";
 import StickyMobileBar from "./StickyMobileBar";
+import ScrollProgress from "./ScrollProgress";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -13,6 +14,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 flex flex-col">
+      <ScrollProgress />
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />

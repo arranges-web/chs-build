@@ -10,10 +10,10 @@ const credentials = [
     accent: "primary"
   },
   {
-    badge: "CertainTeed",
-    label: "SELECT ShingleMaster™",
+    badge: "FRSA",
+    label: "Florida Roofing Member",
     icon: BadgeCheck,
-    desc: "Credentialed to install CertainTeed's full architectural lineup with 5-Star SureStart PLUS warranty options.",
+    desc: "Active member of the Florida Roofing & Sheet Metal Contractors Association — staying ahead of code, weather science, and best-practice installs.",
     accent: "gold"
   },
   {

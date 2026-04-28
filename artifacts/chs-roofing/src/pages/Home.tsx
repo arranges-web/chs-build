@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play } from "lucide-react";
+import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play, Sparkles, CloudLightning } from "lucide-react";
 import { Link } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import ProcessTimeline from "@/components/ProcessTimeline";
@@ -8,7 +8,10 @@ import WarrantyFinancing from "@/components/WarrantyFinancing";
 import FAQ from "@/components/FAQ";
 import Credentials from "@/components/Credentials";
 import Partners from "@/components/Partners";
-import { TEAM, SITE, SERVICES, MATERIALS } from "@/lib/site-config";
+import CountUp from "@/components/CountUp";
+import SectionEyebrow from "@/components/SectionEyebrow";
+import TestimonialMarquee from "@/components/TestimonialMarquee";
+import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS } from "@/lib/site-config";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -23,48 +26,7 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   </motion.div>
 );
 
-const testimonials = [
-  {
-    name: "Melissa L.",
-    date: "Apr 2025",
-    text: "I hired Cordova to replace my roof. I dealt directly with Gustavo, he was great. He really worked with me and went out of his way to help me & answer all my questions. His crew did an awesome job!"
-  },
-  {
-    name: "Angela",
-    date: "Jan 2025",
-    text: "Definitely a 5 star! Excellent Contractor for all your roof needs. Fast, efficient, excellent customer service, quality materials, responds to calls and questions in a timely manner, always on top of things, and no problems with clean up."
-  },
-  {
-    name: "Petra",
-    date: "Jan 2025",
-    text: "Our experience working with Melissa from Cordova has been nothing but great. As honest as you can get a contractor these days. Highly recommend."
-  },
-  {
-    name: "Karen",
-    date: "Apr 2025",
-    text: "Just had my roof done by Cordova after hurricane damage. They were so easy to work with. The job was completed so quickly and done well. The site was left clean. I couldn't have asked for better."
-  },
-  {
-    name: "Rudy",
-    date: "Jan 2025",
-    text: "Melissa Blayman with Cordova is one of the most capable, reliable, and trustworthy business people we have ever met. She consistently keeps her promises, delivers on time, and prioritizes her customers above all else."
-  },
-  {
-    name: "Brian",
-    date: "Apr 2025",
-    text: "Cordova was the only one who showed up on time as promised and delivered an actual quote on their first visit. They've been excellent. Resolved issues without complaint or undue expense. I would recommend them to anyone."
-  },
-  {
-    name: "Christine",
-    date: "Apr 2025",
-    text: "Needed my roof repaired after the hurricane and CHS was the only one that came out quickly. Punctual, professional and experienced with metal roofs which is hard to find. Highly recommended."
-  },
-  {
-    name: "Jennifer",
-    date: "Apr 2025",
-    text: "Highly recommend to anyone needing home services! Very professional, quick, and you can tell they have a lot of experience! Very pleased with the work."
-  }
-];
+const testimonials = TESTIMONIALS;
 
 function TestimonialsCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 });
@@ -205,12 +167,27 @@ export default function HomePage() {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const services = [
-    { title: "Asphalt Shingles", desc: "Durable, cost-effective, and beautiful architectural shingles for your home.", icon: Home, image: "/images/hero-roof.png", href: "/materials/asphalt-shingles" },
-    { title: "Metal Roofing", desc: "Premium standing seam metal roofs built to withstand Florida hurricanes.", icon: Shield, image: "/images/metal-roof.png", href: "/materials/metal" },
-    { title: "Tile Roofs", desc: "Classic Southwest Florida terracotta and concrete tile roofing solutions.", icon: HardHat, image: "/images/tile-roof.png", href: "/materials/tile" },
-    { title: "Flat & TPO Roofing", desc: "Energy-efficient flat roofing for commercial buildings and modern homes.", icon: Building2, image: "/images/flat-roof.png", href: "/materials/flat" }
-  ];
+  const SERVICE_ICONS: Record<string, typeof Home> = {
+    installation: Home,
+    repair: Wrench,
+    maintenance: ShieldCheck,
+    "storm-damage": CloudLightning,
+    "specialty-roofing": Sparkles,
+  };
+  const SERVICE_IMAGES: Record<string, string> = {
+    installation: "/images/hero-roof.png",
+    repair: "/images/before-shingle.png",
+    maintenance: "/images/tile-roof.png",
+    "storm-damage": "/images/after-storm.png",
+    "specialty-roofing": "/images/metal-roof.png",
+  };
+  const services = SERVICES.map((s) => ({
+    title: s.title,
+    desc: s.short,
+    icon: SERVICE_ICONS[s.slug] ?? Home,
+    image: SERVICE_IMAGES[s.slug] ?? "/images/hero-roof.png",
+    href: s.href,
+  }));
 
   const team = TEAM;
 
@@ -278,11 +255,11 @@ export default function HomePage() {
 
                 <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="flex flex-col gap-1 text-white">
-                    <span className="font-display text-3xl font-bold text-primary">15+</span>
+                    <CountUp to={15} suffix="+" className="font-display text-3xl font-bold text-primary" />
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Years in Business</span>
                   </div>
                   <div className="flex flex-col gap-1 text-white">
-                    <span className="font-display text-3xl font-bold text-primary">500+</span>
+                    <CountUp to={500} suffix="+" className="font-display text-3xl font-bold text-primary" />
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Projects Completed</span>
                   </div>
                   <div className="flex flex-col gap-1 text-white">
@@ -391,41 +368,50 @@ export default function HomePage() {
         <section className="py-28 bg-background bg-wash-warm">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Our Expertise</h4>
+              <SectionEyebrow number="01" label="Our Services" className="mx-auto" />
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
-                Premium Roofing Solutions
+                Everything Your Roof Needs — In One Place
               </h2>
               <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
-                We specialize in installing and repairing high-quality roofing systems for Southwest Florida's unique climate demands.
+                From new installs to emergency hurricane response, our crews handle the full lifecycle of every roof we touch.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
               {services.map((service, index) => (
-                <FadeIn key={index} delay={index * 0.1}>
-                  <div className="group relative bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg lift-on-hover h-full flex flex-col">
-                    <div className="h-52 overflow-hidden relative">
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
+                <FadeIn key={index} delay={index * 0.08}>
+                  <Link
+                    href={service.href}
+                    className="group relative bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg lift-on-hover h-full flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    data-testid={`service-card-${index}`}
+                  >
+                    <div className="h-40 overflow-hidden relative">
+                      <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors z-10"></div>
                       <img loading="lazy" decoding="async"
                         src={service.image}
                         alt={service.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
-                      <service.icon className="absolute bottom-4 left-4 w-8 h-8 text-white z-20" />
+                      <div className="absolute bottom-3 left-3 z-20 w-9 h-9 rounded-xl bg-white/95 backdrop-blur flex items-center justify-center shadow">
+                        <service.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="absolute top-3 right-3 z-20 text-[10px] font-display font-bold tracking-[0.2em] text-white/80">
+                        0{index + 1}
+                      </span>
                     </div>
-                    <div className="p-7 flex-grow flex flex-col">
-                      <h3 className="text-xl font-display font-bold tracking-tight text-foreground mb-3 group-hover:text-primary transition-colors">
+                    <div className="p-5 flex-grow flex flex-col">
+                      <h3 className="text-base font-display font-bold tracking-tight text-foreground mb-2 group-hover:text-primary transition-colors leading-tight">
                         {service.title}
                       </h3>
-                      <p className="text-muted-foreground flex-grow mb-5 leading-relaxed">
+                      <p className="text-sm text-muted-foreground flex-grow mb-4 leading-relaxed">
                         {service.desc}
                       </p>
-                      <Link href={service.href} className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1 group-hover:text-primary group-hover:gap-2 transition-all mt-auto">
-                        Learn More <ChevronRight className="w-4 h-4" />
-                      </Link>
+                      <span className="text-xs font-semibold text-foreground tracking-wide uppercase flex items-center gap-1 group-hover:text-primary group-hover:gap-2 transition-all mt-auto">
+                        Learn More <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
                     </div>
-                  </div>
+                  </Link>
                 </FadeIn>
               ))}
             </div>
@@ -523,7 +509,7 @@ export default function HomePage() {
 
               <FadeIn delay={0.2}>
                 <div>
-                  <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">The CHS Difference</h4>
+                  <SectionEyebrow number="02" label="The CHS Difference" />
                   <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground mb-6 leading-[1.05]">
                     We Treat Every Client Like Family
                   </h2>
@@ -572,7 +558,7 @@ export default function HomePage() {
         <section className="py-28 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Real Results</h4>
+              <SectionEyebrow number="03" label="Real Results" className="mx-auto" />
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Before & After Transformations
               </h2>
@@ -602,13 +588,14 @@ export default function HomePage() {
 
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">5-Star Reviews</h4>
+              <SectionEyebrow number="04" label="5-Star Reviews" className="mx-auto" />
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Don't Just Take Our Word For It
               </h2>
             </div>
             <TestimonialsCarousel />
           </div>
+          <TestimonialMarquee />
         </section>
 
         {/* SERVICE AREA */}
@@ -618,7 +605,7 @@ export default function HomePage() {
         <section className="py-28 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">People You Can Trust</h4>
+              <SectionEyebrow number="05" label="People You Can Trust" className="mx-auto" />
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                 Meet Your Roofing Team
               </h2>
