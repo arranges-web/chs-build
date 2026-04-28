@@ -11,6 +11,7 @@ import Partners from "@/components/Partners";
 import CountUp from "@/components/CountUp";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import TestimonialMarquee from "@/components/TestimonialMarquee";
+import RoofDivider from "@/components/RoofDivider";
 import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS } from "@/lib/site-config";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -263,11 +264,24 @@ export default function HomePage() {
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Projects Completed</span>
                   </div>
                   <div className="flex flex-col gap-1 text-white">
-                    <span className="font-display text-3xl font-bold text-primary">5★</span>
+                    <CountUp
+                      to={5}
+                      duration={1.2}
+                      format={(n) => `${n.toFixed(1)}★`}
+                      className="font-display text-3xl font-bold text-primary"
+                    />
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Google Rated</span>
                   </div>
                   <div className="flex flex-col gap-1 text-white">
-                    <span className="font-display text-3xl font-bold text-primary">24/7</span>
+                    <CountUp
+                      to={247}
+                      duration={1.4}
+                      format={(n) => {
+                        const r = Math.round(n);
+                        return `${Math.floor(r / 10)}/${r % 10}`;
+                      }}
+                      className="font-display text-3xl font-bold text-primary"
+                    />
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-80">Emergency Response</span>
                   </div>
                 </div>
@@ -401,7 +415,7 @@ export default function HomePage() {
                       </span>
                     </div>
                     <div className="p-5 flex-grow flex flex-col">
-                      <h3 className="text-base font-display font-bold tracking-tight text-foreground mb-2 group-hover:text-primary transition-colors leading-tight">
+                      <h3 className="text-base font-display font-bold tracking-tight text-foreground mb-2 group-hover:text-primary transition-colors leading-tight relative inline-block w-fit after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-0 after:bg-primary after:transition-[width] after:duration-500 group-hover:after:w-full">
                         {service.title}
                       </h3>
                       <p className="text-sm text-muted-foreground flex-grow mb-4 leading-relaxed">
@@ -577,6 +591,8 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <RoofDivider variant="dark" className="text-foreground bg-background" />
 
         {/* MANUFACTURER CREDENTIALS */}
         <Credentials />

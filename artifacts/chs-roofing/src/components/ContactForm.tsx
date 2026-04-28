@@ -22,7 +22,6 @@ import {
   CloudLightning,
   Sparkles,
   ArrowLeft,
-  ArrowRight,
   Camera,
   Clock3,
   CalendarDays,
@@ -30,6 +29,8 @@ import {
   Phone,
   User,
   ChevronRight,
+  MapPin,
+  Pencil,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -52,6 +53,7 @@ const ROOF_AGE = ["Under 5 years", "5–10 years", "10–20 years", "20+ years",
 
 const formSchema = z.object({
   serviceType: z.string().min(1, "Please pick a service"),
+  address: z.string().min(3, "Enter your street address"),
   zip: z
     .string()
     .min(5, "Enter a 5-digit ZIP")
@@ -69,8 +71,9 @@ type FormValues = z.infer<typeof formSchema>;
 
 const STEPS: { id: number; title: string; fields: (keyof FormValues)[] }[] = [
   { id: 1, title: "What do you need?", fields: ["serviceType"] },
-  { id: 2, title: "Tell us about your roof", fields: ["zip", "roofAge", "urgency"] },
+  { id: 2, title: "Tell us about your property", fields: ["address", "zip", "roofAge", "urgency"] },
   { id: 3, title: "How can we reach you?", fields: ["name", "phone", "email"] },
+  { id: 4, title: "Quick review", fields: [] },
 ];
 
 export default function ContactForm() {
@@ -86,6 +89,7 @@ export default function ContactForm() {
     mode: "onTouched",
     defaultValues: {
       serviceType: "",
+      address: "",
       zip: "",
       roofAge: "",
       urgency: "",
@@ -98,8 +102,10 @@ export default function ContactForm() {
 
   const goNext = async () => {
     const fields = STEPS[step - 1].fields;
-    const ok = await form.trigger(fields, { shouldFocus: true });
-    if (!ok) return;
+    if (fields.length) {
+      const ok = await form.trigger(fields, { shouldFocus: true });
+      if (!ok) return;
+    }
     setDirection(1);
     setStep((s) => Math.min(STEPS.length, s + 1));
   };
@@ -107,6 +113,11 @@ export default function ContactForm() {
   const goBack = () => {
     setDirection(-1);
     setStep((s) => Math.max(1, s - 1));
+  };
+
+  const jumpTo = (target: number) => {
+    setDirection(target < step ? -1 : 1);
+    setStep(target);
   };
 
   const onSubmit = async (_data: FormValues) => {
@@ -149,7 +160,7 @@ export default function ContactForm() {
 
   const progressPct = (step / STEPS.length) * 100;
   const currentTitle = STEPS[step - 1].title;
-  const watchedService = form.watch("serviceType");
+  const values = form.watch();
 
   return (
     <div className="bg-card p-6 md:p-8 rounded-3xl shadow-xl border border-border/60 relative overflow-hidden">
@@ -250,13 +261,34 @@ export default function ContactForm() {
 
               {step === 2 && (
                 <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-primary" /> Property address
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="1234 Sunset Dr"
+                            autoComplete="street-address"
+                            {...field}
+                            className="bg-background"
+                            data-testid="input-address"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <FormField
                       control={form.control}
                       name="zip"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-semibold text-sm">Property ZIP</FormLabel>
+                          <FormLabel className="font-semibold text-sm">ZIP code</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="e.g. 33904"
@@ -420,16 +452,43 @@ export default function ContactForm() {
                       </FormItem>
                     )}
                   />
-                  {watchedService && (
-                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                      <p className="text-xs text-foreground/80 leading-relaxed">
-                        We'll prep your <span className="font-semibold">
-                          {SERVICE_OPTIONS.find((o) => o.value === watchedService)?.label}
-                        </span> quote and reach out within 24 hours. No pressure — ever.
-                      </p>
-                    </div>
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="space-y-3" data-testid="review-summary">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Quick check — make sure everything looks right, then send it our way. We'll respond within 24 hours.
+                  </p>
+                  <ReviewRow
+                    label="Service"
+                    value={SERVICE_OPTIONS.find((o) => o.value === values.serviceType)?.label ?? values.serviceType}
+                    onEdit={() => jumpTo(1)}
+                  />
+                  <ReviewRow
+                    label="Property"
+                    value={`${values.address}${values.address ? ", " : ""}${values.zip}`}
+                    onEdit={() => jumpTo(2)}
+                  />
+                  <ReviewRow
+                    label="Roof"
+                    value={`${values.roofAge} · ${URGENCY_OPTIONS.find((o) => o.value === values.urgency)?.label ?? ""}${photoName ? ` · 📎 ${photoName}` : ""}`}
+                    onEdit={() => jumpTo(2)}
+                  />
+                  <ReviewRow
+                    label="Contact"
+                    value={`${values.name} · ${values.phone} · ${values.email}`}
+                    onEdit={() => jumpTo(3)}
+                  />
+                  {values.message && (
+                    <ReviewRow label="Notes" value={values.message} onEdit={() => jumpTo(3)} />
                   )}
+                  <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex items-start gap-2 mt-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-xs text-foreground/80 leading-relaxed">
+                      We'll reach out within 24 hours with a transparent, no-pressure quote. Your info is never sold or shared.
+                    </p>
+                  </div>
                 </div>
               )}
             </motion.div>
@@ -453,24 +512,24 @@ export default function ContactForm() {
                 type="button"
                 onClick={goNext}
                 size="lg"
-                className="flex-1 h-12 text-base font-semibold tracking-tight shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all"
+                className="flex-1 h-12 text-base font-semibold tracking-tight shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
                 data-testid="button-next"
               >
-                Continue <ChevronRight className="w-4 h-4 ml-1.5" />
+                {step === STEPS.length - 1 ? "Review" : "Continue"} <ChevronRight className="w-4 h-4 ml-1.5" />
               </Button>
             ) : (
               <Button
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="flex-1 h-12 text-base font-semibold tracking-tight shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all"
+                className="flex-1 h-12 text-base font-semibold tracking-tight shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
                 data-testid="button-submit"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">Sending…</span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    Get My Free Quote <Send className="w-4 h-4 ml-1" />
+                    Send My Free Quote Request <Send className="w-4 h-4 ml-1" />
                   </span>
                 )}
               </Button>
@@ -482,6 +541,35 @@ export default function ContactForm() {
           </p>
         </form>
       </Form>
+    </div>
+  );
+}
+
+function ReviewRow({
+  label,
+  value,
+  onEdit,
+}: {
+  label: string;
+  value: string;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3 bg-muted/30 border border-border/60 rounded-xl p-3">
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+          {label}
+        </p>
+        <p className="text-sm font-semibold text-foreground mt-0.5 break-words">{value || "—"}</p>
+      </div>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1 shrink-0 mt-1"
+        data-testid={`review-edit-${label.toLowerCase()}`}
+      >
+        <Pencil className="w-3 h-3" /> Edit
+      </button>
     </div>
   );
 }

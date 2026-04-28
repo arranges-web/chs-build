@@ -34,7 +34,7 @@ const credentials = [
 
 export default function Credentials() {
   return (
-    <section className="py-28 bg-background relative">
+    <section className="py-28 bg-background relative grain-overlay">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Industry Recognized</h4>

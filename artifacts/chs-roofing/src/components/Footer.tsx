@@ -4,8 +4,16 @@ import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-secondary-foreground border-t border-border/10 pt-16 pb-24 md:pb-8">
-      <div className="container mx-auto max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+    <footer className="bg-secondary text-secondary-foreground border-t border-border/10 pt-16 pb-24 md:pb-8 relative overflow-hidden">
+      {/* Monogram watermark */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -bottom-12 -right-10 select-none font-display font-bold tracking-tighter text-white/[0.04] leading-none"
+        style={{ fontSize: "clamp(220px, 28vw, 480px)" }}
+      >
+        CHS
+      </div>
+      <div className="container mx-auto max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12 relative">
 
         {/* Brand Col */}
         <div className="space-y-5 lg:col-span-2">
@@ -21,6 +29,12 @@ export default function Footer() {
           <p className="text-sm text-secondary-foreground/80 leading-relaxed max-w-md">
             Southwest Florida's trusted family-owned roofing contractor since {SITE.established}. Specializing in premium residential and commercial roofing systems designed to withstand Florida's toughest weather.
           </p>
+          <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] font-semibold text-secondary-foreground/60">
+            <span className="h-px w-6 bg-primary/70" />
+            Est. {SITE.established}
+            <span className="opacity-50">·</span>
+            <span>{SITE.city}</span>
+          </div>
           <div className="flex gap-3">
             <a
               href="#"
@@ -98,7 +112,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-secondary-foreground/60">
+      <div className="container mx-auto max-w-7xl px-4 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-secondary-foreground/60 relative">
         <p>© {new Date().getFullYear()} {SITE.legalName} ({SITE.brand}). All rights reserved. License {SITE.license}.</p>
         <div className="flex gap-6">
           <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
