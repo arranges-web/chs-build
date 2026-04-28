@@ -33,7 +33,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const SERVICE_OPTIONS = [
   { value: "installation", label: "New Roof Install", icon: Home, hint: "Full residential or commercial roof" },
@@ -78,6 +78,7 @@ const STEPS: { id: number; title: string; fields: (keyof FormValues)[] }[] = [
 
 export default function ContactForm() {
   const { toast } = useToast();
+  const reducedMotion = useReducedMotion();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -138,9 +139,13 @@ export default function ContactForm() {
     return (
       <div className="bg-card border border-border/60 p-10 rounded-3xl text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
         <motion.div
-          initial={{ scale: 0.6, opacity: 0 }}
+          initial={reducedMotion ? false : { scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 240, damping: 18 }}
+          transition={
+            reducedMotion
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 240, damping: 18 }
+          }
           className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center"
         >
           <CheckCircle2 className="w-8 h-8 text-primary" />
@@ -193,7 +198,11 @@ export default function ContactForm() {
             className="h-full bg-primary"
             initial={false}
             animate={{ width: `${progressPct}%` }}
-            transition={{ type: "spring", stiffness: 140, damping: 22 }}
+            transition={
+              reducedMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 140, damping: 22 }
+            }
           />
         </div>
       </div>
@@ -204,10 +213,10 @@ export default function ContactForm() {
             <motion.div
               key={step}
               custom={direction}
-              initial={{ opacity: 0, x: direction * 28 }}
+              initial={reducedMotion ? false : { opacity: 0, x: direction * 28 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -direction * 28 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, x: -direction * 28 }}
+              transition={{ duration: reducedMotion ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }}
               className="space-y-4"
             >
               {step === 1 && (
