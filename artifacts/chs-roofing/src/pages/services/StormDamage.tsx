@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Phone, FileCheck, Camera, Wrench } from "lucide-react";
 import ServicePageTemplate from "@/components/ServicePageTemplate";
+import RaindropOverlay from "@/components/RaindropOverlay";
 import { SITE, PHOTOS } from "@/lib/site-config";
 
 export default function StormDamage() {
@@ -11,6 +12,7 @@ export default function StormDamage() {
       subtitle="Emergency tarping, full insurance documentation, and complete restoration. We've helped hundreds of SWFL families recover from Ian, Helene, and Milton."
       image={PHOTOS.tearOff}
       imageAlt="Storm-damaged roof tear-off and decking inspection in progress"
+      heroOverlay={<RaindropOverlay count={28} tint="light" />}
       crumbs={[{ label: "Services" }, { label: "Storm Damage" }]}
       intro={
         <>

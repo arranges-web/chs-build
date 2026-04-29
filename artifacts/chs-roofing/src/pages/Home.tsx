@@ -12,6 +12,8 @@ import CountUp from "@/components/CountUp";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import TestimonialMarquee from "@/components/TestimonialMarquee";
 import RoofDivider from "@/components/RoofDivider";
+import ShingleDivider from "@/components/ShingleDivider";
+import RaindropOverlay from "@/components/RaindropOverlay";
 import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS, PHOTOS } from "@/lib/site-config";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -329,9 +331,13 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Subtle shingle divider between the floating trust bar and the dark storm-damage section. */}
+        <ShingleDivider variant="light" className="container mx-auto max-w-7xl px-4" />
+
         {/* URGENCY / STORM DAMAGE */}
         <section className="py-20 bg-secondary text-secondary-foreground overflow-hidden relative">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 -skew-x-12 transform origin-top"></div>
+          <RaindropOverlay count={20} tint="light" className="z-0" />
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <FadeIn>
@@ -396,7 +402,7 @@ export default function HomePage() {
                 <FadeIn key={index} delay={index * 0.08}>
                   <Link
                     href={service.href}
-                    className="group relative bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg lift-on-hover h-full flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className="group relative bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg shingle-lift h-full flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     data-testid={`service-card-${index}`}
                   >
                     <div className="h-40 overflow-hidden relative">
@@ -567,6 +573,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Subtle shingle divider between the cool "Why Choose Us" section and the warm Before/After gallery. */}
+        <ShingleDivider variant="light" className="bg-background" />
 
         {/* BEFORE / AFTER GALLERY */}
         <section className="py-28 bg-background">

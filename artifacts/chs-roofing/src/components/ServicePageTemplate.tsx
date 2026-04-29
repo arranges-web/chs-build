@@ -14,6 +14,8 @@ type Props = {
   image: string;
   imageAlt?: string;
   crumbs?: { label: string; href?: string }[];
+  /** Optional decorative overlay for the page hero (e.g. RaindropOverlay on the Storm page). */
+  heroOverlay?: React.ReactNode;
   intro: React.ReactNode;
   included: { title: string; desc: string }[];
   testimonialIndices?: number[];
@@ -29,6 +31,7 @@ export default function ServicePageTemplate({
   image,
   imageAlt,
   crumbs,
+  heroOverlay,
   intro,
   included,
   testimonialIndices = [0, 3, 5],
@@ -47,6 +50,7 @@ export default function ServicePageTemplate({
         image={image}
         imageAlt={imageAlt}
         crumbs={crumbs}
+        overlay={heroOverlay}
       />
 
       {/* Intro */}
@@ -73,7 +77,7 @@ export default function ServicePageTemplate({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.06 }}
-                className="bg-card border border-border/60 rounded-2xl p-6 shadow-sm hover:shadow-md lift-on-hover"
+                className="bg-card border border-border/60 rounded-2xl p-6 shadow-sm hover:shadow-md shingle-lift"
               >
                 <CheckCircle className="w-6 h-6 text-primary mb-3" />
                 <h3 className="font-display font-bold tracking-tight text-foreground text-lg mb-2">

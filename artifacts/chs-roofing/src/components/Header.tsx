@@ -2,6 +2,7 @@ import { Phone, ShieldCheck, Star, Home as HomeIcon, Menu, X, ChevronDown } from
 import { Link, useLocation } from "wouter";
 import { useEffect, useRef, useState } from "react";
 import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
+import HurricaneSeasonPill from "@/components/HurricaneSeasonPill";
 
 type NavGroup = { label: string; href: string; children?: { label: string; href: string }[] };
 
@@ -75,7 +76,8 @@ export default function Header() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <span>Bilingual Service (English / Español)</span>
+            <HurricaneSeasonPill />
+            <span className="hidden lg:inline">Bilingual Service (English / Español)</span>
             <span className="text-[hsl(var(--accent-gold))] font-semibold">Serving All of SWFL</span>
           </div>
         </div>

@@ -159,7 +159,7 @@ export default function MaterialPageTemplate({
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
-                  className="aspect-square overflow-hidden rounded-2xl border border-border/60 shadow-sm group"
+                  className="aspect-square overflow-hidden rounded-2xl border border-border/60 shadow-sm group shingle-lift"
                 >
                   <img
                     loading="lazy"
@@ -185,7 +185,7 @@ export default function MaterialPageTemplate({
               <Link
                 key={m.slug}
                 href={m.href}
-                className="group bg-card border border-border/60 rounded-2xl p-6 hover:border-primary/40 hover:shadow-md lift-on-hover transition-all"
+                className="group bg-card border border-border/60 rounded-2xl p-6 hover:border-primary/40 hover:shadow-md shingle-lift transition-all"
               >
                 <h3 className="font-display font-bold tracking-tight text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
                   {m.title}

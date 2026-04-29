@@ -28,7 +28,7 @@ export default function ResidentialGallery() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: (i % 3) * 0.08 }}
-                className="group bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-md lift-on-hover"
+                className="group bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-md shingle-lift"
               >
                 <div className="aspect-[4/3] overflow-hidden">
                   <img

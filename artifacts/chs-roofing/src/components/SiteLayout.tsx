@@ -14,9 +14,14 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 flex flex-col">
+      <a href="#main" className="skip-link" data-testid="skip-to-content">
+        Skip to main content
+      </a>
       <ScrollProgress />
       <Header />
-      <main className="flex-1">{children}</main>
+      <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
+        {children}
+      </main>
       <Footer />
       <StickyMobileBar />
     </div>

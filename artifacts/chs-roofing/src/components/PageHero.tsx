@@ -12,9 +12,11 @@ type Props = {
   image: string;
   imageAlt?: string;
   crumbs?: Crumb[];
+  /** Optional decorative overlay rendered above the image gradients but below content (e.g. RaindropOverlay). */
+  overlay?: React.ReactNode;
 };
 
-export default function PageHero({ eyebrow, title, subtitle, image, imageAlt, crumbs }: Props) {
+export default function PageHero({ eyebrow, title, subtitle, image, imageAlt, crumbs, overlay }: Props) {
   return (
     <section className="relative pt-20 pb-24 lg:pt-28 lg:pb-32 overflow-hidden bg-secondary">
       <div className="absolute inset-0 z-0">
@@ -27,6 +29,7 @@ export default function PageHero({ eyebrow, title, subtitle, image, imageAlt, cr
         />
         <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/80 to-secondary/40" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-secondary/40" />
+        {overlay}
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 relative z-10">

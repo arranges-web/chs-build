@@ -267,6 +267,56 @@
     transform: translateY(-4px);
   }
 
+  /* Shingle-lift: roof-themed corner-tilt for cards that represent roofs.
+     Lifts the top-left corner like a shingle being peeled, with a directional shadow. */
+  .shingle-lift {
+    transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 360ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: bottom right;
+    will-change: transform;
+  }
+  .shingle-lift:hover {
+    transform: translateY(-6px) rotate(-0.6deg);
+    box-shadow: 14px 18px 32px -16px hsl(220 12% 16% / 0.32),
+                0 8px 22px -10px hsl(220 12% 16% / 0.16);
+  }
+
+  /* Drifting raindrops used by RaindropOverlay on storm-themed sections. */
+  @keyframes raindrop-fall {
+    0%   { transform: translateY(-20%); opacity: 0; }
+    8%   { opacity: var(--raindrop-opacity, 0.55); }
+    92%  { opacity: var(--raindrop-opacity, 0.55); }
+    100% { transform: translateY(120vh); opacity: 0; }
+  }
+  .raindrop {
+    animation-name: raindrop-fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* Skip-to-content link for keyboard users (mounted in SiteLayout). */
+  .skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: -100%;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-weight: 600;
+    border-radius: 0 0 0.75rem 0.75rem;
+    text-decoration: none;
+    font-size: 0.875rem;
+    box-shadow: 0 8px 22px -10px hsl(220 12% 16% / 0.35);
+    transition: top 200ms ease;
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    top: 0;
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
   /* Subtle background washes */
   .bg-wash-warm {
     background-image: radial-gradient(ellipse 80% 60% at 50% 0%, hsl(var(--accent-gold) / 0.06), transparent 70%),
@@ -307,6 +357,17 @@
     }
     .lift-on-hover:hover {
       transform: none;
+    }
+    .shingle-lift {
+      transition: none;
+    }
+    .shingle-lift:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .raindrop {
+      animation: none;
+      opacity: 0 !important;
     }
     .animate-marquee {
       animation: none;
