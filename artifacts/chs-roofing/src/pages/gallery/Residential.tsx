@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
+import ShingleDivider from "@/components/ShingleDivider";
 import { GALLERY_RESIDENTIAL, PHOTOS } from "@/lib/site-config";
 
 export default function ResidentialGallery() {
@@ -18,7 +19,9 @@ export default function ResidentialGallery() {
         crumbs={[{ label: "Gallery" }, { label: "Residential" }]}
       />
 
-      <section className="py-20 bg-background">
+      <ShingleDivider variant="light" className="bg-background" />
+
+      <section className="pt-4 pb-20 bg-background">
         <div className="container mx-auto max-w-7xl px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {GALLERY_RESIDENTIAL.map((g, i) => (

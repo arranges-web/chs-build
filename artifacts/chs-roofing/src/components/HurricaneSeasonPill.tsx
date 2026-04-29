@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { CloudLightning, Sun } from "lucide-react";
 
 type Info =
@@ -25,13 +24,8 @@ export default function HurricaneSeasonPill({
 }: {
   className?: string;
 }) {
-  // Compute on mount so SSR-safe and avoids hydration mismatch.
-  const [info, setInfo] = useState<Info | null>(null);
-  useEffect(() => {
-    setInfo(getHurricaneInfo());
-  }, []);
-
-  if (!info) return null;
+  // Vite + React CSR-only — compute synchronously to avoid header layout shift.
+  const info = getHurricaneInfo();
 
   if (info.active) {
     return (
@@ -41,7 +35,7 @@ export default function HurricaneSeasonPill({
         data-testid="hurricane-pill-active"
       >
         <CloudLightning className="w-3 h-3" />
-        Hurricane Season · Day {info.day}/{info.total}
+        Hurricane Season · Day {info.day} of {info.total} — Book inspections now
       </span>
     );
   }
@@ -52,7 +46,7 @@ export default function HurricaneSeasonPill({
       data-testid="hurricane-pill-offseason"
     >
       <Sun className="w-3 h-3" />
-      Off-Season · Best Time to Re-Roof
+      Off-Season — Best Time to Re-Roof
     </span>
   );
 }
