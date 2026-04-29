@@ -517,7 +517,7 @@ export default function HomePage() {
               <FadeIn>
                 <div className="grid grid-cols-2 gap-4">
                   <img loading="lazy" decoding="async" src={PHOTOS.terracottaWaterfront} alt="Terracotta tile roof on a SWFL waterfront home" className="rounded-2xl shadow-md w-full h-[300px] object-cover" />
-                  <img loading="lazy" decoding="async" src={PHOTOS.silverMetalPoolCage} alt="Silver standing-seam metal roof with pool cage" className="rounded-2xl shadow-md w-full h-[300px] object-cover mt-8" />
+                  <img loading="lazy" decoding="async" src={PHOTOS.flatTpoCrew} alt="CHS crew installing TPO on a commercial flat roof" className="rounded-2xl shadow-md w-full h-[300px] object-cover mt-8" />
                 </div>
               </FadeIn>
 

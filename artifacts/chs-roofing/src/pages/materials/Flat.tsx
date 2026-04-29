@@ -1,4 +1,5 @@
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function Flat() {
   return (
@@ -36,10 +37,10 @@ export default function Flat() {
       ]}
       manufacturers={["Carlisle", "GAF", "ABC Supply"]}
       galleryImages={[
-        { src: "/images/flat-roof.png", alt: "Commercial flat roof install" },
-        { src: "/images/before-flat.png", alt: "Commercial flat roof prep" },
-        { src: "/images/after-metal.png", alt: "Commercial roof completion" },
-        { src: "/images/metal-roof.png", alt: "Commercial project examples" },
+        { src: PHOTOS.flatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof" },
+        { src: PHOTOS.flatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line" },
+        { src: PHOTOS.canalMetalInstall, alt: "Modern dark metal roof mid-install on a canal-front property" },
+        { src: PHOTOS.darkMetalAerial, alt: "Finished dark metal roof aerial view, Southwest Florida" },
       ]}
     />
   );

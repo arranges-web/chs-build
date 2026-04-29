@@ -1,4 +1,5 @@
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function Shingles() {
   return (
@@ -37,10 +38,10 @@ export default function Shingles() {
       ]}
       manufacturers={["GAF", "TAMKO", "Owens Corning"]}
       galleryImages={[
-        { src: "/images/hero-roof.png", alt: "Architectural shingle roof" },
-        { src: "/images/after-shingle.png", alt: "Replacement shingle install" },
-        { src: "/images/before-shingle.png", alt: "Shingle install in progress" },
-        { src: "/images/after-storm.png", alt: "Post-hurricane shingle restoration" },
+        { src: PHOTOS.finishedGreyShingle, alt: "Finished grey architectural shingle roof aerial view" },
+        { src: PHOTOS.tanShingleAerial, alt: "Tan asphalt shingle roof aerial, Lehigh Acres" },
+        { src: PHOTOS.shingleInstallTopdown, alt: "Shingle re-roof in progress, top-down view" },
+        { src: PHOTOS.tanShingleAerial2, alt: "Tan and brown asphalt shingle roof aerial, Cape Coral" },
       ]}
     />
   );

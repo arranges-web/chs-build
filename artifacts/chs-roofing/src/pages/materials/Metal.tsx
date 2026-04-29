@@ -1,4 +1,5 @@
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function Metal() {
   return (
@@ -38,10 +39,10 @@ export default function Metal() {
       ]}
       manufacturers={["Metal Alliance", "ABC Supply"]}
       galleryImages={[
-        { src: "/images/metal-roof.png", alt: "Standing seam metal roof install" },
-        { src: "/images/after-metal.png", alt: "Completed metal roof" },
-        { src: "/images/hero-roof.png", alt: "Roofing project showcase" },
-        { src: "/images/after-storm.png", alt: "Storm-restored metal roof" },
+        { src: PHOTOS.whiteStandingSeam, alt: "White standing-seam metal roof on a Cape Coral waterfront home" },
+        { src: PHOTOS.beachfrontMetal, alt: "Standing-seam metal roof on a Sanibel beachfront residence" },
+        { src: PHOTOS.darkMetalAerial, alt: "Finished dark metal roof aerial view, Southwest Florida" },
+        { src: PHOTOS.silverMetalPoolCage, alt: "Silver metal roof with pool cage, Punta Gorda" },
       ]}
     />
   );

@@ -1,4 +1,5 @@
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function Tile() {
   return (
@@ -36,10 +37,10 @@ export default function Tile() {
       ]}
       manufacturers={["Westlake Royal Roofing", "Eagle", "Boral"]}
       galleryImages={[
-        { src: "/images/tile-roof.png", alt: "Tile roof showcase" },
-        { src: "/images/hero-roof.png", alt: "Residential roofing" },
-        { src: "/images/after-shingle.png", alt: "Roof project completion" },
-        { src: "/images/metal-roof.png", alt: "SWFL roofing examples" },
+        { src: PHOTOS.terracottaWaterfront, alt: "Terracotta tile roof on a Naples waterfront residence" },
+        { src: PHOTOS.multiToneTile, alt: "Multi-tone concrete tile roof aerial, Bonita Springs" },
+        { src: PHOTOS.salmonBarrelTile, alt: "Salmon barrel-tile roof installation, Estero" },
+        { src: PHOTOS.darkMetalEstate, alt: "Estate-scale roof project, Sarasota" },
       ]}
     />
   );
