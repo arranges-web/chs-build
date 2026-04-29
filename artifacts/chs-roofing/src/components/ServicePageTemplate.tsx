@@ -12,6 +12,7 @@ type Props = {
   title: React.ReactNode;
   subtitle: string;
   image: string;
+  imageAlt?: string;
   crumbs?: { label: string; href?: string }[];
   intro: React.ReactNode;
   included: { title: string; desc: string }[];
@@ -26,6 +27,7 @@ export default function ServicePageTemplate({
   title,
   subtitle,
   image,
+  imageAlt,
   crumbs,
   intro,
   included,
@@ -43,6 +45,7 @@ export default function ServicePageTemplate({
         title={title}
         subtitle={subtitle}
         image={image}
+        imageAlt={imageAlt}
         crumbs={crumbs}
       />
 

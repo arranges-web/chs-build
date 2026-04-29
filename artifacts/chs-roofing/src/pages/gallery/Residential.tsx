@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
-import { GALLERY_RESIDENTIAL } from "@/lib/site-config";
+import { GALLERY_RESIDENTIAL, PHOTOS } from "@/lib/site-config";
 
 export default function ResidentialGallery() {
   return (
@@ -13,7 +13,8 @@ export default function ResidentialGallery() {
         eyebrow="Gallery · Residential"
         title={<>Residential <span className="text-primary">Project Gallery</span></>}
         subtitle="A small selection of recent residential roofing projects across Cape Coral, Fort Myers, Naples, and the rest of Southwest Florida."
-        image="/images/hero-roof.png"
+        image={PHOTOS.beachfrontMetal}
+        imageAlt="Standing-seam metal roof on a beachfront SWFL home"
         crumbs={[{ label: "Gallery" }, { label: "Residential" }]}
       />
 

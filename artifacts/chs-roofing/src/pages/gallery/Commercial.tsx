@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
-import { GALLERY_COMMERCIAL } from "@/lib/site-config";
+import { GALLERY_COMMERCIAL, PHOTOS } from "@/lib/site-config";
 
 export default function CommercialGallery() {
   return (
@@ -13,7 +13,8 @@ export default function CommercialGallery() {
         eyebrow="Gallery · Commercial"
         title={<>Commercial <span className="text-primary">Project Gallery</span></>}
         subtitle="From flat TPO systems on warehouses to standing-seam metal on retail spaces, we deliver code-compliant commercial roofing across SWFL."
-        image="/images/flat-roof.png"
+        image={PHOTOS.flatTpoCrew}
+        imageAlt="CHS crew installing TPO on a commercial flat roof"
         crumbs={[{ label: "Gallery" }, { label: "Commercial" }]}
       />
 

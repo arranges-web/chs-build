@@ -1,4 +1,5 @@
 import ServicePageTemplate from "@/components/ServicePageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function SpecialtyRoofing() {
   return (
@@ -6,7 +7,8 @@ export default function SpecialtyRoofing() {
       eyebrow="Service · Specialty"
       title={<>Specialty <span className="text-primary">Roofing</span> Services</>}
       subtitle="Skylights, copper accents, custom flashing, and unique architectural roofs. The detail work other contractors won't touch."
-      image="/images/metal-roof.png"
+      image={PHOTOS.redMetalAccent}
+      imageAlt="Bold red standing-seam metal accent roof — specialty install"
       crumbs={[{ label: "Services" }, { label: "Specialty Roofing" }]}
       intro={
         <>

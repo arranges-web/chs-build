@@ -1,4 +1,5 @@
 import ServicePageTemplate from "@/components/ServicePageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function Maintenance() {
   return (
@@ -6,7 +7,8 @@ export default function Maintenance() {
       eyebrow="Service · Maintenance"
       title={<>Roof <span className="text-primary">Maintenance</span> & Inspections</>}
       subtitle="Annual maintenance is the cheapest insurance policy you can buy for your roof. Catch small problems before they become $20,000 ones."
-      image="/images/tile-roof.png"
+      image={PHOTOS.greyMetalHip}
+      imageAlt="Clean grey metal hip roof on a Fort Myers home"
       crumbs={[{ label: "Services" }, { label: "Maintenance" }]}
       intro={
         <>

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Phone, FileCheck, Camera, Wrench } from "lucide-react";
 import ServicePageTemplate from "@/components/ServicePageTemplate";
-import { SITE } from "@/lib/site-config";
+import { SITE, PHOTOS } from "@/lib/site-config";
 
 export default function StormDamage() {
   return (
@@ -9,7 +9,8 @@ export default function StormDamage() {
       eyebrow="Service · Storm Damage"
       title={<>Hurricane & <span className="text-primary">Storm Damage</span> Restoration</>}
       subtitle="Emergency tarping, full insurance documentation, and complete restoration. We've helped hundreds of SWFL families recover from Ian, Helene, and Milton."
-      image="/images/before-storm.png"
+      image={PHOTOS.tearOff}
+      imageAlt="Storm-damaged roof tear-off and decking inspection in progress"
       crumbs={[{ label: "Services" }, { label: "Storm Damage" }]}
       intro={
         <>

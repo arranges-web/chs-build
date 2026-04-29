@@ -2,7 +2,7 @@ import { Phone, Mail, MapPin, Clock, ShieldCheck } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import ContactForm from "@/components/ContactForm";
 import ServiceArea from "@/components/ServiceArea";
-import { SITE } from "@/lib/site-config";
+import { SITE, PHOTOS } from "@/lib/site-config";
 
 export default function Contact() {
   return (
@@ -11,7 +11,8 @@ export default function Contact() {
         eyebrow="Get In Touch"
         title={<>Get a <span className="text-primary">free quote</span></>}
         subtitle="Tell us about your project and we'll get back to you within 24 hours with a transparent, line-itemed estimate. No pressure, no hidden costs."
-        image="/images/metal-roof.png"
+        image={PHOTOS.silverMetalPorch}
+        imageAlt="Silver metal roof upgrade with covered porch in Southwest Florida"
         crumbs={[{ label: "Contact" }]}
       />
 

@@ -12,7 +12,7 @@ import CountUp from "@/components/CountUp";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import TestimonialMarquee from "@/components/TestimonialMarquee";
 import RoofDivider from "@/components/RoofDivider";
-import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS } from "@/lib/site-config";
+import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS, PHOTOS } from "@/lib/site-config";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -105,20 +105,20 @@ function BeforeAfterGallery() {
   const projects = [
     {
       label: "Hurricane Damage Restoration",
-      before: "/images/before-storm.png",
-      after: "/images/after-storm.png",
+      before: PHOTOS.tearOff,
+      after: PHOTOS.darkMetalAerial,
       location: "Cape Coral, FL"
     },
     {
-      label: "Full Shingle Replacement",
-      before: "/images/before-shingle.png",
-      after: "/images/after-shingle.png",
+      label: "Full Shingle Re-Roof",
+      before: PHOTOS.shingleInstallTopdown,
+      after: PHOTOS.finishedGreyShingle,
       location: "Fort Myers, FL"
     },
     {
-      label: "Commercial Flat to Metal",
-      before: "/images/before-flat.png",
-      after: "/images/after-metal.png",
+      label: "Commercial Flat TPO Install",
+      before: PHOTOS.flatPrepRedLine,
+      after: PHOTOS.flatTpoCrew,
       location: "Bonita Springs, FL"
     }
   ];
@@ -176,17 +176,17 @@ export default function HomePage() {
     "specialty-roofing": Sparkles,
   };
   const SERVICE_IMAGES: Record<string, string> = {
-    installation: "/images/hero-roof.png",
-    repair: "/images/before-shingle.png",
-    maintenance: "/images/tile-roof.png",
-    "storm-damage": "/images/after-storm.png",
-    "specialty-roofing": "/images/metal-roof.png",
+    installation: PHOTOS.beachfrontMetal,
+    repair: PHOTOS.tearOff,
+    maintenance: PHOTOS.greyMetalHip,
+    "storm-damage": PHOTOS.redMetalAccent,
+    "specialty-roofing": PHOTOS.terracottaWaterfront,
   };
   const services = SERVICES.map((s) => ({
     title: s.title,
     desc: s.short,
     icon: SERVICE_ICONS[s.slug] ?? Home,
-    image: SERVICE_IMAGES[s.slug] ?? "/images/hero-roof.png",
+    image: SERVICE_IMAGES[s.slug] ?? PHOTOS.beachfrontMetal,
     href: s.href,
   }));
 
@@ -365,7 +365,7 @@ export default function HomePage() {
               </FadeIn>
               <FadeIn delay={0.2}>
                 <div className="relative h-[400px] rounded-xl overflow-hidden shadow-2xl border border-white/10">
-                  <img loading="lazy" decoding="async" src="/images/metal-roof.png" alt="Roof Inspection" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={PHOTOS.tearOff} alt="Storm-damage tear-off and decking inspection in progress" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6">
                     <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-lg text-white font-semibold">
@@ -438,7 +438,7 @@ export default function HomePage() {
         {/* VIDEO SHOWCASE SECTION */}
         <section className="py-24 bg-secondary relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-5">
-            <img loading="lazy" decoding="async" src="/images/hero-roof.png" alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={PHOTOS.beachfrontMetal} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="container mx-auto max-w-7xl px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
@@ -457,8 +457,8 @@ export default function HomePage() {
                 <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 group relative bg-black lift-on-hover">
                   <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
                     <img loading="lazy" decoding="async"
-                      src="/images/metal-roof.png"
-                      alt="Residential Metal Roofing Installation"
+                      src={PHOTOS.whiteStandingSeam}
+                      alt="Standing-seam metal roof on a Southwest Florida residence"
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -480,8 +480,8 @@ export default function HomePage() {
                 <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 group relative bg-black lift-on-hover">
                   <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
                     <img loading="lazy" decoding="async"
-                      src="/images/flat-roof.png"
-                      alt="Commercial Flat Roofing"
+                      src={PHOTOS.flatTpoCrew}
+                      alt="CHS crew installing TPO on a commercial flat roof"
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                     />
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -516,8 +516,8 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <FadeIn>
                 <div className="grid grid-cols-2 gap-4">
-                  <img loading="lazy" decoding="async" src="/images/tile-roof.png" alt="Tile Roof" className="rounded-2xl shadow-md w-full h-[300px] object-cover" />
-                  <img loading="lazy" decoding="async" src="/images/flat-roof.png" alt="Flat Roof" className="rounded-2xl shadow-md w-full h-[300px] object-cover mt-8" />
+                  <img loading="lazy" decoding="async" src={PHOTOS.terracottaWaterfront} alt="Terracotta tile roof on a SWFL waterfront home" className="rounded-2xl shadow-md w-full h-[300px] object-cover" />
+                  <img loading="lazy" decoding="async" src={PHOTOS.silverMetalPoolCage} alt="Silver standing-seam metal roof with pool cage" className="rounded-2xl shadow-md w-full h-[300px] object-cover mt-8" />
                 </div>
               </FadeIn>
 
@@ -716,7 +716,7 @@ export default function HomePage() {
         {/* FINAL CTA & CONTACT FORM */}
         <section id="contact" className="py-28 bg-secondary relative overflow-hidden">
           <div className="absolute inset-0 z-0 opacity-10">
-            <img loading="lazy" decoding="async" src="/images/hero-roof.png" alt="Background" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={PHOTOS.darkMetalEstate} alt="" className="w-full h-full object-cover" />
           </div>
           <div className="absolute inset-0 z-0 bg-gradient-to-br from-secondary via-secondary to-primary/15"></div>
           <div className="container mx-auto max-w-7xl px-4 relative z-10">

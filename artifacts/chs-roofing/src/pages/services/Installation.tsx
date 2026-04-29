@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
 import ServicePageTemplate from "@/components/ServicePageTemplate";
-import { MATERIALS } from "@/lib/site-config";
+import { MATERIALS, PHOTOS } from "@/lib/site-config";
 
 export default function Installation() {
   return (
@@ -9,7 +9,8 @@ export default function Installation() {
       eyebrow="Service · Installation"
       title={<>New Roof <span className="text-primary">Installation</span></>}
       subtitle="Premium residential and commercial roof installations across Southwest Florida — engineered for our climate, built to last decades."
-      image="/images/hero-roof.png"
+      image={PHOTOS.beachfrontMetal}
+      imageAlt="Standing-seam metal roof on a beachfront SWFL home"
       crumbs={[{ label: "Services" }, { label: "Installation" }]}
       intro={
         <>

@@ -5,7 +5,7 @@ import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import Credentials from "@/components/Credentials";
 import ServiceArea from "@/components/ServiceArea";
-import { TEAM, SITE } from "@/lib/site-config";
+import { TEAM, SITE, PHOTOS } from "@/lib/site-config";
 
 export default function About() {
   return (
@@ -14,7 +14,8 @@ export default function About() {
         eyebrow="About CHS Roofing"
         title={<>A family-owned <span className="text-primary">SWFL roofer</span></>}
         subtitle={`Cordova Home Services has been roofing Southwest Florida since ${SITE.established}. Licensed, insured, and built on a simple promise: treat every client like family.`}
-        image="/images/tile-roof.png"
+        image={PHOTOS.darkMetalEstate}
+        imageAlt="Dark metal roof on a SWFL estate, surrounded by mature oaks"
         crumbs={[{ label: "About" }]}
       />
 

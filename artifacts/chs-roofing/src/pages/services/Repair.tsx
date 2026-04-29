@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { AlertCircle } from "lucide-react";
 import ServicePageTemplate from "@/components/ServicePageTemplate";
+import { PHOTOS } from "@/lib/site-config";
 
 export default function Repair() {
   return (
@@ -8,7 +9,8 @@ export default function Repair() {
       eyebrow="Service · Repair"
       title={<>Roof <span className="text-primary">Repair</span> Done Right</>}
       subtitle="Fast, honest repair work — leaks, missing shingles, flashing failures, and post-storm damage. We come out, diagnose accurately, and fix it the first time."
-      image="/images/after-shingle.png"
+      image={PHOTOS.shingleInstallTopdown}
+      imageAlt="Shingle re-roof in progress, top-down view"
       crumbs={[{ label: "Services" }, { label: "Repair" }]}
       intro={
         <>

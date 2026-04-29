@@ -5,6 +5,50 @@ import teamGustavo from "@assets/image_1776908399820.png";
 import teamDaniel from "@assets/image_1776908406154.png";
 import teamRoberto from "@assets/image_1776908417253.png";
 
+import photoBeachfrontMetal from "@assets/image_1777343219176.png";
+import photoCanalMetalInstall from "@assets/image_1777343230206.png";
+import photoFlatTpoCrew from "@assets/image_1777343244574.png";
+import photoTearOff from "@assets/image_1777343264667.png";
+import photoGreyMetalHip from "@assets/image_1777343276383.png";
+import photoTerracottaWaterfront from "@assets/image_1777343288382.png";
+import photoRedMetalAccent from "@assets/image_1777343301107.png";
+import photoShingleInstallTopdown from "@assets/image_1777343324198.png";
+import photoLightGreyMetalLanai from "@assets/image_1777343334258.png";
+import photoFlatPrepRedLine from "@assets/image_1777343343141.png";
+import photoWhiteStandingSeam from "@assets/image_1777343356321.png";
+import photoDarkMetalAerial from "@assets/image_1777343365657.png";
+import photoSilverMetalPoolCage from "@assets/image_1777343378799.png";
+import photoTanShingleAerial from "@assets/image_1777343395382.png";
+import photoSilverMetalPorch from "@assets/image_1777343406516.png";
+import photoMultiToneTile from "@assets/image_1777343422133.png";
+import photoSalmonBarrelTile from "@assets/image_1777343434210.png";
+import photoDarkMetalEstate from "@assets/image_1777343458019.png";
+import photoTanShingleAerial2 from "@assets/image_1777343468789.png";
+import photoFinishedGreyShingle from "@assets/image_1777343477966.png";
+
+export const PHOTOS = {
+  beachfrontMetal: photoBeachfrontMetal,
+  canalMetalInstall: photoCanalMetalInstall,
+  flatTpoCrew: photoFlatTpoCrew,
+  tearOff: photoTearOff,
+  greyMetalHip: photoGreyMetalHip,
+  terracottaWaterfront: photoTerracottaWaterfront,
+  redMetalAccent: photoRedMetalAccent,
+  shingleInstallTopdown: photoShingleInstallTopdown,
+  lightGreyMetalLanai: photoLightGreyMetalLanai,
+  flatPrepRedLine: photoFlatPrepRedLine,
+  whiteStandingSeam: photoWhiteStandingSeam,
+  darkMetalAerial: photoDarkMetalAerial,
+  silverMetalPoolCage: photoSilverMetalPoolCage,
+  tanShingleAerial: photoTanShingleAerial,
+  silverMetalPorch: photoSilverMetalPorch,
+  multiToneTile: photoMultiToneTile,
+  salmonBarrelTile: photoSalmonBarrelTile,
+  darkMetalEstate: photoDarkMetalEstate,
+  tanShingleAerial2: photoTanShingleAerial2,
+  finishedGreyShingle: photoFinishedGreyShingle,
+} as const;
+
 export const SITE = {
   brand: "CHS Roofing",
   legalName: "Cordova Home Services LLC",
@@ -92,7 +136,7 @@ export const MATERIALS = [
     title: "Asphalt Shingles",
     short: "Affordable, durable, available in dozens of colors and styles.",
     href: "/materials/asphalt-shingles",
-    image: "/images/hero-roof.png",
+    image: photoFinishedGreyShingle,
     lifespan: "25–30 years",
     manufacturers: ["GAF", "TAMKO", "Owens Corning"],
   },
@@ -101,7 +145,7 @@ export const MATERIALS = [
     title: "Metal Roofing",
     short: "Standing-seam metal — the gold standard for hurricane resistance.",
     href: "/materials/metal",
-    image: "/images/metal-roof.png",
+    image: photoWhiteStandingSeam,
     lifespan: "50+ years",
     manufacturers: ["Metal Alliance", "ABC Supply"],
   },
@@ -110,7 +154,7 @@ export const MATERIALS = [
     title: "Tile Roofing",
     short: "Concrete and clay tile — Southwest Florida's classic look.",
     href: "/materials/tile",
-    image: "/images/tile-roof.png",
+    image: photoTerracottaWaterfront,
     lifespan: "50+ years",
     manufacturers: ["Westlake Royal Roofing"],
   },
@@ -119,7 +163,7 @@ export const MATERIALS = [
     title: "Flat & TPO Roofing",
     short: "Energy-efficient flat systems for commercial and modern homes.",
     href: "/materials/flat",
-    image: "/images/flat-roof.png",
+    image: photoFlatTpoCrew,
     lifespan: "20–30 years",
     manufacturers: ["Carlisle", "GAF"],
   },
@@ -145,17 +189,23 @@ export const TESTIMONIALS = [
 ] as const;
 
 export const GALLERY_RESIDENTIAL = [
-  { src: "/images/hero-roof.png", alt: "Architectural shingle roof, Cape Coral", label: "Cape Coral" },
-  { src: "/images/metal-roof.png", alt: "Standing-seam metal roof, Fort Myers", label: "Fort Myers" },
-  { src: "/images/tile-roof.png", alt: "Concrete tile roof, Naples", label: "Naples" },
-  { src: "/images/after-shingle.png", alt: "Replacement shingle install", label: "Bonita Springs" },
-  { src: "/images/after-storm.png", alt: "Hurricane restoration", label: "Lehigh Acres" },
-  { src: "/images/after-metal.png", alt: "Metal upgrade install", label: "Estero" },
+  { src: photoBeachfrontMetal, alt: "Standing-seam metal roof on a beachfront home", label: "Sanibel" },
+  { src: photoWhiteStandingSeam, alt: "White standing-seam metal roof on a waterfront residence", label: "Cape Coral" },
+  { src: photoGreyMetalHip, alt: "Clean grey metal hip roof on a single-family home", label: "Fort Myers" },
+  { src: photoLightGreyMetalLanai, alt: "Modern light-grey metal roof with screened lanai", label: "Cape Coral" },
+  { src: photoSilverMetalPoolCage, alt: "Silver metal roof with pool cage on a canal home", label: "Punta Gorda" },
+  { src: photoTerracottaWaterfront, alt: "Terracotta tile roof on a waterfront residence", label: "Naples" },
+  { src: photoMultiToneTile, alt: "Multi-tone concrete tile roof aerial view", label: "Bonita Springs" },
+  { src: photoSalmonBarrelTile, alt: "Salmon barrel-tile roof installation", label: "Estero" },
+  { src: photoTanShingleAerial, alt: "Tan asphalt shingle roof aerial view", label: "Lehigh Acres" },
+  { src: photoTanShingleAerial2, alt: "Tan and brown asphalt shingle roof aerial", label: "Cape Coral" },
+  { src: photoRedMetalAccent, alt: "Bold red metal accent roof — specialty install", label: "Fort Myers" },
+  { src: photoSilverMetalPorch, alt: "Silver metal roof upgrade with covered porch", label: "North Port" },
+  { src: photoDarkMetalEstate, alt: "Dark metal roof on an estate surrounded by mature oaks", label: "Sarasota" },
 ] as const;
 
 export const GALLERY_COMMERCIAL = [
-  { src: "/images/flat-roof.png", alt: "Commercial flat TPO install", label: "Cape Coral" },
-  { src: "/images/before-flat.png", alt: "Commercial flat re-roof prep", label: "Fort Myers" },
-  { src: "/images/after-metal.png", alt: "Commercial metal retrofit", label: "Naples" },
-  { src: "/images/metal-roof.png", alt: "Industrial metal roof system", label: "Punta Gorda" },
+  { src: photoFlatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof", label: "Cape Coral" },
+  { src: photoFlatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line", label: "Fort Myers" },
+  { src: photoCanalMetalInstall, alt: "Modern dark metal roof mid-install on a canal-front commercial property", label: "Naples" },
 ] as const;
