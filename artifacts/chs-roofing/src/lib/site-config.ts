@@ -125,9 +125,71 @@ export const SERVICES = [
   {
     slug: "specialty-roofing",
     title: "Specialty Roofing",
-    short: "Skylights, custom flashing, copper details, and unique architectural roofs.",
+    short: "Skylights, custom flashing, chimney caps, and unique architectural roofs.",
     href: "/services/specialty-roofing",
   },
+  {
+    slug: "gutters",
+    title: "Gutters",
+    short: "Seamless aluminum gutters, downspouts, and gutter guards installed to spec.",
+    href: "/services/gutters",
+  },
+  {
+    slug: "roof-coating",
+    title: "Roof Coating & Restoration",
+    short: "Reflective coating systems that extend roof life and lower energy bills.",
+    href: "/services/roof-coating",
+  },
+] as const;
+
+export const MAINTENANCE_PLANS = [
+  {
+    slug: "basic",
+    name: "Basic Plan",
+    tagline: "Annual Protection",
+    desc: "Annual inspection and maintenance to catch early issues and extend the life of the roof.",
+    image: photoGreyMetalHip,
+    highlights: [
+      "1 full roof inspection per year",
+      "Photo report with recommendations",
+      "Sealant and flashing check",
+      "Priority repair scheduling",
+    ],
+  },
+  {
+    slug: "pro",
+    name: "Pro Plan",
+    tagline: "Seasonal Protection",
+    desc: "Multiple inspections per year with preventative maintenance to keep the roof performing year-round.",
+    image: photoLightGreyMetalLanai,
+    highlights: [
+      "Pre- and post-hurricane-season inspections",
+      "Preventative sealant & boot service",
+      "Debris and gutter-line clearing",
+      "Photo report after each visit",
+    ],
+  },
+  {
+    slug: "premium",
+    name: "Premium Plan",
+    tagline: "Full Protection",
+    desc: "Complete maintenance coverage including priority service, detailed inspections, and ongoing protection.",
+    image: photoBeachfrontMetal,
+    highlights: [
+      "Quarterly detailed roof inspections",
+      "Priority emergency response",
+      "Proactive boot, flashing & sealant replacement",
+      "Annual condition report and lifespan forecast",
+    ],
+  },
+] as const;
+
+export const MAINTENANCE_STEPS = [
+  "Full roof inspection",
+  "Leak and damage inspection",
+  "Preventative maintenance",
+  "Photo report with recommendations",
+  "Ongoing protection plan",
 ] as const;
 
 export const MATERIALS = [
@@ -138,7 +200,7 @@ export const MATERIALS = [
     href: "/materials/asphalt-shingles",
     image: photoFinishedGreyShingle,
     lifespan: "25–30 years",
-    manufacturers: ["GAF", "TAMKO", "Owens Corning"],
+    manufacturers: ["GAF", "TAMKO"],
   },
   {
     slug: "metal",
@@ -154,7 +216,7 @@ export const MATERIALS = [
     title: "Tile Roofing",
     short: "Concrete and clay tile — Southwest Florida's classic look.",
     href: "/materials/tile",
-    image: photoTerracottaWaterfront,
+    image: photoMultiToneTile,
     lifespan: "50+ years",
     manufacturers: ["Westlake Royal Roofing"],
   },
@@ -174,8 +236,8 @@ export const PARTNERS = [
   { name: "GAF", url: "https://www.gaf.com/en-us/residential" },
   { name: "Metal Alliance", url: "https://www.metalalliance.com/" },
   { name: "ABC Supply", url: "https://www.abcsupply.com/" },
-  { name: "Owens Corning", url: "https://www.owenscorning.com/" },
   { name: "TAMKO", url: "https://www.tamko.com/" },
+  { name: "TRI Alliance Tile Roofing", url: "https://trialliance.com/" },
   { name: "Westlake Royal Roofing", url: "https://westlakeroyalroofing.com/" },
 ] as const;
 
@@ -208,4 +270,14 @@ export const GALLERY_COMMERCIAL = [
   { src: photoFlatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof", label: "Cape Coral" },
   { src: photoFlatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line", label: "Fort Myers" },
   { src: photoCanalMetalInstall, alt: "Modern dark metal roof mid-install on a canal-front commercial property", label: "Naples" },
+] as const;
+
+// TODO: Replace placeholder images with real multifamily project photos when available.
+export const GALLERY_MULTIFAMILY = [
+  { src: photoFlatTpoCrew, alt: "Multifamily flat roof system on a Cape Coral condo complex", label: "Cape Coral · Condos" },
+  { src: photoTanShingleAerial, alt: "Aerial of a re-roofed apartment community in Fort Myers", label: "Fort Myers · Apartments" },
+  { src: photoTanShingleAerial2, alt: "Two-tone shingle re-roof across a multi-building condo", label: "Naples · Condos" },
+  { src: photoCanalMetalInstall, alt: "Standing-seam metal roof on a multifamily waterfront property", label: "Bonita Springs · Apartments" },
+  { src: photoFlatPrepRedLine, alt: "Commercial flat-roof prep on a multifamily building", label: "Estero · Condos" },
+  { src: photoDarkMetalEstate, alt: "Estate-scale roofing project across multiple buildings", label: "Sarasota · Apartments" },
 ] as const;

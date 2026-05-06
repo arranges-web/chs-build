@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play, Sparkles, CloudLightning } from "lucide-react";
+import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play, Sparkles, CloudLightning, Droplets, Paintbrush } from "lucide-react";
 import { Link } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import ProcessTimeline from "@/components/ProcessTimeline";
@@ -176,6 +176,8 @@ export default function HomePage() {
     maintenance: ShieldCheck,
     "storm-damage": CloudLightning,
     "specialty-roofing": Sparkles,
+    gutters: Droplets,
+    "roof-coating": Paintbrush,
   };
   const SERVICE_IMAGES: Record<string, string> = {
     installation: PHOTOS.beachfrontMetal,
@@ -183,6 +185,8 @@ export default function HomePage() {
     maintenance: PHOTOS.greyMetalHip,
     "storm-damage": PHOTOS.redMetalAccent,
     "specialty-roofing": PHOTOS.terracottaWaterfront,
+    gutters: PHOTOS.silverMetalPorch,
+    "roof-coating": PHOTOS.flatTpoCrew,
   };
   const services = SERVICES.map((s) => ({
     title: s.title,
@@ -397,7 +401,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {services.map((service, index) => (
                 <FadeIn key={index} delay={index * 0.08}>
                   <Link
@@ -704,6 +708,26 @@ export default function HomePage() {
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Accredited Business</p>
                   <p className="text-lg font-display font-bold text-[#006DA6]">A+ Rating</p>
+                </div>
+              </div>
+
+              {/* GAF Certified Badge */}
+              <div className="flex items-center gap-3 border border-border/60 rounded-2xl px-5 py-3.5 shadow-sm bg-card hover:shadow-md transition-all hover:-translate-y-0.5">
+                <div className="w-10 h-10 rounded-lg bg-[#0033A0] flex items-center justify-center text-white font-display font-bold text-sm">GAF</div>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Manufacturer Certified</p>
+                  <p className="text-sm font-bold text-[#0033A0]">GAF® Certified</p>
+                </div>
+              </div>
+
+              {/* Certified Roofing Contractor Badge */}
+              <div className="flex items-center gap-3 border border-border/60 rounded-2xl px-5 py-3.5 shadow-sm bg-card hover:shadow-md transition-all hover:-translate-y-0.5">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Award className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">FL Certified</p>
+                  <p className="text-sm font-bold text-foreground">Roofing Contractor</p>
                 </div>
               </div>
 

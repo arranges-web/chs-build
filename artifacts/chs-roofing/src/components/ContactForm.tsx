@@ -31,16 +31,24 @@ import {
   ChevronRight,
   MapPin,
   Pencil,
+  Building2,
+  HardHat,
+  Paintbrush,
+  Droplets,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 const SERVICE_OPTIONS = [
-  { value: "installation", label: "New Roof Install", icon: Home, hint: "Full residential or commercial roof" },
+  { value: "installation", label: "New Roof Install", icon: Home, hint: "Full residential roof replacement" },
+  { value: "new-construction", label: "New Construction", icon: HardHat, hint: "Roofing for a new build" },
+  { value: "commercial-roofing", label: "Commercial Roofing", icon: Building2, hint: "TPO, flat, and commercial systems" },
   { value: "repair", label: "Roof Repair", icon: Wrench, hint: "Leak, flashing, missing shingles" },
   { value: "maintenance", label: "Maintenance", icon: ShieldCheck, hint: "Inspection or annual care" },
   { value: "storm-damage", label: "Storm Damage", icon: CloudLightning, hint: "Hurricane / emergency response" },
-  { value: "specialty-roofing", label: "Specialty Roofing", icon: Sparkles, hint: "Skylights, copper, custom flashing" },
+  { value: "specialty-roofing", label: "Specialty Roofing", icon: Sparkles, hint: "Skylights, chimney caps, custom flashing" },
+  { value: "roof-coating", label: "Roof Coating", icon: Paintbrush, hint: "Reflective coating & restoration" },
+  { value: "gutters", label: "Gutters", icon: Droplets, hint: "Seamless gutters & guards" },
 ] as const;
 
 const URGENCY_OPTIONS = [

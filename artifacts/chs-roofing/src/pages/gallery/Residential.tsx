@@ -49,12 +49,18 @@ export default function ResidentialGallery() {
             ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-12 flex flex-wrap justify-center gap-x-8 gap-y-3">
             <Link
               href="/gallery/commercial"
               className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
             >
               See commercial projects <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/gallery/multifamily"
+              className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
+            >
+              See multifamily projects <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

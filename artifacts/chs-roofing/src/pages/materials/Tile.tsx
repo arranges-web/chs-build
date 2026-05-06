@@ -37,10 +37,9 @@ export default function Tile() {
       ]}
       manufacturers={["Westlake Royal Roofing", "Eagle", "Boral"]}
       galleryImages={[
-        { src: PHOTOS.terracottaWaterfront, alt: "Terracotta tile roof on a Naples waterfront residence" },
-        { src: PHOTOS.multiToneTile, alt: "Multi-tone concrete tile roof aerial, Bonita Springs" },
-        { src: PHOTOS.salmonBarrelTile, alt: "Salmon barrel-tile roof installation, Estero" },
-        { src: PHOTOS.darkMetalEstate, alt: "Estate-scale roof project, Sarasota" },
+        { src: PHOTOS.terracottaWaterfront, alt: "Completed terracotta tile roof on a Naples waterfront residence" },
+        { src: PHOTOS.multiToneTile, alt: "Completed multi-tone concrete tile roof, aerial view, Bonita Springs" },
+        { src: PHOTOS.salmonBarrelTile, alt: "Completed salmon barrel-tile roof, Estero" },
       ]}
     />
   );

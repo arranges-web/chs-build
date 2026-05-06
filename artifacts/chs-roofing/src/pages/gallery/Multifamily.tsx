@@ -5,18 +5,18 @@ import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import ShingleDivider from "@/components/ShingleDivider";
-import { GALLERY_COMMERCIAL, PHOTOS } from "@/lib/site-config";
+import { GALLERY_MULTIFAMILY, PHOTOS } from "@/lib/site-config";
 
-export default function CommercialGallery() {
+export default function MultifamilyGallery() {
   return (
     <>
       <PageHero
-        eyebrow="Gallery · Commercial"
-        title={<>Commercial <span className="text-primary">Project Gallery</span></>}
-        subtitle="From flat TPO systems on warehouses to standing-seam metal on retail spaces, we deliver code-compliant commercial roofing across SWFL."
-        image={PHOTOS.flatTpoCrew}
-        imageAlt="CHS crew installing TPO on a commercial flat roof"
-        crumbs={[{ label: "Gallery" }, { label: "Commercial" }]}
+        eyebrow="Gallery · Multifamily"
+        title={<>Multifamily <span className="text-primary">Project Gallery</span></>}
+        subtitle="Condos, apartment communities, and multi-building properties across Southwest Florida — re-roofed to weather hurricane season and last."
+        image={PHOTOS.tanShingleAerial}
+        imageAlt="Aerial of a multifamily community re-roofed by CHS"
+        crumbs={[{ label: "Gallery" }, { label: "Multifamily" }]}
       />
 
       <ShingleDivider variant="light" className="bg-background" />
@@ -24,7 +24,7 @@ export default function CommercialGallery() {
       <section className="pt-4 pb-20 bg-background">
         <div className="container mx-auto max-w-7xl px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {GALLERY_COMMERCIAL.map((g, i) => (
+            {GALLERY_MULTIFAMILY.map((g, i) => (
               <motion.figure
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
@@ -57,10 +57,10 @@ export default function CommercialGallery() {
               See residential projects <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/gallery/multifamily"
+              href="/gallery/commercial"
               className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
             >
-              See multifamily projects <ArrowRight className="w-4 h-4" />
+              See commercial projects <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

@@ -4,16 +4,16 @@ import { Award, ShieldCheck, BadgeCheck, Star } from "lucide-react";
 const credentials = [
   {
     badge: "GAF",
-    label: "Master Elite® Contractor",
+    label: "GAF® Certified Contractor",
     icon: Award,
-    desc: "Top 2% of roofing contractors nationwide. Certified to install GAF's premium shingle systems with extended Golden Pledge warranties.",
+    desc: "Factory-certified to install GAF's premium shingle systems with extended manufacturer warranties available only through credentialed contractors.",
     accent: "primary"
   },
   {
-    badge: "FRSA",
-    label: "Florida Roofing Member",
+    badge: "TRI",
+    label: "TRI Alliance Tile Roofing",
     icon: BadgeCheck,
-    desc: "Active member of the Florida Roofing & Sheet Metal Contractors Association — staying ahead of code, weather science, and best-practice installs.",
+    desc: "Member of the Tile Roofing Industry Alliance — trained to current best-practice install standards for concrete and clay tile in Florida.",
     accent: "gold"
   },
   {
@@ -24,10 +24,10 @@ const credentials = [
     accent: "primary"
   },
   {
-    badge: "OWENS",
-    label: "Owens Corning® Preferred",
+    badge: "TAMKO",
+    label: "TAMKO® Authorized Installer",
     icon: Star,
-    desc: "Authorized installer of Owens Corning Duration® shingles with platinum-level warranty upgrades available.",
+    desc: "Authorized installer of TAMKO Heritage® shingles with extended manufacturer warranty options on every install.",
     accent: "gold"
   },
 ];

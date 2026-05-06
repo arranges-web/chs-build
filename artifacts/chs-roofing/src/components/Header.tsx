@@ -15,6 +15,7 @@ const NAV: NavGroup[] = [
     children: [
       { label: "Residential Gallery", href: "/gallery/residential" },
       { label: "Commercial Gallery", href: "/gallery/commercial" },
+      { label: "Multifamily Gallery", href: "/gallery/multifamily" },
     ],
   },
   { label: "About", href: "/about" },
