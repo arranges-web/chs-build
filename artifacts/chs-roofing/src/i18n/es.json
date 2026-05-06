@@ -393,7 +393,7 @@
       "title": "Su techo, estimado",
       "rangeLabel": "Rango estimado",
       "midpoint": "Punto medio",
-      "squares": "{{count}} cuadros ({{sf}} pies²)",
+      "squares": "{{squares}} cuadros ({{sf}} pies²)",
       "rows": {
         "complexity": "Complejidad ({{label}})",
         "waste": "Desperdicio ({{pct}})",

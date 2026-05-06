@@ -393,7 +393,7 @@
       "title": "Your roof, ballpark",
       "rangeLabel": "Estimated range",
       "midpoint": "Midpoint",
-      "squares": "{{count}} squares ({{sf}} sq ft)",
+      "squares": "{{squares}} squares ({{sf}} sq ft)",
       "rows": {
         "complexity": "Complexity ({{label}})",
         "waste": "Waste ({{pct}})",

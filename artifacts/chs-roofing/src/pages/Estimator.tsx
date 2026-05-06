@@ -426,7 +426,7 @@ export default function EstimatorPage() {
                   <p className="text-[11px] text-white/60 mt-1">
                     {t("estimator.result.midpoint")} {fmtUSD(computed.subtotal)} ·{" "}
                     {t("estimator.result.squares", {
-                      count: computed.squares.toFixed(1),
+                      squares: computed.squares.toFixed(1),
                       sf: Math.round(computed.adjustedSf).toLocaleString(),
                     })}
                   </p>
