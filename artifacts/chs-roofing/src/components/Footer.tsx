@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Facebook, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { Facebook, Instagram, MapPin, Phone, Mail, Clock, Star } from "lucide-react";
 import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 import BBBBadges from "@/components/BBBBadges";
 
@@ -38,11 +38,31 @@ export default function Footer() {
           </div>
           <div className="flex gap-3">
             <a
-              href="#"
+              href={SITE.social.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Visit CHS Roofing on Facebook"
               className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
             >
               <Facebook className="w-5 h-5" aria-hidden="true" />
+            </a>
+            <a
+              href={SITE.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit CHS Roofing on Instagram"
+              className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
+            >
+              <Instagram className="w-5 h-5" aria-hidden="true" />
+            </a>
+            <a
+              href={SITE.social.google}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Read CHS Roofing reviews on Google"
+              className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
+            >
+              <Star className="w-5 h-5 fill-current" aria-hidden="true" />
             </a>
           </div>
           <div className="pt-2">

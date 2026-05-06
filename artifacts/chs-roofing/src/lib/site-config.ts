@@ -63,6 +63,12 @@ export const SITE = {
   hours: "Mon – Fri: 8am – 5pm · Weekend emergency service",
   established: "2010",
   logo: chsLogo,
+  social: {
+    facebook: "https://www.facebook.com/profile.php?id=61567718997385",
+    instagram: "https://www.instagram.com/cordova_home_services/",
+    google:
+      "https://www.google.com/search?q=cordova+home+services+cape+coral",
+  },
 };
 
 export const TEAM = [

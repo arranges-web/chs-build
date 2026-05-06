@@ -331,6 +331,18 @@ export default function LandingPage() {
                 </FadeIn>
               ))}
             </div>
+            <div className="text-center mt-10">
+              <a
+                href={SITE.social.google}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-card border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full text-sm font-semibold text-foreground hover:text-primary transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              >
+                <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                Read all reviews on Google
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
         </section>
 
