@@ -18,6 +18,7 @@ const NAV: NavGroup[] = [
       { label: "Multifamily Gallery", href: "/gallery/multifamily" },
     ],
   },
+  { label: "Estimator", href: "/estimator" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

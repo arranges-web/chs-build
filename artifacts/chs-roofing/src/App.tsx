@@ -21,6 +21,7 @@ import GalleryCommercial from "@/pages/gallery/Commercial";
 import GalleryMultifamily from "@/pages/gallery/Multifamily";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Estimator from "@/pages/Estimator";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ function Router() {
         <Route path="/gallery/multifamily" component={GalleryMultifamily} />
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
+        <Route path="/estimator" component={Estimator} />
         <Route component={NotFound} />
       </Switch>
     </SiteLayout>

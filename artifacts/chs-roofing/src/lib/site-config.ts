@@ -4,6 +4,7 @@ import teamSaul from "@assets/image_1776908337861.png";
 import teamGustavo from "@assets/image_1776908399820.png";
 import teamDaniel from "@assets/image_1776908406154.png";
 import teamRoberto from "@assets/image_1776908417253.png";
+import teamMaria from "@assets/team_maria.png";
 
 import photoBeachfrontMetal from "@assets/image_1777343219176.png";
 import photoCanalMetalInstall from "@assets/image_1777343230206.png";
@@ -82,6 +83,12 @@ export const TEAM = [
     role: "Owner & Master Roofer",
     bio: "Founder of CHS Roofing with 15+ years of hands-on roofing experience across Southwest Florida. Personally walks every project.",
     image: teamSaul,
+  },
+  {
+    name: "Maria",
+    role: "Owner & Operations",
+    bio: "Co-owner of CHS Roofing leading client experience, scheduling, and project communication. Bilingual and committed to making every CHS interaction effortless.",
+    image: teamMaria,
   },
   {
     name: "Daniel",
@@ -182,6 +189,67 @@ export const MAINTENANCE_PLANS = [
       "Annual condition report and lifespan forecast",
     ],
   },
+] as const;
+
+// Pricing per "square" (100 sq ft of roof area). Source: CHS Roofing founder.
+// Used by the Estimator page to produce a rough budget figure only.
+export const ESTIMATOR_MATERIALS = [
+  {
+    slug: "shingle",
+    label: "GAF Shingle Roof",
+    pricePerSquare: 460,
+    colorOptionAvailable: false,
+    short: "Premium GAF asphalt shingle system.",
+  },
+  {
+    slug: "metal-standing-seam",
+    label: "Metal Standing Seam",
+    pricePerSquare: 775,
+    colorOptionAvailable: true,
+    colorAdderPerSquare: 150,
+    short: "Hurricane-rated standing seam metal roof.",
+  },
+  {
+    slug: "metal-5v",
+    label: "Metal 5V",
+    pricePerSquare: 665,
+    colorOptionAvailable: true,
+    colorAdderPerSquare: 150,
+    short: "Classic 5V exposed-fastener metal roof.",
+  },
+  {
+    slug: "tile-on-tile",
+    label: "Tile Off / Tile On",
+    pricePerSquare: 1000,
+    colorOptionAvailable: false,
+    short: "Tear off existing tile and install new tile.",
+  },
+  {
+    slug: "tile-to-standing-seam",
+    label: "Tile Off / Standing Seam (with color)",
+    pricePerSquare: 1100,
+    colorOptionAvailable: false,
+    short: "Tear off existing tile, install standing seam metal in your color.",
+  },
+] as const;
+
+export const ESTIMATOR_PITCH_OPTIONS = [
+  { slug: "low", label: "Low slope (≤4/12)", multiplier: 1.05 },
+  { slug: "standard", label: "Standard (5/12 – 7/12)", multiplier: 1.12 },
+  { slug: "steep", label: "Steep (8/12 – 12/12)", multiplier: 1.2 },
+  { slug: "very-steep", label: "Very steep (>12/12)", multiplier: 1.3 },
+] as const;
+
+export const ESTIMATOR_COMPLEXITY_OPTIONS = [
+  { slug: "simple", label: "Simple (single ridge, few penetrations)", multiplier: 1.0 },
+  { slug: "moderate", label: "Moderate (multiple hips & valleys)", multiplier: 1.06 },
+  { slug: "complex", label: "Complex (cut-up roof, dormers, skylights)", multiplier: 1.12 },
+] as const;
+
+export const ESTIMATOR_WASTE_OPTIONS = [
+  { slug: "low", label: "10%", value: 0.1 },
+  { slug: "standard", label: "15% (recommended)", value: 0.15 },
+  { slug: "high", label: "20%", value: 0.2 },
 ] as const;
 
 export const MAINTENANCE_STEPS = [

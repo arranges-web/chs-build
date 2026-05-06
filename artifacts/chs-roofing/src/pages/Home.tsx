@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play, Sparkles, CloudLightning, Droplets, Paintbrush } from "lucide-react";
+import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play, Sparkles, CloudLightning, Droplets, Paintbrush, Calculator } from "lucide-react";
 import { Link } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import ProcessTimeline from "@/components/ProcessTimeline";
@@ -440,6 +440,40 @@ export default function HomePage() {
                 </FadeIn>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ESTIMATOR PROMO */}
+        <section className="py-16 bg-background">
+          <div className="container mx-auto max-w-7xl px-4">
+            <FadeIn>
+              <div className="relative overflow-hidden rounded-3xl bg-secondary text-white p-8 md:p-12 shadow-2xl">
+                <div className="absolute -top-16 -right-16 w-72 h-72 bg-primary/25 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-20 -left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="relative grid md:grid-cols-[1fr_auto] gap-8 items-center">
+                  <div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary mb-4">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      New · Free Tool
+                    </div>
+                    <h2 className="font-display font-bold tracking-tight text-3xl md:text-4xl lg:text-5xl leading-[1.05]">
+                      Get an instant <span className="text-primary">roof estimate</span> in under a minute.
+                    </h2>
+                    <p className="text-gray-300/90 mt-4 text-base md:text-lg leading-relaxed max-w-2xl">
+                      Pick your material, dial in pitch and complexity, and our estimator delivers a transparent ballpark price — no email or phone required.
+                    </p>
+                  </div>
+                  <Link
+                    href="/estimator"
+                    className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-7 py-4 rounded-full font-semibold tracking-tight shadow-lg shadow-primary/40 hover:-translate-y-0.5 transition-all whitespace-nowrap"
+                  >
+                    <Calculator className="w-4 h-4" />
+                    Try the Estimator
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </FadeIn>
           </div>
         </section>
 

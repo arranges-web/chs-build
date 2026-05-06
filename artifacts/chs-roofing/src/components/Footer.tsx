@@ -81,6 +81,7 @@ export default function Footer() {
             <li><Link href="/gallery/residential" className="hover:text-primary transition-colors">Residential Gallery</Link></li>
             <li><Link href="/gallery/commercial" className="hover:text-primary transition-colors">Commercial Gallery</Link></li>
             <li><Link href="/gallery/multifamily" className="hover:text-primary transition-colors">Multifamily Gallery</Link></li>
+            <li><Link href="/estimator" className="hover:text-primary transition-colors">Roof Estimator</Link></li>
             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
             <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
           </ul>
