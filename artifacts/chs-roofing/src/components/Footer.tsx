@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Facebook, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
+import BBBBadges from "@/components/BBBBadges";
 
 export default function Footer() {
   return (
@@ -43,6 +44,9 @@ export default function Footer() {
             >
               <Facebook className="w-5 h-5" aria-hidden="true" />
             </a>
+          </div>
+          <div className="pt-2">
+            <BBBBadges variant="dark" layout="row" className="justify-start" />
           </div>
         </div>
 

@@ -8,6 +8,7 @@ import WarrantyFinancing from "@/components/WarrantyFinancing";
 import FAQ from "@/components/FAQ";
 import Credentials from "@/components/Credentials";
 import Partners from "@/components/Partners";
+import BBBBadges from "@/components/BBBBadges";
 import CountUp from "@/components/CountUp";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import TestimonialMarquee from "@/components/TestimonialMarquee";
@@ -743,6 +744,13 @@ export default function HomePage() {
               </div>
             </div>
 
+            {/* Official BBB badges */}
+            <div className="mt-10 pt-8 border-t border-border/60">
+              <p className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.22em] mb-5">
+                BBB Accredited · West Florida
+              </p>
+              <BBBBadges />
+            </div>
           </div>
         </section>
 

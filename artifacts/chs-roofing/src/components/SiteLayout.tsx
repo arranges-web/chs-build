@@ -4,6 +4,8 @@ import Header from "./Header";
 import Footer from "./Footer";
 import StickyMobileBar from "./StickyMobileBar";
 import ScrollProgress from "./ScrollProgress";
+import SupportChat from "./SupportChat";
+import LocalInquiryToast from "./LocalInquiryToast";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -24,6 +26,8 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </main>
       <Footer />
       <StickyMobileBar />
+      <SupportChat />
+      <LocalInquiryToast />
     </div>
   );
 }

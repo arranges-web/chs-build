@@ -75,13 +75,13 @@ export const TEAM = [
     name: "Saul",
     role: "Field Lead",
     bio: "On-site every day making sure each install meets the CHS standard. Bilingual and customer-focused.",
-    image: teamSaul,
+    image: teamGustavo,
   },
   {
     name: "Gustavo",
     role: "Owner & Master Roofer",
     bio: "Founder of CHS Roofing with 15+ years of hands-on roofing experience across Southwest Florida. Personally walks every project.",
-    image: teamGustavo,
+    image: teamSaul,
   },
   {
     name: "Daniel",
