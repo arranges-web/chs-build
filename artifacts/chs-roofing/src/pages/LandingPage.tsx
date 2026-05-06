@@ -17,6 +17,7 @@ import { Link } from "wouter";
 import { useEffect } from "react";
 import ContactForm from "@/components/ContactForm";
 import BBBBadges from "@/components/BBBBadges";
+import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 import { PHOTOS, SITE, TESTIMONIALS } from "@/lib/site-config";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
@@ -196,15 +197,8 @@ export default function LandingPage() {
                   </a>
                 </div>
 
-                <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-white/90 text-sm">
-                  <span className="flex items-center gap-1.5 font-semibold">
-                    <span className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-[hsl(var(--accent-gold))] text-[hsl(var(--accent-gold))]" />
-                      ))}
-                    </span>
-                    5.0 Google Rating
-                  </span>
+                <div className="mt-8 flex flex-wrap items-center gap-3 text-white/90 text-sm">
+                  <GoogleReviewsBadge variant="dark" />
                   <span className="flex items-center gap-1.5 font-semibold">
                     <ShieldCheck className="w-4 h-4 text-primary" /> BBB A+ Accredited
                   </span>
@@ -331,14 +325,15 @@ export default function LandingPage() {
                 </FadeIn>
               ))}
             </div>
-            <div className="text-center mt-10">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <GoogleReviewsBadge />
               <a
                 href={SITE.social.google}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-card border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full text-sm font-semibold text-foreground hover:text-primary transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
               >
-                <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                <GoogleLogo size={16} />
                 Read all reviews on Google
                 <ArrowRight className="w-3.5 h-3.5" />
               </a>

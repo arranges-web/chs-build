@@ -1,7 +1,8 @@
 import { Link } from "wouter";
-import { Facebook, Instagram, MapPin, Phone, Mail, Clock, Star } from "lucide-react";
+import { Facebook, Instagram, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 import BBBBadges from "@/components/BBBBadges";
+import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 
 export default function Footer() {
   return (
@@ -60,10 +61,13 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Read CHS Roofing reviews on Google"
-              className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
+              className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-primary/10 transition-colors"
             >
-              <Star className="w-5 h-5 fill-current" aria-hidden="true" />
+              <GoogleLogo size={20} />
             </a>
+          </div>
+          <div className="pt-2">
+            <GoogleReviewsBadge variant="dark" />
           </div>
           <div className="pt-2">
             <BBBBadges variant="dark" layout="row" className="justify-start" />
