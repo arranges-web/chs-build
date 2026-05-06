@@ -121,8 +121,8 @@ export default function Footer() {
       <div className="container mx-auto max-w-7xl px-4 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-secondary-foreground/60 relative">
         <p>© {new Date().getFullYear()} {SITE.legalName} ({SITE.brand}). All rights reserved. License {SITE.license}.</p>
         <div className="flex gap-6">
-          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>

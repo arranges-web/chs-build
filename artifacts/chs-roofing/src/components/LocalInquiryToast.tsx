@@ -15,24 +15,9 @@ const SERVICE_AREAS = [
   "Sarasota",
 ] as const;
 
-const FIRST_NAMES = [
-  "Melissa",
-  "James",
-  "Karen",
-  "Brian",
-  "Jennifer",
-  "Carlos",
-  "Angela",
-  "Michael",
-  "Christine",
-  "David",
-  "Maria",
-  "Tom",
-  "Laura",
-  "Ricardo",
-  "Stephanie",
-] as const;
-
+// We deliberately do not use fictional first names — fake personalized
+// social proof is a Google/Meta Ads policy concern. We keep messaging
+// abstract: city + service-area inquiry only.
 const SERVICES_REL = [
   "a free roof inspection",
   "a roof repair quote",
@@ -45,12 +30,11 @@ const SERVICES_REL = [
 ] as const;
 
 const TIME_LABELS = [
-  "just now",
-  "1 minute ago",
-  "3 minutes ago",
-  "8 minutes ago",
-  "12 minutes ago",
-  "23 minutes ago",
+  "today",
+  "this morning",
+  "this afternoon",
+  "earlier today",
+  "this week",
 ] as const;
 
 const STORAGE_KEY = "chs.inquiry.toast.dismissed.v1";
@@ -60,7 +44,6 @@ const GAP_MS = 18000;
 
 type Notice = {
   id: number;
-  name: string;
   city: string;
   service: string;
   time: string;
@@ -73,7 +56,6 @@ function pick<T>(arr: readonly T[]): T {
 function buildNotice(id: number): Notice {
   return {
     id,
-    name: pick(FIRST_NAMES),
     city: pick(SERVICE_AREAS),
     service: pick(SERVICES_REL),
     time: pick(TIME_LABELS),
@@ -159,17 +141,17 @@ export default function LocalInquiryToast() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary mb-0.5">
-                  New local inquiry
+                  Service area activity
                 </p>
                 <p className="text-[13px] text-foreground leading-snug">
-                  <span className="font-semibold">{current.name}.</span> from{" "}
+                  Inquiry from{" "}
                   <span className="inline-flex items-center gap-0.5 font-semibold">
                     <MapPin className="w-3 h-3 text-primary" />
                     {current.city}
                   </span>{" "}
-                  just requested {current.service}.
+                  for {current.service}.
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-1">{current.time}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Received {current.time}</p>
               </div>
               <button
                 type="button"

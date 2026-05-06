@@ -22,10 +22,13 @@ import GalleryMultifamily from "@/pages/gallery/Multifamily";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Estimator from "@/pages/Estimator";
+import LandingPage from "@/pages/LandingPage";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
 
 const queryClient = new QueryClient();
 
-function Router() {
+function MainSiteRoutes() {
   return (
     <SiteLayout>
       <Switch>
@@ -47,9 +50,24 @@ function Router() {
         <Route path="/about" component={About} />
         <Route path="/contact" component={Contact} />
         <Route path="/estimator" component={Estimator} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/terms" component={Terms} />
         <Route component={NotFound} />
       </Switch>
     </SiteLayout>
+  );
+}
+
+function Router() {
+  return (
+    <Switch>
+      {/* Dedicated paid-traffic landing page renders OUTSIDE the main site
+          chrome — minimal nav, no chat widget, no social-proof toast. */}
+      <Route path="/free-quote" component={LandingPage} />
+      <Route>
+        <MainSiteRoutes />
+      </Route>
+    </Switch>
   );
 }
 

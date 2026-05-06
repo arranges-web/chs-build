@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Play, Sparkles, CloudLightning, Droplets, Paintbrush, Calculator } from "lucide-react";
+import { ArrowRight, CheckCircle, Shield, Home, Building2, Wrench, HardHat, Award, Star, Quote, ChevronRight, Clock, ShieldCheck, Phone, ChevronLeft, Sparkles, CloudLightning, Droplets, Paintbrush, Calculator } from "lucide-react";
 import { Link } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import ProcessTimeline from "@/components/ProcessTimeline";
@@ -104,59 +104,58 @@ function TestimonialsCarousel() {
   );
 }
 
-function BeforeAfterGallery() {
+function FeaturedProjectsGallery() {
   const projects = [
-    {
-      label: "Hurricane Damage Restoration",
-      before: PHOTOS.tearOff,
-      after: PHOTOS.darkMetalAerial,
-      location: "Cape Coral, FL"
-    },
-    {
-      label: "Full Shingle Re-Roof",
-      before: PHOTOS.shingleInstallTopdown,
-      after: PHOTOS.finishedGreyShingle,
-      location: "Fort Myers, FL"
-    },
-    {
-      label: "Commercial Flat TPO Install",
-      before: PHOTOS.flatPrepRedLine,
-      after: PHOTOS.flatTpoCrew,
-      location: "Bonita Springs, FL"
-    }
+    { src: PHOTOS.beachfrontMetal, label: "Standing Seam · Sanibel", category: "Residential · Metal" },
+    { src: PHOTOS.terracottaWaterfront, label: "Terracotta Tile · Naples", category: "Residential · Tile" },
+    { src: PHOTOS.flatTpoCrew, label: "TPO Flat · Cape Coral", category: "Commercial · Flat" },
+    { src: PHOTOS.darkMetalAerial, label: "Dark Metal Aerial · Fort Myers", category: "Residential · Metal" },
+    { src: PHOTOS.multiToneTile, label: "Multi-Tone Tile · Bonita Springs", category: "Residential · Tile" },
+    { src: PHOTOS.whiteStandingSeam, label: "White Standing Seam · Cape Coral", category: "Residential · Metal" },
+    { src: PHOTOS.silverMetalPoolCage, label: "Silver Metal · Punta Gorda", category: "Residential · Metal" },
+    { src: PHOTOS.finishedGreyShingle, label: "Architectural Shingle · Fort Myers", category: "Residential · Shingle" },
+  ];
+
+  // Index of the spans in CSS-grid units to vary heights without overflowing.
+  const heights = [
+    "row-span-2",
+    "",
+    "",
+    "row-span-2",
+    "",
+    "",
+    "",
+    "",
   ];
 
   return (
-    <div className="grid md:grid-cols-3 gap-8">
-      {projects.map((project, i) => (
-        <FadeIn key={i} delay={i * 0.15}>
-          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-md group">
-            <div className="relative">
-              <div className="grid grid-cols-2">
-                <div className="relative">
-                  <img loading="lazy" decoding="async" src={project.before} alt={`Before: ${project.label}`} className="w-full h-48 object-cover" />
-                  <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs font-bold px-2 py-0.5 rounded">BEFORE</div>
-                </div>
-                <div className="relative">
-                  <img loading="lazy" decoding="async" src={project.after} alt={`After: ${project.label}`} className="w-full h-48 object-cover" />
-                  <div className="absolute bottom-2 right-2 bg-primary text-white text-xs font-bold px-2 py-0.5 rounded">AFTER</div>
-                </div>
-              </div>
-              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center z-10">
-                <div className="w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center border-2 border-primary">
-                  <div className="flex gap-0.5">
-                    <ChevronLeft className="w-3 h-3 text-primary" />
-                    <ChevronRight className="w-3 h-3 text-primary" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-4">
-              <p className="font-bold text-foreground">{project.label}</p>
-              <p className="text-sm text-muted-foreground mt-1">{project.location}</p>
-            </div>
-          </div>
-        </FadeIn>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] md:auto-rows-[210px] gap-3 md:gap-4">
+      {projects.map((p, i) => (
+        <motion.figure
+          key={i}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.45, delay: (i % 4) * 0.06 }}
+          className={`relative rounded-2xl overflow-hidden border border-border/60 shadow-sm group ${heights[i] ?? ""}`}
+        >
+          <img
+            loading="lazy"
+            decoding="async"
+            src={p.src}
+            alt={p.label}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <figcaption className="absolute bottom-3 left-3 right-3 text-white">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/85">
+              {p.category}
+            </p>
+            <p className="font-display font-bold tracking-tight text-sm md:text-base leading-tight drop-shadow">
+              {p.label}
+            </p>
+          </figcaption>
+        </motion.figure>
       ))}
     </div>
   );
@@ -480,81 +479,6 @@ export default function HomePage() {
         {/* PROCESS TIMELINE */}
         <ProcessTimeline />
 
-        {/* VIDEO SHOWCASE SECTION */}
-        <section className="py-24 bg-secondary relative overflow-hidden">
-          <div className="absolute inset-0 z-0 opacity-5">
-            <img loading="lazy" decoding="async" src={PHOTOS.beachfrontMetal} alt="" className="w-full h-full object-cover" />
-          </div>
-          <div className="container mx-auto max-w-7xl px-4 relative z-10">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">See Our Work</h4>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white leading-[1.05]">
-                Metal & Commercial Roofing Excellence
-              </h2>
-              <p className="text-gray-300 mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
-                Watch how our expert crews deliver flawless standing seam metal installations and commercial flat roofing — on time, every time.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Residential Metal Roofing Video */}
-              <FadeIn>
-                <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 group relative bg-black lift-on-hover">
-                  <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
-                    <img loading="lazy" decoding="async"
-                      src={PHOTOS.whiteStandingSeam}
-                      alt="Standing-seam metal roof on a Southwest Florida residence"
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform duration-300">
-                        <Play className="w-7 h-7 text-white ml-1" fill="white" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-5 left-5 right-5 text-white">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Residential</span>
-                      <h3 className="text-xl font-display font-bold tracking-tight mt-1">Standing Seam Metal Roofing</h3>
-                      <p className="text-sm text-gray-300 mt-1">Hurricane-rated, lifetime warranty installation</p>
-                    </div>
-                  </div>
-                </div>
-              </FadeIn>
-
-              {/* Commercial Flat Roofing Video */}
-              <FadeIn delay={0.2}>
-                <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 group relative bg-black lift-on-hover">
-                  <div className="relative aspect-video bg-secondary-foreground/5 flex items-center justify-center">
-                    <img loading="lazy" decoding="async"
-                      src={PHOTOS.flatTpoCrew}
-                      alt="CHS crew installing TPO on a commercial flat roof"
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform duration-300">
-                        <Play className="w-7 h-7 text-white ml-1" fill="white" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-5 left-5 right-5 text-white">
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">Commercial</span>
-                      <h3 className="text-xl font-display font-bold tracking-tight mt-1">Flat & TPO Roofing Systems</h3>
-                      <p className="text-sm text-gray-300 mt-1">Energy-efficient, code-compliant installations</p>
-                    </div>
-                  </div>
-                </div>
-              </FadeIn>
-            </div>
-
-            <div className="text-center mt-12">
-              <button
-                onClick={scrollToContact}
-                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-7 py-3.5 rounded-full font-semibold text-base tracking-tight transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary"
-              >
-                Schedule a Free Walkthrough <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </section>
-
         {/* WHY CHOOSE US / VALUE PROPS */}
         <section className="py-28 bg-muted bg-wash-cool relative">
           <div className="container mx-auto max-w-7xl px-4">
@@ -616,26 +540,38 @@ export default function HomePage() {
         {/* Subtle shingle divider between the cool "Why Choose Us" section and the warm Before/After gallery. */}
         <ShingleDivider variant="light" className="bg-background" />
 
-        {/* BEFORE / AFTER GALLERY */}
+        {/* FEATURED PROJECTS GALLERY */}
         <section className="py-28 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <SectionEyebrow number="03" label="Real Results" className="mx-auto" />
+            <div className="text-center max-w-3xl mx-auto mb-14">
+              <SectionEyebrow number="03" label="Featured Projects" className="mx-auto" />
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
-                Before & After Transformations
+                Recent Roofs Across Southwest Florida
               </h2>
               <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
-                See the dramatic difference a quality CHS Roofing project makes for Southwest Florida homeowners.
+                A small selection of recent residential and commercial roofs from Sanibel to Sarasota — built to weather the climate, designed to last.
               </p>
             </div>
-            <BeforeAfterGallery />
-            <div className="text-center mt-14">
-              <button
-                onClick={scrollToContact}
-                className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-7 py-3.5 rounded-full font-semibold text-base tracking-tight transition-all duration-300 hover:-translate-y-0.5 shadow-lg shadow-secondary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            <FeaturedProjectsGallery />
+            <div className="text-center mt-12 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/gallery/residential"
+                className="inline-flex items-center gap-2 bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-full font-semibold text-sm tracking-tight transition-all duration-300 hover:-translate-y-0.5 shadow-md shadow-secondary/20"
               >
-                Get Your Free Estimate <ArrowRight className="w-4 h-4" />
-              </button>
+                Residential Gallery <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/gallery/commercial"
+                className="inline-flex items-center gap-2 bg-card border border-border/60 text-foreground hover:border-primary/40 px-6 py-3 rounded-full font-semibold text-sm tracking-tight transition-all"
+              >
+                Commercial Gallery
+              </Link>
+              <Link
+                href="/gallery/multifamily"
+                className="inline-flex items-center gap-2 bg-card border border-border/60 text-foreground hover:border-primary/40 px-6 py-3 rounded-full font-semibold text-sm tracking-tight transition-all"
+              >
+                Multifamily Gallery
+              </Link>
             </div>
           </div>
         </section>

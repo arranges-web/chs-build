@@ -554,7 +554,15 @@ export default function ContactForm() {
           </div>
 
           <p className="text-[11px] text-center text-muted-foreground mt-4">
-            By submitting, you agree to be contacted by CHS Roofing about your inquiry.
+            By submitting, you agree to be contacted by CHS Roofing about your inquiry. See our{" "}
+            <a href="/privacy" className="underline hover:text-foreground">
+              Privacy Policy
+            </a>{" "}
+            and{" "}
+            <a href="/terms" className="underline hover:text-foreground">
+              Terms
+            </a>
+            .
           </p>
         </form>
       </Form>
