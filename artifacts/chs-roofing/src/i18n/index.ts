@@ -11,35 +11,50 @@ export const SUPPORTED_LANGUAGES = [
 
 export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
 
-void i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: en },
-      es: { translation: es },
-    },
-    fallbackLng: "en",
-    supportedLngs: SUPPORTED_LANGUAGES.map((l) => l.code),
-    nonExplicitSupportedLngs: true,
-    interpolation: {
-      escapeValue: false, // React already escapes
-    },
-    detection: {
-      order: ["localStorage", "navigator", "htmlTag"],
-      lookupLocalStorage: "chs.lang",
-      caches: ["localStorage"],
-    },
-  });
-
-// Keep <html lang> in sync so screen readers and search engines pick
-// up the active language.
-const syncHtmlLang = (lng: string) => {
-  if (typeof document !== "undefined") {
-    document.documentElement.lang = lng.split("-")[0];
+const syncHtmlLang = (lng: unknown) => {
+  if (typeof document === "undefined") return;
+  const code = typeof lng === "string" && lng.length > 0 ? lng.split("-")[0] : "en";
+  try {
+    document.documentElement.lang = code;
+  } catch {
+    // ignore — never crash the page over a lang attribute
   }
 };
-syncHtmlLang(i18n.language);
-i18n.on("languageChanged", syncHtmlLang);
+
+try {
+  void i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources: {
+        en: { translation: en },
+        es: { translation: es },
+      },
+      lng: undefined, // let detector decide
+      fallbackLng: "en",
+      supportedLngs: SUPPORTED_LANGUAGES.map((l) => l.code),
+      nonExplicitSupportedLngs: true,
+      interpolation: {
+        escapeValue: false, // React already escapes
+      },
+      detection: {
+        order: ["localStorage", "navigator", "htmlTag"],
+        lookupLocalStorage: "chs.lang",
+        caches: ["localStorage"],
+      },
+      returnNull: false,
+    })
+    .then(() => syncHtmlLang(i18n.language))
+    .catch(() => {
+      // If init fails, fall back to English in-memory bundle so the
+      // site still renders rather than crashing.
+      syncHtmlLang("en");
+    });
+
+  i18n.on("languageChanged", syncHtmlLang);
+} catch {
+  // Synchronous init throw — extremely unlikely but keeps the page alive.
+  syncHtmlLang("en");
+}
 
 export default i18n;
