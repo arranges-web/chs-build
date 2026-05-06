@@ -43,7 +43,7 @@ export default function Repair() {
         { title: "Photo documentation", desc: "Before/after photos of every repair, sent to you on completion." },
         { title: "30-day repair warranty", desc: "If our repair fails in 30 days, we come back and fix it free." },
       ]}
-      testimonialIndices={[3, 6, 7]}
+      testimonialIndices={[3, 4, 6]}
       extra={
         <>
           <section className="py-20 bg-background">

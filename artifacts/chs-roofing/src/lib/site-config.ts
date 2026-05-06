@@ -309,13 +309,44 @@ export const PARTNERS = [
   { name: "Westlake Royal Roofing", url: "https://westlakeroyalroofing.com/" },
 ] as const;
 
+// Real Google reviews. Anonymous reviewers attributed as "Verified Google
+// Review" — fictional names are never used (ad-policy and trust hygiene).
 export const TESTIMONIALS = [
-  { name: "Melissa L.", date: "Apr 2025", text: "I hired Cordova to replace my roof. I dealt directly with Gustavo, he was great. He really worked with me and went out of his way to help me & answer all my questions. His crew did an awesome job!" },
-  { name: "Angela", date: "Jan 2025", text: "Definitely a 5 star! Excellent contractor for all your roof needs. Fast, efficient, excellent customer service, quality materials, responds to calls and questions in a timely manner, always on top of things, and no problems with clean up." },
-  { name: "Karen", date: "Apr 2025", text: "Just had my roof done by Cordova after hurricane damage. They were so easy to work with. The job was completed so quickly and done well. The site was left clean. I couldn't have asked for better." },
-  { name: "Brian", date: "Apr 2025", text: "Cordova was the only one who showed up on time as promised and delivered an actual quote on their first visit. They've been excellent. Resolved issues without complaint or undue expense. I would recommend them to anyone." },
-  { name: "Christine", date: "Apr 2025", text: "Needed my roof repaired after the hurricane and CHS was the only one that came out quickly. Punctual, professional and experienced with metal roofs which is hard to find. Highly recommended." },
-  { name: "Jennifer", date: "Apr 2025", text: "Highly recommend to anyone needing home services! Very professional, quick, and you can tell they have a lot of experience! Very pleased with the work." },
+  {
+    name: "Leanet García Díaz",
+    date: "Nov 2025",
+    text: "The CHS team did an amazing job replacing my roof. Great service and quality work! The team was professional, fast, and left everything clean. Highly recommend!",
+  },
+  {
+    name: "Christine Castellano",
+    date: "Apr 2025",
+    text: "Needed my roof repaired after the hurricane and CHS was the only one that came out quickly. Got a quote for the work and they were working the next day. Punctual, professional and experienced with metal roofs which is hard to find. Highly recommended.",
+  },
+  {
+    name: "Rudy Schoenbohm",
+    date: "May 2025",
+    text: "Melissa with Cordova Home Services is one of the best business people we ever met. Honest, reliable and competent. Gustavo is the highly engaged, skilled president of the company, super-nice guy who's doing everything to keep promises and provide the highest quality standards. We can only recommend CHS.",
+  },
+  {
+    name: "Jude B.",
+    date: "Dec 2025",
+    text: "They did a great job on replacing my roof — and I was impressed on how they cleaned up afterwards.",
+  },
+  {
+    name: "Verified Google Review",
+    date: "2025",
+    text: "Gustavo definitely helped us in a difficult situation to get our roof done after the company we were working with started the job and then left us hanging with just a partial dried in, but not enough to get an inspection. He knew what to do and helped us get a fair price to finish the job and all inspections done. Now we can go into hurricane season confident that our roof will keep us dry. Would definitely recommend them for anyone looking for a roofing contractor.",
+  },
+  {
+    name: "Verified Google Review",
+    date: "2025",
+    text: "I had an excellent experience with Cordova Home Services LLC. Their team was professional, knowledgeable, and completed the roofing project on time with outstanding quality. They communicated clearly throughout the entire process and made sure every detail was perfect. It's rare to find a company that combines great craftsmanship with exceptional customer service — I highly recommend them to anyone needing roofing work!",
+  },
+  {
+    name: "Verified Google Review",
+    date: "2025",
+    text: "Cordova replaced broken tiles and sealed stucco cracks on our house. The job was done well, they came as promised, and the price was reasonable.",
+  },
 ] as const;
 
 export const GALLERY_RESIDENTIAL = [

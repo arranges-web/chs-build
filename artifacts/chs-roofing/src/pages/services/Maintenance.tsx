@@ -122,7 +122,7 @@ export default function Maintenance() {
         { title: "Written report", desc: "Photo-documented PDF report emailed to you within 48 hours." },
         { title: "Priority scheduling", desc: "Maintenance customers get first slots after storm events." },
       ]}
-      testimonialIndices={[1, 2, 7]}
+      testimonialIndices={[1, 2, 6]}
       extra={<MaintenancePlans />}
     />
   );
