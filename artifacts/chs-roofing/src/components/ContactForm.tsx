@@ -36,55 +36,26 @@ import {
   Paintbrush,
   Droplets,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const SERVICE_OPTIONS = [
-  { value: "installation", label: "New Roof Install", icon: Home, hint: "Full residential roof replacement" },
-  { value: "new-construction", label: "New Construction", icon: HardHat, hint: "Roofing for a new build" },
-  { value: "commercial-roofing", label: "Commercial Roofing", icon: Building2, hint: "TPO, flat, and commercial systems" },
-  { value: "repair", label: "Roof Repair", icon: Wrench, hint: "Leak, flashing, missing shingles" },
-  { value: "maintenance", label: "Maintenance", icon: ShieldCheck, hint: "Inspection or annual care" },
-  { value: "storm-damage", label: "Storm Damage", icon: CloudLightning, hint: "Hurricane / emergency response" },
-  { value: "specialty-roofing", label: "Specialty Roofing", icon: Sparkles, hint: "Skylights, chimney caps, custom flashing" },
-  { value: "roof-coating", label: "Roof Coating", icon: Paintbrush, hint: "Reflective coating & restoration" },
-  { value: "gutters", label: "Gutters", icon: Droplets, hint: "Seamless gutters & guards" },
+  { value: "installation", icon: Home, key: "installation" },
+  { value: "new-construction", icon: HardHat, key: "newConstruction" },
+  { value: "commercial-roofing", icon: Building2, key: "commercialRoofing" },
+  { value: "repair", icon: Wrench, key: "repair" },
+  { value: "maintenance", icon: ShieldCheck, key: "maintenance" },
+  { value: "storm-damage", icon: CloudLightning, key: "stormDamage" },
+  { value: "specialty-roofing", icon: Sparkles, key: "specialty" },
+  { value: "roof-coating", icon: Paintbrush, key: "roofCoating" },
+  { value: "gutters", icon: Droplets, key: "gutters" },
 ] as const;
 
-const URGENCY_OPTIONS = [
-  { value: "emergency", label: "Emergency", hint: "Active leak / storm damage" },
-  { value: "soon", label: "Within 30 days", hint: "Planning a project soon" },
-  { value: "planning", label: "Just exploring", hint: "Researching options" },
-] as const;
-
-const ROOF_AGE = ["Under 5 years", "5–10 years", "10–20 years", "20+ years", "Not sure"] as const;
-
-const formSchema = z.object({
-  serviceType: z.string().min(1, "Please pick a service"),
-  address: z.string().min(3, "Enter your street address"),
-  zip: z
-    .string()
-    .min(5, "Enter a 5-digit ZIP")
-    .max(10, "ZIP looks too long")
-    .regex(/^\d{5}(-\d{4})?$/, "Use a US ZIP like 33904"),
-  roofAge: z.string().min(1, "Pick an age range"),
-  urgency: z.string().min(1, "Pick an urgency"),
-  name: z.string().min(2, "Name is required"),
-  phone: z.string().min(10, "Valid phone number is required"),
-  email: z.string().email("Valid email is required"),
-  message: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-const STEPS: { id: number; title: string; fields: (keyof FormValues)[] }[] = [
-  { id: 1, title: "What do you need?", fields: ["serviceType"] },
-  { id: 2, title: "Tell us about your property", fields: ["address", "zip", "roofAge", "urgency"] },
-  { id: 3, title: "How can we reach you?", fields: ["name", "phone", "email"] },
-  { id: 4, title: "Quick review", fields: [] },
-];
+const URGENCY_KEYS = ["emergency", "soon", "planning"] as const;
 
 export default function ContactForm() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const reducedMotion = useReducedMotion();
   const [step, setStep] = useState(1);
@@ -92,6 +63,37 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [photoName, setPhotoName] = useState<string | null>(null);
+
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        serviceType: z.string().min(1, t("contactForm.errors.service")),
+        address: z.string().min(3, t("contactForm.errors.address")),
+        zip: z
+          .string()
+          .min(5, t("contactForm.errors.zip5"))
+          .max(10, t("contactForm.errors.zipLong"))
+          .regex(/^\d{5}(-\d{4})?$/, t("contactForm.errors.zipFormat")),
+        roofAge: z.string().min(1, t("contactForm.errors.ageRange")),
+        urgency: z.string().min(1, t("contactForm.errors.urgency")),
+        name: z.string().min(2, t("contactForm.errors.name")),
+        phone: z.string().min(10, t("contactForm.errors.phone")),
+        email: z.string().email(t("contactForm.errors.email")),
+        message: z.string().optional(),
+      }),
+    [t],
+  );
+
+  type FormValues = z.infer<typeof formSchema>;
+
+  const STEPS: { id: number; titleKey: string; fields: (keyof FormValues)[] }[] = [
+    { id: 1, titleKey: "contactForm.stepTitles.0", fields: ["serviceType"] },
+    { id: 2, titleKey: "contactForm.stepTitles.1", fields: ["address", "zip", "roofAge", "urgency"] },
+    { id: 3, titleKey: "contactForm.stepTitles.2", fields: ["name", "phone", "email"] },
+    { id: 4, titleKey: "contactForm.stepTitles.3", fields: [] },
+  ];
+
+  const ROOF_AGE_KEYS = [0, 1, 2, 3, 4];
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -135,8 +137,8 @@ export default function ContactForm() {
     setIsSubmitting(false);
     setIsSuccess(true);
     toast({
-      title: "Request Received",
-      description: "We'll be in touch shortly to provide your free quote.",
+      title: t("contactForm.success.toastTitle"),
+      description: t("contactForm.success.toastDesc"),
     });
     form.reset();
     setPhotoName(null);
@@ -159,20 +161,20 @@ export default function ContactForm() {
           <CheckCircle2 className="w-8 h-8 text-primary" />
         </motion.div>
         <div>
-          <h3 className="text-2xl font-bold text-foreground tracking-tight">Request Received!</h3>
+          <h3 className="text-2xl font-bold text-foreground tracking-tight">{t("contactForm.success.title")}</h3>
           <p className="text-muted-foreground mt-2 leading-relaxed">
-            Thank you for choosing CHS Roofing. Our team will contact you shortly to schedule your free estimate.
+            {t("contactForm.success.body")}
           </p>
         </div>
         <Button variant="outline" onClick={() => setIsSuccess(false)} className="mt-4">
-          Submit Another Request
+          {t("contactForm.buttons.submitAnother")}
         </Button>
       </div>
     );
   }
 
   const progressPct = (step / STEPS.length) * 100;
-  const currentTitle = STEPS[step - 1].title;
+  const currentTitle = t(STEPS[step - 1].titleKey);
   const values = form.watch();
 
   return (
@@ -184,7 +186,7 @@ export default function ContactForm() {
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-primary">
-              Free Quote · Step {step} of {STEPS.length}
+              {t("contactForm.step", { current: step, total: STEPS.length })}
             </p>
             <h3 className="text-xl md:text-2xl font-bold font-display tracking-tight text-foreground mt-1">
               {currentTitle}
@@ -233,9 +235,11 @@ export default function ContactForm() {
                   name="serviceType"
                   render={({ field }) => (
                     <FormItem>
-                      <div role="radiogroup" aria-label="Service needed" className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div role="radiogroup" aria-label={t("contactForm.stepTitles.0")} className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         {SERVICE_OPTIONS.map((opt) => {
                           const selected = field.value === opt.value;
+                          const label = t(`contactForm.service.${opt.key}.label`);
+                          const hint = t(`contactForm.service.${opt.key}.hint`);
                           return (
                             <button
                               type="button"
@@ -259,10 +263,10 @@ export default function ContactForm() {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className="font-semibold text-sm text-foreground tracking-tight leading-tight">
-                                  {opt.label}
+                                  {label}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                                  {opt.hint}
+                                  {hint}
                                 </p>
                               </div>
                               {selected && <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-1" />}
@@ -284,11 +288,11 @@ export default function ContactForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-primary" /> Property address
+                          <MapPin className="w-3.5 h-3.5 text-primary" /> {t("contactForm.fields.address")}
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="1234 Sunset Dr"
+                            placeholder={t("contactForm.fields.addressPlaceholder")}
                             autoComplete="street-address"
                             {...field}
                             className="bg-background"
@@ -305,10 +309,10 @@ export default function ContactForm() {
                       name="zip"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-semibold text-sm">ZIP code</FormLabel>
+                          <FormLabel className="font-semibold text-sm">{t("contactForm.fields.zip")}</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="e.g. 33904"
+                              placeholder={t("contactForm.fields.zipPlaceholder")}
                               inputMode="numeric"
                               autoComplete="postal-code"
                               maxLength={10}
@@ -327,7 +331,7 @@ export default function ContactForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                            <CalendarDays className="w-3.5 h-3.5 text-primary" /> Roof age
+                            <CalendarDays className="w-3.5 h-3.5 text-primary" /> {t("contactForm.fields.roofAge")}
                           </FormLabel>
                           <FormControl>
                             <select
@@ -335,10 +339,13 @@ export default function ContactForm() {
                               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                               data-testid="select-roof-age"
                             >
-                              <option value="">Select age</option>
-                              {ROOF_AGE.map((a) => (
-                                <option key={a} value={a}>{a}</option>
-                              ))}
+                              <option value="">{t("contactForm.fields.selectAge")}</option>
+                              {ROOF_AGE_KEYS.map((idx) => {
+                                const label = t(`contactForm.roofAgeOptions.${idx}`);
+                                return (
+                                  <option key={idx} value={label}>{label}</option>
+                                );
+                              })}
                             </select>
                           </FormControl>
                           <FormMessage />
@@ -353,27 +360,29 @@ export default function ContactForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                          <Clock3 className="w-3.5 h-3.5 text-primary" /> How soon?
+                          <Clock3 className="w-3.5 h-3.5 text-primary" /> {t("contactForm.fields.urgency")}
                         </FormLabel>
-                        <div role="radiogroup" aria-label="Project urgency" className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                          {URGENCY_OPTIONS.map((opt) => {
-                            const selected = field.value === opt.value;
+                        <div role="radiogroup" aria-label={t("contactForm.fields.urgency")} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          {URGENCY_KEYS.map((urgKey) => {
+                            const selected = field.value === urgKey;
+                            const label = t(`contactForm.urgencyOptions.${urgKey}.label`);
+                            const hint = t(`contactForm.urgencyOptions.${urgKey}.hint`);
                             return (
                               <button
                                 type="button"
-                                key={opt.value}
+                                key={urgKey}
                                 role="radio"
                                 aria-checked={selected}
-                                onClick={() => field.onChange(opt.value)}
+                                onClick={() => field.onChange(urgKey)}
                                 className={`text-left rounded-xl border p-3 transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                                   selected
                                     ? "border-primary bg-primary/5 ring-2 ring-primary/30"
                                     : "border-border/60 bg-background hover:border-primary/40"
                                 }`}
-                                data-testid={`urgency-${opt.value}`}
+                                data-testid={`urgency-${urgKey}`}
                               >
-                                <p className="font-semibold text-sm tracking-tight text-foreground">{opt.label}</p>
-                                <p className="text-[11px] text-muted-foreground mt-0.5">{opt.hint}</p>
+                                <p className="font-semibold text-sm tracking-tight text-foreground">{label}</p>
+                                <p className="text-[11px] text-muted-foreground mt-0.5">{hint}</p>
                               </button>
                             );
                           })}
@@ -386,7 +395,7 @@ export default function ContactForm() {
                   <div className="bg-muted/40 border border-dashed border-border rounded-xl p-3 flex items-center gap-3">
                     <label className="flex items-center gap-2 text-sm font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">
                       <Camera className="w-4 h-4 text-primary" />
-                      <span>{photoName ? "Photo attached" : "Attach a roof photo (optional)"}</span>
+                      <span>{photoName ? t("contactForm.fields.photoAttached") : t("contactForm.fields.photo")}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -411,10 +420,10 @@ export default function ContactForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                            <User className="w-3.5 h-3.5 text-primary" /> Full name
+                            <User className="w-3.5 h-3.5 text-primary" /> {t("contactForm.fields.fullName")}
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="Jane Doe" autoComplete="name" {...field} className="bg-background" data-testid="input-name" />
+                            <Input placeholder={t("contactForm.fields.namePlaceholder")} autoComplete="name" {...field} className="bg-background" data-testid="input-name" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -426,10 +435,10 @@ export default function ContactForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                            <Phone className="w-3.5 h-3.5 text-primary" /> Phone
+                            <Phone className="w-3.5 h-3.5 text-primary" /> {t("contactForm.fields.phone")}
                           </FormLabel>
                           <FormControl>
-                            <Input placeholder="(239) 555-0199" type="tel" autoComplete="tel" {...field} className="bg-background" data-testid="input-phone" />
+                            <Input placeholder={t("contactForm.fields.phonePlaceholder")} type="tel" autoComplete="tel" {...field} className="bg-background" data-testid="input-phone" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -442,10 +451,10 @@ export default function ContactForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                          <Mail className="w-3.5 h-3.5 text-primary" /> Email
+                          <Mail className="w-3.5 h-3.5 text-primary" /> {t("contactForm.fields.email")}
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="jane@example.com" type="email" autoComplete="email" {...field} className="bg-background" data-testid="input-email" />
+                          <Input placeholder={t("contactForm.fields.emailPlaceholder")} type="email" autoComplete="email" {...field} className="bg-background" data-testid="input-email" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -456,10 +465,10 @@ export default function ContactForm() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-semibold text-sm">Anything else? (optional)</FormLabel>
+                        <FormLabel className="font-semibold text-sm">{t("contactForm.fields.message")}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Tell us anything that helps us prep your quote…"
+                            placeholder={t("contactForm.fields.messagePlaceholder")}
                             className="resize-none min-h-[88px] bg-background"
                             {...field}
                             data-testid="input-message"
@@ -475,35 +484,51 @@ export default function ContactForm() {
               {step === 4 && (
                 <div className="space-y-3" data-testid="review-summary">
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Quick check — make sure everything looks right, then send it our way. We'll respond within 24 hours.
+                    {t("contactForm.review.intro")}
                   </p>
                   <ReviewRow
-                    label="Service"
-                    value={SERVICE_OPTIONS.find((o) => o.value === values.serviceType)?.label ?? values.serviceType}
+                    label={t("contactForm.review.service")}
+                    editLabel={t("contactForm.review.service")}
+                    value={
+                      values.serviceType
+                        ? t(
+                            `contactForm.service.${
+                              SERVICE_OPTIONS.find((o) => o.value === values.serviceType)?.key ?? "installation"
+                            }.label`,
+                          )
+                        : ""
+                    }
                     onEdit={() => jumpTo(1)}
                   />
                   <ReviewRow
-                    label="Property"
+                    label={t("contactForm.review.property")}
+                    editLabel={t("contactForm.review.property")}
                     value={`${values.address}${values.address ? ", " : ""}${values.zip}`}
                     onEdit={() => jumpTo(2)}
                   />
                   <ReviewRow
-                    label="Roof"
-                    value={`${values.roofAge} · ${URGENCY_OPTIONS.find((o) => o.value === values.urgency)?.label ?? ""}${photoName ? ` · 📎 ${photoName}` : ""}`}
+                    label={t("contactForm.review.roof")}
+                    editLabel={t("contactForm.review.roof")}
+                    value={`${values.roofAge} · ${
+                      values.urgency
+                        ? t(`contactForm.urgencyOptions.${values.urgency}.label`)
+                        : ""
+                    }${photoName ? ` · 📎 ${photoName}` : ""}`}
                     onEdit={() => jumpTo(2)}
                   />
                   <ReviewRow
-                    label="Contact"
+                    label={t("contactForm.review.contact")}
+                    editLabel={t("contactForm.review.contact")}
                     value={`${values.name} · ${values.phone} · ${values.email}`}
                     onEdit={() => jumpTo(3)}
                   />
                   {values.message && (
-                    <ReviewRow label="Notes" value={values.message} onEdit={() => jumpTo(3)} />
+                    <ReviewRow label={t("contactForm.review.notes")} editLabel={t("contactForm.review.notes")} value={values.message} onEdit={() => jumpTo(3)} />
                   )}
                   <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 flex items-start gap-2 mt-2">
                     <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-xs text-foreground/80 leading-relaxed">
-                      We'll reach out within 24 hours with a transparent, no-pressure quote. Your info is never sold or shared.
+                      {t("contactForm.review.promise")}
                     </p>
                   </div>
                 </div>
@@ -521,7 +546,7 @@ export default function ContactForm() {
                 className="h-12 px-4"
                 data-testid="button-back"
               >
-                <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
+                <ArrowLeft className="w-4 h-4 mr-1.5" /> {t("contactForm.buttons.back")}
               </Button>
             )}
             {step < STEPS.length ? (
@@ -532,7 +557,7 @@ export default function ContactForm() {
                 className="flex-1 h-12 text-base font-semibold tracking-tight shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
                 data-testid="button-next"
               >
-                {step === STEPS.length - 1 ? "Review" : "Continue"} <ChevronRight className="w-4 h-4 ml-1.5" />
+                {step === STEPS.length - 1 ? t("contactForm.buttons.review") : t("contactForm.buttons.continue")} <ChevronRight className="w-4 h-4 ml-1.5" />
               </Button>
             ) : (
               <Button
@@ -543,10 +568,10 @@ export default function ContactForm() {
                 data-testid="button-submit"
               >
                 {isSubmitting ? (
-                  <span className="flex items-center gap-2">Sending…</span>
+                  <span className="flex items-center gap-2">{t("contactForm.buttons.sending")}</span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    Send My Free Quote Request <Send className="w-4 h-4 ml-1" />
+                    {t("contactForm.buttons.send")} <Send className="w-4 h-4 ml-1" />
                   </span>
                 )}
               </Button>
@@ -554,13 +579,13 @@ export default function ContactForm() {
           </div>
 
           <p className="text-[11px] text-center text-muted-foreground mt-4">
-            By submitting, you agree to be contacted by CHS Roofing about your inquiry. See our{" "}
+            {t("contactForm.consent")}{" "}
             <a href="/privacy" className="underline hover:text-foreground">
-              Privacy Policy
+              {t("contactForm.consentSee")}
             </a>{" "}
-            and{" "}
+            {t("common.and")}{" "}
             <a href="/terms" className="underline hover:text-foreground">
-              Terms
+              {t("contactForm.consentTerms")}
             </a>
             .
           </p>
@@ -572,13 +597,16 @@ export default function ContactForm() {
 
 function ReviewRow({
   label,
+  editLabel,
   value,
   onEdit,
 }: {
   label: string;
+  editLabel: string;
   value: string;
   onEdit: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-start justify-between gap-3 bg-muted/30 border border-border/60 rounded-xl p-3">
       <div className="min-w-0 flex-1">
@@ -591,9 +619,10 @@ function ReviewRow({
         type="button"
         onClick={onEdit}
         className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1 shrink-0 mt-1"
-        data-testid={`review-edit-${label.toLowerCase()}`}
+        aria-label={`${t("common.edit")} ${editLabel}`}
+        data-testid={`review-edit-${editLabel.toLowerCase()}`}
       >
-        <Pencil className="w-3 h-3" /> Edit
+        <Pencil className="w-3 h-3" /> {t("common.edit")}
       </button>
     </div>
   );

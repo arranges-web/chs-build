@@ -1,0 +1,477 @@
+{
+  "common": {
+    "freeQuote": "Free Quote",
+    "getFreeQuote": "Get Your Free Quote",
+    "getMyFreeQuote": "Get My Free Quote",
+    "callLabel": "Call {{phone}}",
+    "callNow": "Call Now",
+    "learnMore": "Learn More",
+    "readMore": "Read more",
+    "loading": "Loading…",
+    "submit": "Submit",
+    "send": "Send",
+    "back": "Back",
+    "continue": "Continue",
+    "review": "Review",
+    "edit": "Edit",
+    "close": "Close",
+    "open": "Open",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "or": "or",
+    "and": "and",
+    "comingSoon": "Coming soon",
+    "language": "Language",
+    "switchToSpanish": "Cambiar a Español",
+    "switchToEnglish": "Switch to English",
+    "readAllReviewsOnGoogle": "Read all reviews on Google",
+    "googleReviews": "Google Reviews",
+    "verifiedGoogleReview": "Verified Google Review"
+  },
+  "trust": {
+    "license": "License {{license}}",
+    "fullyInsured": "Fully Insured",
+    "bbbAccredited": "BBB Accredited",
+    "fiveStarGoogle": "5-Star Google Rating",
+    "familyOwned": "Family-Owned",
+    "familyOwnedSince": "Family-Owned Since {{year}}",
+    "googleRated": "Google Rated",
+    "yearsInBusiness": "Years in Business",
+    "projectsCompleted": "Projects Completed",
+    "emergencyResponse": "Emergency Response",
+    "verifiedRatings": "Verified Ratings & Licenses",
+    "manufacturerCertified": "Manufacturer Certified",
+    "flCertified": "FL Certified",
+    "roofingContractor": "Roofing Contractor",
+    "flStateLicensed": "FL State Licensed",
+    "bbbAccreditedWestFL": "BBB Accredited · West Florida",
+    "accreditedBusiness": "Accredited Business",
+    "aPlusRating": "A+ Rating",
+    "googleRating": "Google Rating",
+    "bilingual": "Bilingual Service (English / Español)",
+    "servingAllSWFL": "Serving All of SWFL"
+  },
+  "header": {
+    "ariaPrimary": "Primary",
+    "ariaMobile": "Mobile primary",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "topBar": {
+      "licensed": "Licensed {{license}} & Insured",
+      "googleStar": "Google 5-Star Rated"
+    },
+    "nav": {
+      "services": "Services",
+      "materials": "Materials",
+      "gallery": "Gallery",
+      "estimator": "Estimator",
+      "about": "About",
+      "contact": "Contact",
+      "residentialGallery": "Residential Gallery",
+      "commercialGallery": "Commercial Gallery",
+      "multifamilyGallery": "Multifamily Gallery"
+    }
+  },
+  "footer": {
+    "brandTagline": "Southwest Florida's trusted family-owned roofing contractor since {{year}}. Specializing in premium residential and commercial roofing systems designed to withstand Florida's toughest weather.",
+    "established": "Est. {{year}}",
+    "facebookAria": "Visit CHS Roofing on Facebook",
+    "instagramAria": "Visit CHS Roofing on Instagram",
+    "googleAria": "Read CHS Roofing reviews on Google",
+    "services": "Services",
+    "materials": "Materials",
+    "more": "More",
+    "contact": "Contact",
+    "emergencyLine": "24/7 emergency line",
+    "servingSWFL": "Serving all of SWFL",
+    "rights": "© {{year}} {{name}} ({{brand}}). All rights reserved. License {{license}}.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "roofingEstimator": "Roofing Estimator",
+    "aboutUs": "About Us"
+  },
+  "hero": {
+    "badge": "Southwest Florida's #1 Roofer",
+    "ownership": "Family-Owned · Est. {{year}}",
+    "title": "Protect Your Home With A",
+    "titleAccent": "Roof Built To Last",
+    "subtitle": "Licensed, insured, and family-owned. From quick hurricane repairs to premium full replacements, CHS Roofing delivers battle-tested quality you can trust."
+  },
+  "stormBlock": {
+    "title": "Storm Damage? Don't Wait.",
+    "body": "Florida storms can compromise your roof's integrity invisibly. We provide fast, emergency tarping, thorough inspections, and complete restoration services to protect your home.",
+    "items": [
+      "Free, no-obligation storm damage inspection",
+      "Emergency leak response and tarping",
+      "Insurance claims assistance and documentation",
+      "Complete structural repair and replacement"
+    ],
+    "cta": "Request an Inspection",
+    "imageAlt": "Storm-damage tear-off and decking inspection in progress",
+    "quote": "\"Punctual, professional and experienced... Highly recommended.\" — Christine"
+  },
+  "servicesSection": {
+    "eyebrow": "Our Services",
+    "title": "Everything Your Roof Needs — In One Place",
+    "subtitle": "From new installs to emergency hurricane response, our crews handle the full lifecycle of every roof we touch."
+  },
+  "estimatorPromo": {
+    "badge": "New · Free Tool",
+    "title": "Get an instant",
+    "titleAccent": "roof estimate",
+    "titleEnd": "in under a minute.",
+    "body": "Pick your material, dial in pitch and complexity, and our estimator delivers a transparent ballpark price — no email or phone required.",
+    "cta": "Try the Estimator"
+  },
+  "whyChoose": {
+    "eyebrow": "The CHS Difference",
+    "title": "We Treat Every Client Like Family",
+    "body": "We don't just build roofs; we build lasting partnerships based on trust, security, and transparent communication. No hidden surprises.",
+    "items": [
+      { "title": "Expert Craftsmanship", "desc": "Our knowledgeable team brings years of industry expertise to every single project." },
+      { "title": "Timely & Dependable", "desc": "Count on us to show up when promised and complete the job efficiently." },
+      { "title": "Licensed & Insured", "desc": "Complete peace of mind knowing your property is protected." }
+    ]
+  },
+  "featuredProjects": {
+    "eyebrow": "Featured Projects",
+    "title": "Recent Roofs Across Southwest Florida",
+    "subtitle": "A small selection of recent residential and commercial roofs from Sanibel to Sarasota — built to weather the climate, designed to last.",
+    "viewResidential": "Residential Gallery",
+    "viewCommercial": "Commercial Gallery",
+    "viewMultifamily": "Multifamily Gallery"
+  },
+  "credentials": {
+    "eyebrow": "Industry Recognized",
+    "title": "Manufacturer Credentials",
+    "subtitle": "We earn — and maintain — the highest installer certifications from the industry's leading manufacturers, unlocking premium warranties available only through credentialed contractors.",
+    "certified": "Certified",
+    "items": [
+      { "badge": "GAF", "label": "GAF® Certified Contractor", "desc": "Factory-certified to install GAF's premium shingle systems with extended manufacturer warranties available only through credentialed contractors." },
+      { "badge": "TRI", "label": "TRI Alliance Tile Roofing", "desc": "Member of the Tile Roofing Industry Alliance — trained to current best-practice install standards for concrete and clay tile in Florida." },
+      { "badge": "BBB", "label": "A+ Accredited Business", "desc": "Accredited by the Better Business Bureau with our highest possible A+ rating — zero unresolved complaints." },
+      { "badge": "TAMKO", "label": "TAMKO® Authorized Installer", "desc": "Authorized installer of TAMKO Heritage® shingles with extended manufacturer warranty options on every install." }
+    ]
+  },
+  "testimonialsSection": {
+    "eyebrow": "5-Star Reviews",
+    "title": "Don't Just Take Our Word For It"
+  },
+  "team": {
+    "eyebrow": "People You Can Trust",
+    "title": "Meet Your Roofing Team",
+    "subtitle": "Family-owned means you deal with the owners directly — not a call center."
+  },
+  "finalCta": {
+    "title": "Ready For A",
+    "titleAccent": "Better Roof?",
+    "subtitle": "Get a free, honest assessment of your roof. No high-pressure sales tactics, just straight talk from local experts.",
+    "callPromise": {
+      "label": "Call Us Directly",
+      "phonePlaceholder": "(239) XXX-XXXX"
+    },
+    "promise": {
+      "label": "Our Promise",
+      "body": "Transparent pricing. Quality materials."
+    }
+  },
+  "process": {
+    "eyebrow": "How We Work",
+    "title": "Our 6-Step Process",
+    "subtitle": "A straightforward process built on transparency, craftsmanship, and respect for your home — from first inspection to final walkthrough.",
+    "steps": [
+      { "title": "Free Inspection", "desc": "Full evaluation of roof condition with photo documentation and a no-obligation report." },
+      { "title": "Site Preparation", "desc": "Protect property and prep the job site — landscaping, pool, and driveway covered." },
+      { "title": "Tear-Off", "desc": "Remove old roofing materials safely down to clean, sound decking." },
+      { "title": "Dry-In", "desc": "Install premium underlayment for full waterproofing before finish material goes on." },
+      { "title": "Install", "desc": "Install your new roofing system with code-rated fastening and precision finish work." },
+      { "title": "Final Walkthrough", "desc": "Quality check, magnet sweep, written warranty, and client approval before we leave." }
+    ]
+  },
+  "contactForm": {
+    "step": "Free Quote · Step {{current}} of {{total}}",
+    "stepTitles": [
+      "What do you need?",
+      "Tell us about your property",
+      "How can we reach you?",
+      "Quick review"
+    ],
+    "fields": {
+      "address": "Property address",
+      "addressPlaceholder": "1234 Sunset Dr",
+      "zip": "ZIP code",
+      "zipPlaceholder": "e.g. 33904",
+      "roofAge": "Roof age",
+      "selectAge": "Select age",
+      "urgency": "How soon?",
+      "fullName": "Full name",
+      "namePlaceholder": "Jane Doe",
+      "phone": "Phone",
+      "phonePlaceholder": "(239) 555-0199",
+      "email": "Email",
+      "emailPlaceholder": "jane@example.com",
+      "message": "Anything else? (optional)",
+      "messagePlaceholder": "Tell us anything that helps us prep your quote…",
+      "photo": "Attach a roof photo (optional)",
+      "photoAttached": "Photo attached"
+    },
+    "errors": {
+      "service": "Please pick a service",
+      "address": "Enter your street address",
+      "zip5": "Enter a 5-digit ZIP",
+      "zipLong": "ZIP looks too long",
+      "zipFormat": "Use a US ZIP like 33904",
+      "ageRange": "Pick an age range",
+      "urgency": "Pick an urgency",
+      "name": "Name is required",
+      "phone": "Valid phone number is required",
+      "email": "Valid email is required"
+    },
+    "service": {
+      "installation": { "label": "New Roof Install", "hint": "Full residential roof replacement" },
+      "newConstruction": { "label": "New Construction", "hint": "Roofing for a new build" },
+      "commercialRoofing": { "label": "Commercial Roofing", "hint": "TPO, flat, and commercial systems" },
+      "repair": { "label": "Roof Repair", "hint": "Leak, flashing, missing shingles" },
+      "maintenance": { "label": "Maintenance", "hint": "Inspection or annual care" },
+      "stormDamage": { "label": "Storm Damage", "hint": "Hurricane / emergency response" },
+      "specialty": { "label": "Specialty Roofing", "hint": "Skylights, chimney caps, custom flashing" },
+      "roofCoating": { "label": "Roof Coating", "hint": "Reflective coating & restoration" },
+      "gutters": { "label": "Gutters", "hint": "Seamless gutters & guards" }
+    },
+    "urgencyOptions": {
+      "emergency": { "label": "Emergency", "hint": "Active leak / storm damage" },
+      "soon": { "label": "Within 30 days", "hint": "Planning a project soon" },
+      "planning": { "label": "Just exploring", "hint": "Researching options" }
+    },
+    "roofAgeOptions": ["Under 5 years", "5–10 years", "10–20 years", "20+ years", "Not sure"],
+    "review": {
+      "intro": "Quick check — make sure everything looks right, then send it our way. We'll respond within 24 hours.",
+      "service": "Service",
+      "property": "Property",
+      "roof": "Roof",
+      "contact": "Contact",
+      "notes": "Notes",
+      "promise": "We'll reach out within 24 hours with a transparent, no-pressure quote. Your info is never sold or shared."
+    },
+    "buttons": {
+      "back": "Back",
+      "continue": "Continue",
+      "review": "Review",
+      "send": "Send My Free Quote Request",
+      "sending": "Sending…",
+      "submitAnother": "Submit Another Request"
+    },
+    "success": {
+      "title": "Request Received!",
+      "body": "Thank you for choosing CHS Roofing. Our team will contact you shortly to schedule your free estimate.",
+      "toastTitle": "Request Received",
+      "toastDesc": "We'll be in touch shortly to provide your free quote."
+    },
+    "consent": "By submitting, you agree to be contacted by CHS Roofing about your inquiry. See our",
+    "consentSee": "Privacy Policy",
+    "consentTerms": "Terms"
+  },
+  "supportChat": {
+    "launcherOpen": "Open chat support",
+    "launcherClose": "Close chat",
+    "headerTitle": "CHS Roofing Support",
+    "headerStatus": "Typically replies within minutes",
+    "intro": "Hi! 👋 I'm the CHS Roofing assistant. I can connect you with the right person — I just need a few quick details first.",
+    "askName": "What's your <strong>first name</strong>?",
+    "askPhone": "Thanks{{name}}! What's the best <strong>phone number</strong> to reach you?",
+    "askEmail": "Great. And your <strong>email</strong>?",
+    "askService": "Last one — <strong>which service</strong> do you need help with?",
+    "ready": "Perfect — I have everything I need. A CHS rep will reach out within business hours. If you'd like to talk now, give us a call or jump to the full quote form.",
+    "thanks": "Thanks{{name}}! Our team will reach out shortly. Want to talk now?",
+    "getStarted": "Get started",
+    "send": "Send",
+    "callNow": "Call {{phone}}",
+    "continueForm": "Continue to free quote form",
+    "startOver": "Start over",
+    "errors": {
+      "name": "Please share your first name.",
+      "phone": "A 10-digit phone number works best.",
+      "email": "That email doesn't look quite right."
+    },
+    "placeholders": {
+      "name": "Your first name",
+      "phone": "(239) 555-0199",
+      "email": "you@example.com"
+    }
+  },
+  "toast": {
+    "label": "Service area activity",
+    "body": "Inquiry from {{city}} for {{service}}.",
+    "received": "Received {{when}}",
+    "dismiss": "Dismiss notification",
+    "services": [
+      "a free roof inspection",
+      "a roof repair quote",
+      "a hurricane-damage assessment",
+      "a metal roof estimate",
+      "a tile re-roof quote",
+      "a maintenance plan",
+      "a flat-roof repair",
+      "a gutter installation quote"
+    ],
+    "times": [
+      "today",
+      "this morning",
+      "this afternoon",
+      "earlier today",
+      "this week"
+    ]
+  },
+  "estimator": {
+    "eyebrow": "Free Tool · Roof Estimator",
+    "titleStart": "Instant Roof",
+    "titleAccent": "Estimate",
+    "subtitle": "Get a transparent ballpark price for your roof in under a minute. Pick your material, dial in the details, and we'll do the math — no email or phone number required.",
+    "imageAlt": "Standing-seam metal roof on a Southwest Florida home",
+    "address": {
+      "title": "Property address",
+      "subtitle": "Optional. We'll show a satellite preview so you can confirm the right home — your address is never stored or sent.",
+      "placeholder": "1234 Sunset Dr, Cape Coral, FL 33904",
+      "preview": "Enter an address to see a satellite preview",
+      "previewBody": "Auto-measuring roof area from satellite imagery is coming soon — for now, please enter the roof footprint below."
+    },
+    "footprint": {
+      "title": "Roof footprint",
+      "subtitle": "Approximate house footprint in square feet. (Roof area is calculated from this and your pitch.)",
+      "unit": "sq ft"
+    },
+    "material": {
+      "title": "Roof material",
+      "subtitle": "Pick the system you're considering. Pricing is per \"square\" (100 sq ft of roof).",
+      "perSquare": "/sq",
+      "items": {
+        "shingle": { "label": "GAF Shingle Roof", "short": "Premium GAF asphalt shingle system." },
+        "metal-standing-seam": { "label": "Metal Standing Seam", "short": "Hurricane-rated standing seam metal roof." },
+        "metal-5v": { "label": "Metal 5V", "short": "Classic 5V exposed-fastener metal roof." },
+        "tile-on-tile": { "label": "Tile Off / Tile On", "short": "Tear off existing tile and install new tile." },
+        "tile-to-standing-seam": { "label": "Tile Off / Standing Seam (with color)", "short": "Tear off existing tile, install standing seam metal in your color." }
+      },
+      "colorOption": "Color / standard color finish",
+      "colorOptionDesc": "Adds ${{adder}} per square for a factory-baked color finish."
+    },
+    "pitch": {
+      "title": "Roof pitch",
+      "items": {
+        "low": "Low slope (≤4/12)",
+        "standard": "Standard (5/12 – 7/12)",
+        "steep": "Steep (8/12 – 12/12)",
+        "very-steep": "Very steep (>12/12)"
+      },
+      "areaSuffix": "× area"
+    },
+    "complexity": {
+      "title": "Roof complexity",
+      "items": {
+        "simple": "Simple (single ridge, few penetrations)",
+        "moderate": "Moderate (multiple hips & valleys)",
+        "complex": "Complex (cut-up roof, dormers, skylights)"
+      }
+    },
+    "waste": {
+      "title": "Waste factor",
+      "items": {
+        "low": "10%",
+        "standard": "15% (recommended)",
+        "high": "20%"
+      }
+    },
+    "allowances": {
+      "title": "Allowances",
+      "subtitle": "Defaults are typical for SWFL. Adjust if you know your job has unusual permitting or decking needs.",
+      "permit": "Permit & admin allowance",
+      "decking": "Wood / decking allowance"
+    },
+    "result": {
+      "label": "Rough Estimate",
+      "title": "Your roof, ballpark",
+      "rangeLabel": "Estimated range",
+      "midpoint": "Midpoint",
+      "squares": "{{count}} squares ({{sf}} sq ft)",
+      "rows": {
+        "complexity": "Complexity ({{label}})",
+        "waste": "Waste ({{pct}})",
+        "permit": "Permit & admin",
+        "decking": "Wood / decking",
+        "total": "Estimate total"
+      },
+      "ctaInspect": "Book a free on-site inspection"
+    },
+    "disclaimer": "<strong>This is a rough estimate only.</strong> Final pricing requires an on-site inspection. Actual cost can vary based on roof geometry, decking condition, code upgrades, and material availability.",
+    "rateNote": "Pricing is based on rates provided by CHS Roofing for {{region}}. Includes labor, standard materials, and underlayment. Excludes structural repairs, code upgrades, and HOA-required upgrades unless noted.",
+    "comingSoon": "Working on auto-measuring roof area from satellite imagery — for now, please enter your home's footprint manually. The pitch field accounts for the steeper roof area on top of that footprint.",
+    "ctaTitle": "Ready for the",
+    "ctaTitleAccent": "real number?",
+    "ctaSubtitle": "Book a free on-site inspection and we'll deliver a fully line-itemed quote within 24–48 hours."
+  },
+  "lp": {
+    "docTitle": "Free Roof Inspection in SWFL — {{brand}}",
+    "heroBadge": "Free Inspection · No Obligation",
+    "heroTitleStart": "A Free Roof Inspection in",
+    "heroTitleAccent": "Southwest Florida",
+    "heroSubtitle": "Licensed, insured, and family-owned since {{year}}. Get a transparent, line-itemed quote within 24 hours — no high-pressure sales tactics.",
+    "heroBullets": [
+      "Free, no-obligation on-site inspection",
+      "Written quote within 24–48 hours",
+      "Insurance-claim documentation included"
+    ],
+    "heroLicensedLine": "Florida License {{license}} · Fully insured",
+    "trust": {
+      "fiveStar": "Google 5.0",
+      "bbbAccredited": "BBB A+ Accredited",
+      "projects": "500+ Projects"
+    },
+    "benefitsTitle": "Why homeowners across SWFL choose {{brand}}",
+    "benefits": [
+      { "title": "Licensed & Insured", "desc": "Florida State License {{license}}. Fully insured. BBB Accredited A+." },
+      { "title": "Quote in 24 Hours", "desc": "On-site inspection scheduled in days. Written quote within 24–48 hours." },
+      { "title": "In-House Crews", "desc": "Never day labor. Owner-supervised installs you can actually trust." },
+      { "title": "Family-Owned Since {{year}}", "desc": "Local to {{city}}. Hundreds of completed projects across Southwest Florida." }
+    ],
+    "processTitle": "3 simple steps from inquiry to quote",
+    "process": [
+      { "title": "Book your free inspection", "desc": "Fill out the form or call. We confirm a time that works for you." },
+      { "title": "We inspect, you don't lift a finger", "desc": "On-site evaluation with photos and documentation. No pressure, no upsell." },
+      { "title": "Get a transparent written quote", "desc": "Line-itemed estimate within 24–48 hours so you know exactly what you're paying for." }
+    ],
+    "reviewsEyebrow": "5-Star Reviews",
+    "reviewsTitle": "Real customers, real results",
+    "faqTitle": "Common questions",
+    "faqs": [
+      { "q": "Is the inspection really free?", "a": "Yes. We do not charge for an on-site roof inspection or a written estimate. There is no obligation to book the project with us." },
+      { "q": "How quickly can you start?", "a": "Most replacements are scheduled within 2–4 weeks; emergency repairs can usually be addressed the same week." },
+      { "q": "Do you handle insurance claims?", "a": "Yes — we document storm and hurricane damage thoroughly and work directly with your insurance carrier when needed." },
+      { "q": "What areas do you serve?", "a": "All of Southwest Florida — Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Punta Gorda, Sanibel, North Port, and surrounding areas." }
+    ],
+    "finalCtaTitle": "Ready for your",
+    "finalCtaAccent": "free roof inspection?",
+    "finalCtaSubtitle": "Tell us a bit about your property — our team will reach out within one business day to schedule.",
+    "fullSite": "Full Website"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "services": {
+    "installation": { "title": "New Roof Installation", "short": "Full residential and commercial roof installations built for SWFL." },
+    "repair": { "title": "Roof Repair", "short": "Fast, honest repair work — leaks, flashing, missing shingles, and more." },
+    "maintenance": { "title": "Roof Maintenance", "short": "Annual inspections and preventative care to extend your roof's life." },
+    "storm-damage": { "title": "Storm Damage Restoration", "short": "Emergency tarping, inspections, and full hurricane-damage restoration." },
+    "specialty-roofing": { "title": "Specialty Roofing", "short": "Skylights, custom flashing, chimney caps, and unique architectural roofs." },
+    "gutters": { "title": "Gutters", "short": "Seamless aluminum gutters, downspouts, and gutter guards installed to spec." },
+    "roof-coating": { "title": "Roof Coating & Restoration", "short": "Reflective coating systems that extend roof life and lower energy bills." }
+  },
+  "materials": {
+    "asphalt-shingles": { "title": "Asphalt Shingles", "short": "Affordable, durable, available in dozens of colors and styles." },
+    "metal": { "title": "Metal Roofing", "short": "Standing-seam metal — the gold standard for hurricane resistance." },
+    "tile": { "title": "Tile Roofing", "short": "Concrete and clay tile — Southwest Florida's classic look." },
+    "flat": { "title": "Flat & TPO Roofing", "short": "Energy-efficient flat systems for commercial and modern homes." }
+  }
+}

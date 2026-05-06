@@ -1,10 +1,13 @@
 import { Link } from "wouter";
 import { Facebook, Instagram, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-secondary text-secondary-foreground border-t border-border/10 pt-16 pb-24 md:pb-8 relative overflow-hidden">
       {/* Monogram watermark */}
@@ -29,11 +32,11 @@ export default function Footer() {
             </div>
           </Link>
           <p className="text-sm text-secondary-foreground/80 leading-relaxed max-w-md">
-            Southwest Florida's trusted family-owned roofing contractor since {SITE.established}. Specializing in premium residential and commercial roofing systems designed to withstand Florida's toughest weather.
+            {t("footer.brandTagline", { year: SITE.established })}
           </p>
           <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] font-semibold text-secondary-foreground/60">
             <span className="h-px w-6 bg-primary/70" />
-            Est. {SITE.established}
+            {t("footer.established", { year: SITE.established })}
             <span className="opacity-50">·</span>
             <span>{SITE.city}</span>
           </div>
@@ -42,7 +45,7 @@ export default function Footer() {
               href={SITE.social.facebook}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Visit CHS Roofing on Facebook"
+              aria-label={t("footer.facebookAria")}
               className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
             >
               <Facebook className="w-5 h-5" aria-hidden="true" />
@@ -51,7 +54,7 @@ export default function Footer() {
               href={SITE.social.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Visit CHS Roofing on Instagram"
+              aria-label={t("footer.instagramAria")}
               className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
             >
               <Instagram className="w-5 h-5" aria-hidden="true" />
@@ -60,7 +63,7 @@ export default function Footer() {
               href={SITE.social.google}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Read CHS Roofing reviews on Google"
+              aria-label={t("footer.googleAria")}
               className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-primary/10 transition-colors"
             >
               <GoogleLogo size={20} />
@@ -76,12 +79,12 @@ export default function Footer() {
 
         {/* Services Col */}
         <div>
-          <h4 className="font-display text-xs font-semibold mb-5 text-white tracking-[0.2em] uppercase">Services</h4>
+          <h4 className="font-display text-xs font-semibold mb-5 text-white tracking-[0.2em] uppercase">{t("footer.services")}</h4>
           <ul className="space-y-2.5 text-sm">
             {SERVICES.map(s => (
               <li key={s.slug}>
                 <Link href={s.href} className="hover:text-primary transition-colors">
-                  {s.title}
+                  {t(`services.${s.slug}.title`, { defaultValue: s.title })}
                 </Link>
               </li>
             ))}
@@ -90,30 +93,30 @@ export default function Footer() {
 
         {/* Materials Col */}
         <div>
-          <h4 className="font-display text-xs font-semibold mb-5 text-white tracking-[0.2em] uppercase">Materials</h4>
+          <h4 className="font-display text-xs font-semibold mb-5 text-white tracking-[0.2em] uppercase">{t("footer.materials")}</h4>
           <ul className="space-y-2.5 text-sm">
             {MATERIALS.map(m => (
               <li key={m.slug}>
                 <Link href={m.href} className="hover:text-primary transition-colors">
-                  {m.title}
+                  {t(`materials.${m.slug}.title`, { defaultValue: m.title })}
                 </Link>
               </li>
             ))}
           </ul>
-          <h4 className="font-display text-xs font-semibold mt-6 mb-3 text-white tracking-[0.2em] uppercase">More</h4>
+          <h4 className="font-display text-xs font-semibold mt-6 mb-3 text-white tracking-[0.2em] uppercase">{t("footer.more")}</h4>
           <ul className="space-y-2.5 text-sm">
-            <li><Link href="/gallery/residential" className="hover:text-primary transition-colors">Residential Gallery</Link></li>
-            <li><Link href="/gallery/commercial" className="hover:text-primary transition-colors">Commercial Gallery</Link></li>
-            <li><Link href="/gallery/multifamily" className="hover:text-primary transition-colors">Multifamily Gallery</Link></li>
-            <li><Link href="/estimator" className="hover:text-primary transition-colors">Roof Estimator</Link></li>
-            <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-            <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+            <li><Link href="/gallery/residential" className="hover:text-primary transition-colors">{t("header.nav.residentialGallery")}</Link></li>
+            <li><Link href="/gallery/commercial" className="hover:text-primary transition-colors">{t("header.nav.commercialGallery")}</Link></li>
+            <li><Link href="/gallery/multifamily" className="hover:text-primary transition-colors">{t("header.nav.multifamilyGallery")}</Link></li>
+            <li><Link href="/estimator" className="hover:text-primary transition-colors">{t("footer.roofingEstimator")}</Link></li>
+            <li><Link href="/about" className="hover:text-primary transition-colors">{t("footer.aboutUs")}</Link></li>
+            <li><Link href="/contact" className="hover:text-primary transition-colors">{t("footer.contact")}</Link></li>
           </ul>
         </div>
 
         {/* Contact Col */}
         <div>
-          <h4 className="font-display text-xs font-semibold mb-5 text-white tracking-[0.2em] uppercase">Contact</h4>
+          <h4 className="font-display text-xs font-semibold mb-5 text-white tracking-[0.2em] uppercase">{t("footer.contact")}</h4>
           <ul className="space-y-4 text-sm">
             <li className="flex items-start gap-3">
               <Phone className="w-5 h-5 text-primary mt-0.5" />
@@ -121,7 +124,7 @@ export default function Footer() {
                 <a href={`tel:${SITE.phoneTel}`} className="block text-white font-bold hover:text-primary transition-colors">
                   {SITE.phoneDisplay}
                 </a>
-                <span className="text-xs text-secondary-foreground/70">24/7 emergency line</span>
+                <span className="text-xs text-secondary-foreground/70">{t("footer.emergencyLine")}</span>
               </div>
             </li>
             <li className="flex items-start gap-3">
@@ -132,7 +135,7 @@ export default function Footer() {
             </li>
             <li className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-primary mt-0.5" />
-              <span>{SITE.city}<br />Serving all of SWFL</span>
+              <span>{SITE.city}<br />{t("footer.servingSWFL")}</span>
             </li>
             <li className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -143,10 +146,10 @@ export default function Footer() {
       </div>
 
       <div className="container mx-auto max-w-7xl px-4 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-secondary-foreground/60 relative">
-        <p>© {new Date().getFullYear()} {SITE.legalName} ({SITE.brand}). All rights reserved. License {SITE.license}.</p>
+        <p>{t("footer.rights", { year: new Date().getFullYear(), name: SITE.legalName, brand: SITE.brand, license: SITE.license })}</p>
         <div className="flex gap-6">
-          <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">{t("footer.privacy")}</Link>
+          <Link href="/terms" className="hover:text-white transition-colors">{t("footer.terms")}</Link>
         </div>
       </div>
     </footer>

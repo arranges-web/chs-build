@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import {
@@ -43,6 +44,7 @@ const fmtUSD = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 export default function EstimatorPage() {
+  const { t } = useTranslation();
   const [address, setAddress] = useState("");
   const [footprintInput, setFootprintInput] = useState<string>("2000");
   const [materialSlug, setMaterialSlug] =
@@ -103,16 +105,16 @@ export default function EstimatorPage() {
   return (
     <>
       <PageHero
-        eyebrow="Free Tool · Roof Estimator"
+        eyebrow={t("estimator.eyebrow")}
         title={
           <>
-            Instant Roof <span className="text-primary">Estimate</span>
+            {t("estimator.titleStart")} <span className="text-primary">{t("estimator.titleAccent")}</span>
           </>
         }
-        subtitle="Get a transparent ballpark price for your roof in under a minute. Pick your material, dial in the details, and we'll do the math — no email or phone number required."
+        subtitle={t("estimator.subtitle")}
         image={PHOTOS.beachfrontMetal}
-        imageAlt="Standing-seam metal roof on a Southwest Florida home"
-        crumbs={[{ label: "Estimator" }]}
+        imageAlt={t("estimator.imageAlt")}
+        crumbs={[{ label: t("header.nav.estimator") }]}
       />
 
       <section className="py-16 md:py-20 bg-background">
@@ -129,10 +131,10 @@ export default function EstimatorPage() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-display font-bold tracking-tight text-foreground text-lg">
-                        Property address
+                        {t("estimator.address.title")}
                       </h3>
                       <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
-                        Optional. We'll show a satellite preview so you can confirm the right home — your address is never stored or sent.
+                        {t("estimator.address.subtitle")}
                       </p>
                     </div>
                   </div>
@@ -140,10 +142,10 @@ export default function EstimatorPage() {
                   <input
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="1234 Sunset Dr, Cape Coral, FL 33904"
+                    placeholder={t("estimator.address.placeholder")}
                     autoComplete="street-address"
                     className="w-full h-11 px-4 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    aria-label="Property address"
+                    aria-label={t("estimator.address.title")}
                   />
 
                   {mapsEmbed ? (
@@ -159,9 +161,9 @@ export default function EstimatorPage() {
                   ) : (
                     <div className="mt-4 rounded-2xl border border-dashed border-border/60 bg-muted/30 aspect-video flex flex-col items-center justify-center text-center px-6 text-muted-foreground">
                       <Compass className="w-7 h-7 text-primary/70 mb-2" />
-                      <p className="text-sm font-semibold text-foreground">Enter an address to see a satellite preview</p>
+                      <p className="text-sm font-semibold text-foreground">{t("estimator.address.preview")}</p>
                       <p className="text-xs mt-1 max-w-xs">
-                        Auto-measuring roof area from satellite imagery is coming soon — for now, please enter the roof footprint below.
+                        {t("estimator.address.previewBody")}
                       </p>
                     </div>
                   )}
@@ -178,10 +180,10 @@ export default function EstimatorPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-display font-bold tracking-tight text-foreground text-lg">
-                          Roof footprint
+                          {t("estimator.footprint.title")}
                         </h3>
                         <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
-                          Approximate house footprint in square feet. (Roof area is calculated from this and your pitch.)
+                          {t("estimator.footprint.subtitle")}
                         </p>
                       </div>
                     </div>
@@ -194,10 +196,10 @@ export default function EstimatorPage() {
                         value={footprintInput}
                         onChange={(e) => setFootprintInput(e.target.value)}
                         className="w-full h-11 pl-4 pr-16 rounded-xl border border-border/60 bg-background text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        aria-label="House footprint in square feet"
+                        aria-label={t("estimator.footprint.title")}
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
-                        sq ft
+                        {t("estimator.footprint.unit")}
                       </span>
                     </div>
                   </div>
@@ -209,16 +211,18 @@ export default function EstimatorPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-display font-bold tracking-tight text-foreground text-lg">
-                          Roof material
+                          {t("estimator.material.title")}
                         </h3>
                         <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
-                          Pick the system you're considering. Pricing is per "square" (100 sq ft of roof).
+                          {t("estimator.material.subtitle")}
                         </p>
                       </div>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-2.5">
                       {ESTIMATOR_MATERIALS.map((m) => {
                         const selected = m.slug === materialSlug;
+                        const label = t(`estimator.material.items.${m.slug}.label`, { defaultValue: m.label });
+                        const short = t(`estimator.material.items.${m.slug}.short`, { defaultValue: m.short });
                         return (
                           <button
                             key={m.slug}
@@ -232,13 +236,13 @@ export default function EstimatorPage() {
                           >
                             <div className="flex items-baseline justify-between gap-2">
                               <p className="font-semibold text-foreground tracking-tight text-sm leading-tight">
-                                {m.label}
+                                {label}
                               </p>
                               <p className="font-display font-bold text-primary text-sm whitespace-nowrap">
-                                ${m.pricePerSquare}/sq
+                                ${m.pricePerSquare}{t("estimator.material.perSquare")}
                               </p>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1.5 leading-snug">{m.short}</p>
+                            <p className="text-xs text-muted-foreground mt-1.5 leading-snug">{short}</p>
                           </button>
                         );
                       })}
@@ -254,10 +258,10 @@ export default function EstimatorPage() {
                         />
                         <span className="flex-1 text-sm">
                           <span className="font-semibold text-foreground block">
-                            Color / standard color finish
+                            {t("estimator.material.colorOption")}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            Adds ${(material as { colorAdderPerSquare?: number }).colorAdderPerSquare ?? 0} per square for a factory-baked color finish.
+                            {t("estimator.material.colorOptionDesc", { adder: (material as { colorAdderPerSquare?: number }).colorAdderPerSquare ?? 0 })}
                           </span>
                         </span>
                       </label>
@@ -276,15 +280,15 @@ export default function EstimatorPage() {
                       </div>
                       <div>
                         <h3 className="font-display font-bold tracking-tight text-foreground text-base">
-                          Roof pitch
+                          {t("estimator.pitch.title")}
                         </h3>
                       </div>
                     </div>
                     <Picker
                       options={ESTIMATOR_PITCH_OPTIONS.map((o) => ({
                         slug: o.slug,
-                        label: o.label,
-                        sub: `×${o.multiplier.toFixed(2)} area`,
+                        label: t(`estimator.pitch.items.${o.slug}`, { defaultValue: o.label }),
+                        sub: `×${o.multiplier.toFixed(2)} ${t("estimator.pitch.areaSuffix")}`,
                       }))}
                       value={pitchSlug}
                       onChange={(v) => setPitchSlug(v as typeof pitchSlug)}
@@ -298,14 +302,14 @@ export default function EstimatorPage() {
                       </div>
                       <div>
                         <h3 className="font-display font-bold tracking-tight text-foreground text-base">
-                          Roof complexity
+                          {t("estimator.complexity.title")}
                         </h3>
                       </div>
                     </div>
                     <Picker
                       options={ESTIMATOR_COMPLEXITY_OPTIONS.map((o) => ({
                         slug: o.slug,
-                        label: o.label,
+                        label: t(`estimator.complexity.items.${o.slug}`, { defaultValue: o.label }),
                         sub: `×${o.multiplier.toFixed(2)}`,
                       }))}
                       value={complexitySlug}
@@ -320,14 +324,14 @@ export default function EstimatorPage() {
                       </div>
                       <div>
                         <h3 className="font-display font-bold tracking-tight text-foreground text-base">
-                          Waste factor
+                          {t("estimator.waste.title")}
                         </h3>
                       </div>
                     </div>
                     <Picker
                       options={ESTIMATOR_WASTE_OPTIONS.map((o) => ({
                         slug: o.slug,
-                        label: o.label,
+                        label: t(`estimator.waste.items.${o.slug}`, { defaultValue: o.label }),
                       }))}
                       value={wasteSlug}
                       onChange={(v) => setWasteSlug(v as typeof wasteSlug)}
@@ -345,17 +349,17 @@ export default function EstimatorPage() {
                     </div>
                     <div className="flex-1">
                       <h3 className="font-display font-bold tracking-tight text-foreground text-lg">
-                        Allowances
+                        {t("estimator.allowances.title")}
                       </h3>
                       <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
-                        Defaults are typical for SWFL. Adjust if you know your job has unusual permitting or decking needs.
+                        {t("estimator.allowances.subtitle")}
                       </p>
                     </div>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1.5">
-                        Permit & admin allowance
+                        {t("estimator.allowances.permit")}
                       </label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
@@ -367,13 +371,13 @@ export default function EstimatorPage() {
                           value={permitInput}
                           onChange={(e) => setPermitInput(e.target.value)}
                           className="w-full h-10 pl-7 pr-3 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          aria-label="Permit and admin allowance in dollars"
+                          aria-label={t("estimator.allowances.permit")}
                         />
                       </div>
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1.5">
-                        Wood / decking allowance
+                        {t("estimator.allowances.decking")}
                       </label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
@@ -385,7 +389,7 @@ export default function EstimatorPage() {
                           value={deckingInput}
                           onChange={(e) => setDeckingInput(e.target.value)}
                           className="w-full h-10 pl-7 pr-3 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          aria-label="Wood and decking allowance in dollars"
+                          aria-label={t("estimator.allowances.decking")}
                         />
                       </div>
                     </div>
@@ -405,42 +409,50 @@ export default function EstimatorPage() {
                     </div>
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.22em] font-semibold text-primary">
-                        Rough Estimate
+                        {t("estimator.result.label")}
                       </p>
                       <h3 className="font-display font-bold text-xl tracking-tight">
-                        Your roof, ballpark
+                        {t("estimator.result.title")}
                       </h3>
                     </div>
                   </div>
 
                   <p className="text-xs text-white/60 mb-1 uppercase tracking-[0.18em] font-semibold">
-                    Estimated range
+                    {t("estimator.result.rangeLabel")}
                   </p>
                   <p className="font-display font-bold text-3xl md:text-4xl tracking-tight text-white">
                     {fmtUSD(computed.lowEstimate)} – {fmtUSD(computed.highEstimate)}
                   </p>
                   <p className="text-[11px] text-white/60 mt-1">
-                    Midpoint {fmtUSD(computed.subtotal)} · {computed.squares.toFixed(1)} squares (
-                    {Math.round(computed.adjustedSf).toLocaleString()} sq ft)
+                    {t("estimator.result.midpoint")} {fmtUSD(computed.subtotal)} ·{" "}
+                    {t("estimator.result.squares", {
+                      count: computed.squares.toFixed(1),
+                      sf: Math.round(computed.adjustedSf).toLocaleString(),
+                    })}
                   </p>
 
                   <div className="mt-5 pt-5 border-t border-white/10 space-y-2 text-sm">
                     <Row
-                      label={`${material.label}${colorOption && material.colorOptionAvailable ? " + color finish" : ""}`}
+                      label={`${t(`estimator.material.items.${material.slug}.label`, { defaultValue: material.label })}${colorOption && material.colorOptionAvailable ? ` + ${t("estimator.material.colorOption")}` : ""}`}
                       value={`${computed.squares.toFixed(1)} sq × ${fmtUSD(computed.perSquareTotal)} = ${fmtUSD(computed.baseMaterial)}`}
                     />
                     {computed.complexityAdj > 0 && (
                       <Row
-                        label={`Complexity (${complexity.label.split(" (")[0]})`}
+                        label={t("estimator.result.rows.complexity", {
+                          label: t(`estimator.complexity.items.${complexity.slug}`, { defaultValue: complexity.label }).split(" (")[0],
+                        })}
                         value={fmtUSD(computed.complexityAdj)}
                       />
                     )}
-                    <Row label={`Waste (${waste.label})`} value={fmtUSD(computed.wasteAdj)} />
-                    <Row label="Permit & admin" value={fmtUSD(computed.permit)} />
-                    <Row label="Wood / decking" value={fmtUSD(computed.decking)} />
+                    <Row
+                      label={t("estimator.result.rows.waste", { pct: t(`estimator.waste.items.${waste.slug}`, { defaultValue: waste.label }) })}
+                      value={fmtUSD(computed.wasteAdj)}
+                    />
+                    <Row label={t("estimator.result.rows.permit")} value={fmtUSD(computed.permit)} />
+                    <Row label={t("estimator.result.rows.decking")} value={fmtUSD(computed.decking)} />
                     <div className="pt-3 mt-3 border-t border-white/10 flex items-center justify-between">
                       <span className="text-xs uppercase tracking-[0.18em] font-semibold text-white/70">
-                        Estimate total
+                        {t("estimator.result.rows.total")}
                       </span>
                       <span className="font-display font-bold text-lg text-primary">
                         {fmtUSD(computed.subtotal)}
@@ -453,7 +465,7 @@ export default function EstimatorPage() {
                       href="/contact"
                       className="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-3 rounded-xl font-semibold text-sm tracking-tight shadow-lg shadow-primary/30 hover:-translate-y-0.5 transition-all"
                     >
-                      Book a free on-site inspection
+                      {t("estimator.result.ctaInspect")}
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                     <a
@@ -461,7 +473,7 @@ export default function EstimatorPage() {
                       className="w-full inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-white px-5 py-3 rounded-xl font-semibold text-sm tracking-tight transition-all"
                     >
                       <Phone className="w-4 h-4" />
-                      Call {SITE.phoneDisplay}
+                      {t("common.callLabel", { phone: SITE.phoneDisplay })}
                     </a>
                   </div>
                 </div>
@@ -469,22 +481,23 @@ export default function EstimatorPage() {
 
               <div className="bg-[hsl(var(--accent-gold))]/10 border border-[hsl(var(--accent-gold))]/30 rounded-2xl p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-[hsl(var(--accent-gold))] shrink-0 mt-0.5" />
-                <p className="text-xs text-foreground leading-relaxed">
-                  <strong className="font-semibold">This is a rough estimate only.</strong> Final pricing requires an on-site inspection. Actual cost can vary based on roof geometry, decking condition, code upgrades, and material availability.
-                </p>
+                <p
+                  className="text-xs text-foreground leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: t("estimator.disclaimer") }}
+                />
               </div>
 
               <div className="bg-card border border-border/60 rounded-2xl p-4 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Pricing is based on rates provided by CHS Roofing for {SITE.region}. Includes labor, standard materials, and underlayment. Excludes structural repairs, code upgrades, and HOA-required upgrades unless noted.
+                  {t("estimator.rateNote", { region: SITE.region })}
                 </p>
               </div>
 
               <div className="bg-card border border-border/60 rounded-2xl p-4 flex items-start gap-3">
                 <Info className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Working on auto-measuring roof area from satellite imagery — for now, please enter your home's footprint manually. The pitch field accounts for the steeper roof area on top of that footprint.
+                  {t("estimator.comingSoon")}
                 </p>
               </div>
             </div>
@@ -495,10 +508,10 @@ export default function EstimatorPage() {
       <CtaSection
         title={
           <>
-            Ready for the <span className="text-primary">real number?</span>
+            {t("estimator.ctaTitle")} <span className="text-primary">{t("estimator.ctaTitleAccent")}</span>
           </>
         }
-        subtitle="Book a free on-site inspection and we'll deliver a fully line-itemed quote within 24–48 hours."
+        subtitle={t("estimator.ctaSubtitle")}
       />
     </>
   );

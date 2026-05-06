@@ -1,54 +1,35 @@
 import { motion } from "framer-motion";
 import { Award, ShieldCheck, BadgeCheck, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-const credentials = [
-  {
-    badge: "GAF",
-    label: "GAF® Certified Contractor",
-    icon: Award,
-    desc: "Factory-certified to install GAF's premium shingle systems with extended manufacturer warranties available only through credentialed contractors.",
-    accent: "primary"
-  },
-  {
-    badge: "TRI",
-    label: "TRI Alliance Tile Roofing",
-    icon: BadgeCheck,
-    desc: "Member of the Tile Roofing Industry Alliance — trained to current best-practice install standards for concrete and clay tile in Florida.",
-    accent: "gold"
-  },
-  {
-    badge: "BBB",
-    label: "A+ Accredited Business",
-    icon: ShieldCheck,
-    desc: "Accredited by the Better Business Bureau with our highest possible A+ rating — zero unresolved complaints.",
-    accent: "primary"
-  },
-  {
-    badge: "TAMKO",
-    label: "TAMKO® Authorized Installer",
-    icon: Star,
-    desc: "Authorized installer of TAMKO Heritage® shingles with extended manufacturer warranty options on every install.",
-    accent: "gold"
-  },
-];
+const ICONS = [Award, BadgeCheck, ShieldCheck, Star];
+const ACCENTS: ("primary" | "gold")[] = ["primary", "gold", "primary", "gold"];
 
 export default function Credentials() {
+  const { t } = useTranslation();
+  const items = (
+    t("credentials.items", { returnObjects: true }) as { badge: string; label: string; desc: string }[]
+  ).map((item, i) => ({
+    ...item,
+    icon: ICONS[i] ?? Award,
+    accent: ACCENTS[i] ?? "primary",
+  }));
+
   return (
     <section className="py-28 bg-background relative grain-overlay">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">Industry Recognized</h4>
+          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">{t("credentials.eyebrow")}</h4>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
-            Manufacturer Credentials
+            {t("credentials.title")}
           </h2>
           <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
-            We earn — and maintain — the highest installer certifications from the industry's leading manufacturers,
-            unlocking premium warranties available only through credentialed contractors.
+            {t("credentials.subtitle")}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {credentials.map((c, i) => {
+          {items.map((c, i) => {
             const isGold = c.accent === "gold";
             return (
               <motion.div
@@ -67,7 +48,7 @@ export default function Credentials() {
                     </div>
                     <div className="text-right">
                       <p className={`font-display text-xl font-bold tracking-tight ${isGold ? "text-[hsl(var(--accent-gold))]" : "text-primary"}`}>{c.badge}</p>
-                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Certified</p>
+                      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">{t("credentials.certified")}</p>
                     </div>
                   </div>
                   <h3 className="font-display font-bold tracking-tight text-foreground text-base mb-2 leading-tight">

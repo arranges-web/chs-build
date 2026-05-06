@@ -1,34 +1,51 @@
 import { Phone, ShieldCheck, Star, Home as HomeIcon, Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 import HurricaneSeasonPill from "@/components/HurricaneSeasonPill";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type NavGroup = { label: string; href: string; children?: { label: string; href: string }[] };
 
-const NAV: NavGroup[] = [
-  { label: "Services", href: "/services/installation", children: SERVICES.map(s => ({ label: s.title, href: s.href })) },
-  { label: "Materials", href: "/materials/asphalt-shingles", children: MATERIALS.map(m => ({ label: m.title, href: m.href })) },
-  {
-    label: "Gallery",
-    href: "/gallery/residential",
-    children: [
-      { label: "Residential Gallery", href: "/gallery/residential" },
-      { label: "Commercial Gallery", href: "/gallery/commercial" },
-      { label: "Multifamily Gallery", href: "/gallery/multifamily" },
-    ],
-  },
-  { label: "Estimator", href: "/estimator" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
-
 export default function Header() {
+  const { t } = useTranslation();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const [, setLocation] = useLocation();
+
+  const NAV: NavGroup[] = [
+    {
+      label: t("header.nav.services"),
+      href: "/services/installation",
+      children: SERVICES.map((s) => ({
+        label: t(`services.${s.slug}.title`, { defaultValue: s.title }),
+        href: s.href,
+      })),
+    },
+    {
+      label: t("header.nav.materials"),
+      href: "/materials/asphalt-shingles",
+      children: MATERIALS.map((m) => ({
+        label: t(`materials.${m.slug}.title`, { defaultValue: m.title }),
+        href: m.href,
+      })),
+    },
+    {
+      label: t("header.nav.gallery"),
+      href: "/gallery/residential",
+      children: [
+        { label: t("header.nav.residentialGallery"), href: "/gallery/residential" },
+        { label: t("header.nav.commercialGallery"), href: "/gallery/commercial" },
+        { label: t("header.nav.multifamilyGallery"), href: "/gallery/multifamily" },
+      ],
+    },
+    { label: t("header.nav.estimator"), href: "/estimator" },
+    { label: t("header.nav.about"), href: "/about" },
+    { label: t("header.nav.contact"), href: "/contact" },
+  ];
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -66,21 +83,22 @@ export default function Header() {
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-              Licensed {SITE.license} & Insured
+              {t("header.topBar.licensed", { license: SITE.license })}
             </span>
             <span className="flex items-center gap-1.5">
               <Star className="w-3.5 h-3.5 text-[hsl(var(--accent-gold))] fill-[hsl(var(--accent-gold))]" />
-              Google 5-Star Rated
+              {t("header.topBar.googleStar")}
             </span>
             <span className="flex items-center gap-1.5">
               <HomeIcon className="w-3.5 h-3.5 text-primary" />
-              Family-Owned Since {SITE.established}
+              {t("trust.familyOwnedSince", { year: SITE.established })}
             </span>
           </div>
           <div className="flex items-center gap-4">
             <HurricaneSeasonPill />
-            <span className="hidden lg:inline">Bilingual Service (English / Español)</span>
-            <span className="text-[hsl(var(--accent-gold))] font-semibold">Serving All of SWFL</span>
+            <span className="hidden lg:inline">{t("trust.bilingual")}</span>
+            <span className="text-[hsl(var(--accent-gold))] font-semibold">{t("trust.servingAllSWFL")}</span>
+            <LanguageSwitcher variant="dark" />
           </div>
         </div>
       </div>
@@ -89,8 +107,8 @@ export default function Header() {
       <header className="sticky top-0 z-50 glass-surface border-b border-border/60">
         <div className="container mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="CHS Roofing - Cordova Home Services" onClick={closeAll}>
-            <img src={SITE.logo} alt="CHS Roofing logo" className="w-12 h-12 md:w-14 md:h-14 object-contain transition-transform group-hover:scale-105" />
+          <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label={`${SITE.brand} - ${SITE.legalName}`} onClick={closeAll}>
+            <img src={SITE.logo} alt={`${SITE.brand} logo`} className="w-12 h-12 md:w-14 md:h-14 object-contain transition-transform group-hover:scale-105" />
             <div className="hidden sm:flex flex-col">
               <span className="font-display text-base md:text-lg font-bold tracking-tight text-foreground leading-none">
                 CHS ROOFING
@@ -102,7 +120,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav ref={navRef} className="hidden lg:flex items-center gap-1" aria-label="Primary">
+          <nav ref={navRef} className="hidden lg:flex items-center gap-1" aria-label={t("header.ariaPrimary")}>
             {NAV.map(group => (
               <div key={group.label} className="relative">
                 {group.children ? (
@@ -151,6 +169,9 @@ export default function Header() {
 
           {/* Right Side */}
           <div className="flex items-center gap-3 shrink-0">
+            <div className="hidden md:block lg:hidden">
+              <LanguageSwitcher />
+            </div>
             <a
               href={`tel:${SITE.phoneTel}`}
               className="hidden md:flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors"
@@ -162,12 +183,12 @@ export default function Header() {
               onClick={goToContact}
               className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground px-4 lg:px-5 py-2.5 rounded-full font-semibold tracking-tight transition-all duration-300 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 items-center gap-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              Free Quote
+              {t("common.freeQuote")}
             </button>
             <button
               onClick={() => setMobileOpen(v => !v)}
               className="lg:hidden p-2 rounded-xl text-foreground hover:bg-foreground/[0.05] transition-colors"
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-label={mobileOpen ? t("header.closeMenu") : t("header.openMenu")}
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -178,7 +199,7 @@ export default function Header() {
         {/* Mobile Drawer */}
         {mobileOpen && (
           <div className="lg:hidden fixed inset-0 top-[68px] z-40 bg-background/95 backdrop-blur-xl overflow-y-auto pb-32">
-            <nav className="container mx-auto max-w-7xl px-4 py-6 space-y-2" aria-label="Mobile primary">
+            <nav className="container mx-auto max-w-7xl px-4 py-6 space-y-2" aria-label={t("header.ariaMobile")}>
               {NAV.map(group => (
                 <div key={group.label} className="border-b border-border/40">
                   {group.children ? (
@@ -219,19 +240,22 @@ export default function Header() {
               ))}
 
               <div className="pt-6 space-y-3">
+                <div className="flex justify-center">
+                  <LanguageSwitcher />
+                </div>
                 <a
                   href={`tel:${SITE.phoneTel}`}
                   onClick={closeAll}
                   className="flex items-center justify-center gap-2 py-3.5 rounded-full border-2 border-primary text-primary font-semibold"
                 >
                   <Phone className="w-4 h-4" />
-                  Call {SITE.phoneDisplay}
+                  {t("common.callLabel", { phone: SITE.phoneDisplay })}
                 </a>
                 <button
                   onClick={goToContact}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-primary text-primary-foreground font-semibold shadow-md shadow-primary/30"
                 >
-                  Get a Free Quote
+                  {t("common.getFreeQuote")}
                 </button>
               </div>
             </nav>

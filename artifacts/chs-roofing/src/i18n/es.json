@@ -1,0 +1,477 @@
+{
+  "common": {
+    "freeQuote": "Cotización Gratis",
+    "getFreeQuote": "Obtenga su Cotización Gratis",
+    "getMyFreeQuote": "Quiero mi Cotización Gratis",
+    "callLabel": "Llame {{phone}}",
+    "callNow": "Llamar Ahora",
+    "learnMore": "Más Información",
+    "readMore": "Leer más",
+    "loading": "Cargando…",
+    "submit": "Enviar",
+    "send": "Enviar",
+    "back": "Atrás",
+    "continue": "Continuar",
+    "review": "Revisar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "yes": "Sí",
+    "no": "No",
+    "or": "o",
+    "and": "y",
+    "comingSoon": "Próximamente",
+    "language": "Idioma",
+    "switchToSpanish": "Cambiar a Español",
+    "switchToEnglish": "Switch to English",
+    "readAllReviewsOnGoogle": "Lea todas las reseñas en Google",
+    "googleReviews": "Reseñas de Google",
+    "verifiedGoogleReview": "Reseña Verificada de Google"
+  },
+  "trust": {
+    "license": "Licencia {{license}}",
+    "fullyInsured": "Totalmente Asegurados",
+    "bbbAccredited": "Acreditados por BBB",
+    "fiveStarGoogle": "5 Estrellas en Google",
+    "familyOwned": "Empresa Familiar",
+    "familyOwnedSince": "Empresa Familiar desde {{year}}",
+    "googleRated": "Calificación de Google",
+    "yearsInBusiness": "Años en el Negocio",
+    "projectsCompleted": "Proyectos Completados",
+    "emergencyResponse": "Respuesta de Emergencia",
+    "verifiedRatings": "Calificaciones y Licencias Verificadas",
+    "manufacturerCertified": "Certificado por el Fabricante",
+    "flCertified": "Certificado en Florida",
+    "roofingContractor": "Contratista de Techos",
+    "flStateLicensed": "Licenciados por el Estado de FL",
+    "bbbAccreditedWestFL": "Acreditados por BBB · Oeste de Florida",
+    "accreditedBusiness": "Negocio Acreditado",
+    "aPlusRating": "Calificación A+",
+    "googleRating": "Calificación de Google",
+    "bilingual": "Servicio Bilingüe (Inglés / Español)",
+    "servingAllSWFL": "Servimos Todo el SWFL"
+  },
+  "header": {
+    "ariaPrimary": "Principal",
+    "ariaMobile": "Menú móvil principal",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "topBar": {
+      "licensed": "Licenciados {{license}} y Asegurados",
+      "googleStar": "5 Estrellas en Google"
+    },
+    "nav": {
+      "services": "Servicios",
+      "materials": "Materiales",
+      "gallery": "Galería",
+      "estimator": "Calculadora",
+      "about": "Nosotros",
+      "contact": "Contacto",
+      "residentialGallery": "Galería Residencial",
+      "commercialGallery": "Galería Comercial",
+      "multifamilyGallery": "Galería Multifamiliar"
+    }
+  },
+  "footer": {
+    "brandTagline": "Contratista de techos familiar de confianza en el suroeste de Florida desde {{year}}. Especializados en sistemas de techado residenciales y comerciales premium diseñados para resistir el clima más extremo de Florida.",
+    "established": "Desde {{year}}",
+    "facebookAria": "Visite CHS Roofing en Facebook",
+    "instagramAria": "Visite CHS Roofing en Instagram",
+    "googleAria": "Lea las reseñas de CHS Roofing en Google",
+    "services": "Servicios",
+    "materials": "Materiales",
+    "more": "Más",
+    "contact": "Contacto",
+    "emergencyLine": "Línea de emergencia 24/7",
+    "servingSWFL": "Servimos todo el SWFL",
+    "rights": "© {{year}} {{name}} ({{brand}}). Todos los derechos reservados. Licencia {{license}}.",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "roofingEstimator": "Calculadora de Techo",
+    "aboutUs": "Quiénes Somos"
+  },
+  "hero": {
+    "badge": "El #1 en Techos del Suroeste de Florida",
+    "ownership": "Empresa Familiar · Desde {{year}}",
+    "title": "Proteja su Hogar con un",
+    "titleAccent": "Techo Hecho para Durar",
+    "subtitle": "Licenciados, asegurados y de propiedad familiar. Desde reparaciones rápidas tras huracanes hasta reemplazos completos premium, CHS Roofing entrega calidad probada en la que puede confiar."
+  },
+  "stormBlock": {
+    "title": "¿Daños por Tormenta? No Espere.",
+    "body": "Las tormentas de Florida pueden comprometer la integridad de su techo de manera invisible. Ofrecemos cubierta de emergencia rápida, inspecciones detalladas y servicios completos de restauración para proteger su hogar.",
+    "items": [
+      "Inspección gratuita y sin compromiso por daños de tormenta",
+      "Respuesta de emergencia y cubierta provisional para fugas",
+      "Asistencia y documentación para reclamos de seguros",
+      "Reparación estructural y reemplazo completos"
+    ],
+    "cta": "Solicitar una Inspección",
+    "imageAlt": "Remoción del techo dañado por tormenta e inspección de la cubierta en proceso",
+    "quote": "\"Puntuales, profesionales y experimentados... Altamente recomendados.\" — Christine"
+  },
+  "servicesSection": {
+    "eyebrow": "Nuestros Servicios",
+    "title": "Todo lo que su Techo Necesita — En un Solo Lugar",
+    "subtitle": "Desde nuevas instalaciones hasta respuesta de emergencia tras huracanes, nuestros equipos manejan el ciclo completo de cada techo que tocamos."
+  },
+  "estimatorPromo": {
+    "badge": "Nuevo · Herramienta Gratis",
+    "title": "Obtenga un",
+    "titleAccent": "estimado de techo",
+    "titleEnd": "instantáneo en menos de un minuto.",
+    "body": "Elija su material, ajuste la pendiente y la complejidad, y nuestra calculadora le entrega un precio aproximado y transparente — sin necesidad de correo o teléfono.",
+    "cta": "Probar la Calculadora"
+  },
+  "whyChoose": {
+    "eyebrow": "La Diferencia CHS",
+    "title": "Tratamos a Cada Cliente como Familia",
+    "body": "No solo construimos techos; construimos relaciones duraderas basadas en confianza, seguridad y comunicación transparente. Sin sorpresas ocultas.",
+    "items": [
+      { "title": "Mano de Obra Experta", "desc": "Nuestro equipo capacitado aporta años de experiencia en la industria a cada proyecto." },
+      { "title": "Puntuales y Confiables", "desc": "Cuente con nosotros para llegar cuando lo prometemos y completar el trabajo eficientemente." },
+      { "title": "Licenciados y Asegurados", "desc": "Total tranquilidad sabiendo que su propiedad está protegida." }
+    ]
+  },
+  "featuredProjects": {
+    "eyebrow": "Proyectos Destacados",
+    "title": "Techos Recientes en el Suroeste de Florida",
+    "subtitle": "Una pequeña selección de techos residenciales y comerciales recientes desde Sanibel hasta Sarasota — construidos para resistir el clima, diseñados para durar.",
+    "viewResidential": "Galería Residencial",
+    "viewCommercial": "Galería Comercial",
+    "viewMultifamily": "Galería Multifamiliar"
+  },
+  "credentials": {
+    "eyebrow": "Reconocidos en la Industria",
+    "title": "Credenciales del Fabricante",
+    "subtitle": "Obtenemos — y mantenemos — las más altas certificaciones de instalador de los principales fabricantes de la industria, lo que abre garantías premium disponibles solo a través de contratistas con credenciales.",
+    "certified": "Certificado",
+    "items": [
+      { "badge": "GAF", "label": "Contratista Certificado GAF®", "desc": "Certificados de fábrica para instalar los sistemas de tejas premium de GAF con garantías extendidas del fabricante disponibles solo a través de contratistas con credenciales." },
+      { "badge": "TRI", "label": "TRI Alliance Tile Roofing", "desc": "Miembros de la Tile Roofing Industry Alliance — capacitados en los estándares actuales de mejor práctica para instalación de tejas de concreto y arcilla en Florida." },
+      { "badge": "BBB", "label": "Negocio Acreditado A+", "desc": "Acreditados por el Better Business Bureau con la calificación A+ más alta posible — cero quejas sin resolver." },
+      { "badge": "TAMKO", "label": "Instalador Autorizado TAMKO®", "desc": "Instalador autorizado de tejas TAMKO Heritage® con opciones de garantía extendida del fabricante en cada instalación." }
+    ]
+  },
+  "testimonialsSection": {
+    "eyebrow": "Reseñas de 5 Estrellas",
+    "title": "No Solo Tome Nuestra Palabra"
+  },
+  "team": {
+    "eyebrow": "Personas en las que Puede Confiar",
+    "title": "Conozca a su Equipo de Techado",
+    "subtitle": "Empresa familiar significa que trata directamente con los dueños — no con un centro de llamadas."
+  },
+  "finalCta": {
+    "title": "¿Listo para un",
+    "titleAccent": "Mejor Techo?",
+    "subtitle": "Obtenga una evaluación gratuita y honesta de su techo. Sin tácticas de venta agresivas, solo conversación directa de expertos locales.",
+    "callPromise": {
+      "label": "Llámenos Directamente",
+      "phonePlaceholder": "(239) XXX-XXXX"
+    },
+    "promise": {
+      "label": "Nuestra Promesa",
+      "body": "Precios transparentes. Materiales de calidad."
+    }
+  },
+  "process": {
+    "eyebrow": "Cómo Trabajamos",
+    "title": "Nuestro Proceso de 6 Pasos",
+    "subtitle": "Un proceso directo construido sobre transparencia, calidad y respeto por su hogar — desde la primera inspección hasta el recorrido final.",
+    "steps": [
+      { "title": "Inspección Gratuita", "desc": "Evaluación completa de la condición del techo con documentación fotográfica y un reporte sin compromiso." },
+      { "title": "Preparación del Sitio", "desc": "Protegemos la propiedad y preparamos el área de trabajo — jardinería, piscina y entrada cubiertos." },
+      { "title": "Remoción", "desc": "Removemos los materiales viejos del techo de forma segura hasta una cubierta limpia y sólida." },
+      { "title": "Sellado Inicial", "desc": "Instalamos membrana premium para impermeabilización completa antes del material final." },
+      { "title": "Instalación", "desc": "Instalamos su nuevo sistema de techo con sujeción según código y trabajo de acabado de precisión." },
+      { "title": "Recorrido Final", "desc": "Verificación de calidad, barrido magnético, garantía escrita y aprobación del cliente antes de irnos." }
+    ]
+  },
+  "contactForm": {
+    "step": "Cotización Gratis · Paso {{current}} de {{total}}",
+    "stepTitles": [
+      "¿Qué necesita?",
+      "Cuéntenos sobre su propiedad",
+      "¿Cómo podemos contactarlo?",
+      "Revisión rápida"
+    ],
+    "fields": {
+      "address": "Dirección de la propiedad",
+      "addressPlaceholder": "1234 Sunset Dr",
+      "zip": "Código postal",
+      "zipPlaceholder": "ej. 33904",
+      "roofAge": "Edad del techo",
+      "selectAge": "Seleccione edad",
+      "urgency": "¿Qué tan pronto?",
+      "fullName": "Nombre completo",
+      "namePlaceholder": "Juan Pérez",
+      "phone": "Teléfono",
+      "phonePlaceholder": "(239) 555-0199",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "juan@ejemplo.com",
+      "message": "¿Algo más? (opcional)",
+      "messagePlaceholder": "Cuéntenos cualquier cosa que nos ayude a preparar su cotización…",
+      "photo": "Adjunte una foto del techo (opcional)",
+      "photoAttached": "Foto adjunta"
+    },
+    "errors": {
+      "service": "Por favor elija un servicio",
+      "address": "Ingrese su dirección",
+      "zip5": "Ingrese un código postal de 5 dígitos",
+      "zipLong": "El código postal es muy largo",
+      "zipFormat": "Use un ZIP de EE.UU. como 33904",
+      "ageRange": "Elija un rango de edad",
+      "urgency": "Elija una urgencia",
+      "name": "El nombre es requerido",
+      "phone": "Se requiere un teléfono válido",
+      "email": "Se requiere un correo válido"
+    },
+    "service": {
+      "installation": { "label": "Instalación de Techo Nuevo", "hint": "Reemplazo completo de techo residencial" },
+      "newConstruction": { "label": "Construcción Nueva", "hint": "Techo para una construcción nueva" },
+      "commercialRoofing": { "label": "Techos Comerciales", "hint": "TPO, planos y sistemas comerciales" },
+      "repair": { "label": "Reparación de Techo", "hint": "Fugas, tapajuntas, tejas faltantes" },
+      "maintenance": { "label": "Mantenimiento", "hint": "Inspección o cuidado anual" },
+      "stormDamage": { "label": "Daño por Tormenta", "hint": "Huracán / respuesta de emergencia" },
+      "specialty": { "label": "Techos Especializados", "hint": "Tragaluces, copete de chimeneas, tapajuntas custom" },
+      "roofCoating": { "label": "Recubrimiento de Techo", "hint": "Recubrimiento reflectivo y restauración" },
+      "gutters": { "label": "Canaletas", "hint": "Canaletas sin costuras y protectores" }
+    },
+    "urgencyOptions": {
+      "emergency": { "label": "Emergencia", "hint": "Fuga activa / daño por tormenta" },
+      "soon": { "label": "Dentro de 30 días", "hint": "Planeando un proyecto pronto" },
+      "planning": { "label": "Solo explorando", "hint": "Investigando opciones" }
+    },
+    "roofAgeOptions": ["Menos de 5 años", "5–10 años", "10–20 años", "Más de 20 años", "No estoy seguro"],
+    "review": {
+      "intro": "Revisión rápida — asegúrese de que todo esté correcto y luego envíelo. Le responderemos en 24 horas.",
+      "service": "Servicio",
+      "property": "Propiedad",
+      "roof": "Techo",
+      "contact": "Contacto",
+      "notes": "Notas",
+      "promise": "Le contactaremos en 24 horas con una cotización transparente y sin presión. Su información nunca se vende ni se comparte."
+    },
+    "buttons": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "review": "Revisar",
+      "send": "Enviar mi Solicitud de Cotización Gratis",
+      "sending": "Enviando…",
+      "submitAnother": "Enviar Otra Solicitud"
+    },
+    "success": {
+      "title": "¡Solicitud Recibida!",
+      "body": "Gracias por elegir CHS Roofing. Nuestro equipo lo contactará pronto para programar su estimado gratuito.",
+      "toastTitle": "Solicitud Recibida",
+      "toastDesc": "Le contactaremos pronto para entregarle su cotización gratuita."
+    },
+    "consent": "Al enviar, acepta ser contactado por CHS Roofing sobre su solicitud. Vea nuestra",
+    "consentSee": "Política de Privacidad",
+    "consentTerms": "Términos"
+  },
+  "supportChat": {
+    "launcherOpen": "Abrir chat de soporte",
+    "launcherClose": "Cerrar chat",
+    "headerTitle": "Soporte CHS Roofing",
+    "headerStatus": "Normalmente respondemos en minutos",
+    "intro": "¡Hola! 👋 Soy el asistente de CHS Roofing. Puedo conectarlo con la persona indicada — solo necesito unos detalles primero.",
+    "askName": "¿Cuál es su <strong>nombre</strong>?",
+    "askPhone": "¡Gracias{{name}}! ¿Cuál es el mejor <strong>número de teléfono</strong> para contactarlo?",
+    "askEmail": "¡Excelente! ¿Y su <strong>correo electrónico</strong>?",
+    "askService": "Última pregunta — ¿con <strong>cuál servicio</strong> necesita ayuda?",
+    "ready": "Perfecto — tengo todo lo que necesito. Un representante de CHS lo contactará en horario laboral. Si quiere hablar ahora, llámenos o continúe al formulario completo.",
+    "thanks": "¡Gracias{{name}}! Nuestro equipo lo contactará pronto. ¿Quiere hablar ahora?",
+    "getStarted": "Comenzar",
+    "send": "Enviar",
+    "callNow": "Llame {{phone}}",
+    "continueForm": "Continuar al formulario de cotización gratis",
+    "startOver": "Comenzar de nuevo",
+    "errors": {
+      "name": "Por favor comparta su nombre.",
+      "phone": "Un número de teléfono de 10 dígitos funciona mejor.",
+      "email": "Ese correo no parece estar bien."
+    },
+    "placeholders": {
+      "name": "Su nombre",
+      "phone": "(239) 555-0199",
+      "email": "usted@ejemplo.com"
+    }
+  },
+  "toast": {
+    "label": "Actividad en el área de servicio",
+    "body": "Solicitud desde {{city}} para {{service}}.",
+    "received": "Recibida {{when}}",
+    "dismiss": "Descartar notificación",
+    "services": [
+      "una inspección de techo gratuita",
+      "una cotización de reparación",
+      "una evaluación por daños de huracán",
+      "un estimado de techo de metal",
+      "una cotización de techo de teja",
+      "un plan de mantenimiento",
+      "una reparación de techo plano",
+      "una cotización de instalación de canaletas"
+    ],
+    "times": [
+      "hoy",
+      "esta mañana",
+      "esta tarde",
+      "más temprano hoy",
+      "esta semana"
+    ]
+  },
+  "estimator": {
+    "eyebrow": "Herramienta Gratis · Calculadora de Techo",
+    "titleStart": "Estimado de Techo",
+    "titleAccent": "Instantáneo",
+    "subtitle": "Obtenga un precio aproximado y transparente para su techo en menos de un minuto. Elija su material, ajuste los detalles, y nosotros hacemos el cálculo — sin necesidad de correo o teléfono.",
+    "imageAlt": "Techo de metal de junta alzada en una casa del suroeste de Florida",
+    "address": {
+      "title": "Dirección de la propiedad",
+      "subtitle": "Opcional. Le mostraremos una vista satelital para confirmar la casa correcta — su dirección nunca se almacena ni se envía.",
+      "placeholder": "1234 Sunset Dr, Cape Coral, FL 33904",
+      "preview": "Ingrese una dirección para ver una vista satelital",
+      "previewBody": "La medición automática del área del techo desde imágenes satelitales viene pronto — por ahora, ingrese el área de la casa abajo."
+    },
+    "footprint": {
+      "title": "Área de la casa",
+      "subtitle": "Área aproximada de la casa en pies cuadrados. (El área del techo se calcula a partir de esto y la pendiente.)",
+      "unit": "pies²"
+    },
+    "material": {
+      "title": "Material del techo",
+      "subtitle": "Elija el sistema que está considerando. El precio es por \"cuadro\" (100 pies² de techo).",
+      "perSquare": "/cuadro",
+      "items": {
+        "shingle": { "label": "Techo de Tejas GAF", "short": "Sistema premium de tejas asfálticas GAF." },
+        "metal-standing-seam": { "label": "Metal Junta Alzada", "short": "Techo de metal de junta alzada con resistencia a huracanes." },
+        "metal-5v": { "label": "Metal 5V", "short": "Techo clásico de metal 5V con sujetadores expuestos." },
+        "tile-on-tile": { "label": "Quitar Teja / Instalar Teja", "short": "Remover la teja existente e instalar teja nueva." },
+        "tile-to-standing-seam": { "label": "Quitar Teja / Instalar Junta Alzada (con color)", "short": "Remover la teja existente, instalar metal de junta alzada en su color." }
+      },
+      "colorOption": "Acabado de color estándar",
+      "colorOptionDesc": "Agrega ${{adder}} por cuadro por un acabado de color de fábrica."
+    },
+    "pitch": {
+      "title": "Pendiente del techo",
+      "items": {
+        "low": "Pendiente baja (≤4/12)",
+        "standard": "Estándar (5/12 – 7/12)",
+        "steep": "Empinada (8/12 – 12/12)",
+        "very-steep": "Muy empinada (>12/12)"
+      },
+      "areaSuffix": "× área"
+    },
+    "complexity": {
+      "title": "Complejidad del techo",
+      "items": {
+        "simple": "Simple (un caballete, pocas penetraciones)",
+        "moderate": "Moderada (múltiples cumbreras y valles)",
+        "complex": "Compleja (techo cortado, buhardillas, tragaluces)"
+      }
+    },
+    "waste": {
+      "title": "Factor de desperdicio",
+      "items": {
+        "low": "10%",
+        "standard": "15% (recomendado)",
+        "high": "20%"
+      }
+    },
+    "allowances": {
+      "title": "Concesiones",
+      "subtitle": "Los valores predeterminados son típicos para SWFL. Ajuste si su trabajo tiene necesidades inusuales de permisos o cubierta.",
+      "permit": "Permiso y administración",
+      "decking": "Madera / cubierta"
+    },
+    "result": {
+      "label": "Estimado Aproximado",
+      "title": "Su techo, estimado",
+      "rangeLabel": "Rango estimado",
+      "midpoint": "Punto medio",
+      "squares": "{{count}} cuadros ({{sf}} pies²)",
+      "rows": {
+        "complexity": "Complejidad ({{label}})",
+        "waste": "Desperdicio ({{pct}})",
+        "permit": "Permiso y administración",
+        "decking": "Madera / cubierta",
+        "total": "Total estimado"
+      },
+      "ctaInspect": "Reservar inspección gratuita en sitio"
+    },
+    "disclaimer": "<strong>Esto es solo un estimado aproximado.</strong> El precio final requiere una inspección en sitio. El costo real puede variar según la geometría del techo, condición de la cubierta, actualizaciones de código y disponibilidad de materiales.",
+    "rateNote": "Los precios se basan en tarifas proporcionadas por CHS Roofing para {{region}}. Incluye mano de obra, materiales estándar y membrana base. No incluye reparaciones estructurales, actualizaciones de código ni mejoras requeridas por la HOA salvo que se indique.",
+    "comingSoon": "Estamos trabajando en la medición automática del área del techo desde imágenes satelitales — por ahora, ingrese el área de la casa manualmente. La pendiente considera el área adicional sobre esa base.",
+    "ctaTitle": "¿Listo para el",
+    "ctaTitleAccent": "número real?",
+    "ctaSubtitle": "Reserve una inspección gratuita en sitio y le entregaremos una cotización detallada en 24–48 horas."
+  },
+  "lp": {
+    "docTitle": "Inspección Gratuita de Techo en SWFL — {{brand}}",
+    "heroBadge": "Inspección Gratis · Sin Compromiso",
+    "heroTitleStart": "Inspección Gratuita de Techo en el",
+    "heroTitleAccent": "Suroeste de Florida",
+    "heroSubtitle": "Licenciados, asegurados y de propiedad familiar desde {{year}}. Obtenga una cotización detallada y transparente en 24 horas — sin tácticas de venta agresivas.",
+    "heroBullets": [
+      "Inspección gratuita en sitio sin compromiso",
+      "Cotización escrita en 24–48 horas",
+      "Documentación para reclamos de seguro incluida"
+    ],
+    "heroLicensedLine": "Licencia de Florida {{license}} · Totalmente asegurados",
+    "trust": {
+      "fiveStar": "Google 5.0",
+      "bbbAccredited": "BBB A+ Acreditados",
+      "projects": "500+ Proyectos"
+    },
+    "benefitsTitle": "Por qué los propietarios del SWFL eligen {{brand}}",
+    "benefits": [
+      { "title": "Licenciados y Asegurados", "desc": "Licencia del Estado de Florida {{license}}. Totalmente asegurados. Acreditados A+ por BBB." },
+      { "title": "Cotización en 24 Horas", "desc": "Inspección en sitio agendada en días. Cotización escrita en 24–48 horas." },
+      { "title": "Equipos Propios", "desc": "Nunca trabajadores temporales. Instalaciones supervisadas por el dueño en las que realmente puede confiar." },
+      { "title": "Empresa Familiar desde {{year}}", "desc": "Local en {{city}}. Cientos de proyectos completados en el suroeste de Florida." }
+    ],
+    "processTitle": "3 pasos sencillos desde la consulta hasta la cotización",
+    "process": [
+      { "title": "Reserve su inspección gratis", "desc": "Llene el formulario o llámenos. Confirmamos un horario que le funcione." },
+      { "title": "Inspeccionamos sin que mueva un dedo", "desc": "Evaluación en sitio con fotos y documentación. Sin presión, sin venta forzada." },
+      { "title": "Reciba una cotización transparente y escrita", "desc": "Estimado detallado en 24–48 horas para que sepa exactamente lo que paga." }
+    ],
+    "reviewsEyebrow": "Reseñas de 5 Estrellas",
+    "reviewsTitle": "Clientes reales, resultados reales",
+    "faqTitle": "Preguntas frecuentes",
+    "faqs": [
+      { "q": "¿La inspección es realmente gratis?", "a": "Sí. No cobramos por la inspección en sitio ni por el estimado escrito. No hay obligación de contratar el proyecto con nosotros." },
+      { "q": "¿Qué tan rápido pueden empezar?", "a": "La mayoría de los reemplazos se programan en 2–4 semanas; las reparaciones de emergencia generalmente se atienden la misma semana." },
+      { "q": "¿Manejan reclamos de seguros?", "a": "Sí — documentamos a fondo los daños por tormenta o huracán y trabajamos directamente con su aseguradora cuando es necesario." },
+      { "q": "¿Qué áreas atienden?", "a": "Todo el suroeste de Florida — Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Punta Gorda, Sanibel, North Port y áreas circundantes." }
+    ],
+    "finalCtaTitle": "¿Listo para su",
+    "finalCtaAccent": "inspección gratis de techo?",
+    "finalCtaSubtitle": "Cuéntenos un poco sobre su propiedad — nuestro equipo lo contactará en un día hábil para programar.",
+    "fullSite": "Sitio Completo"
+  },
+  "languageSwitcher": {
+    "label": "Idioma",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "services": {
+    "installation": { "title": "Instalación de Techo Nuevo", "short": "Instalaciones completas de techos residenciales y comerciales hechas para el SWFL." },
+    "repair": { "title": "Reparación de Techo", "short": "Reparaciones rápidas y honestas — fugas, tapajuntas, tejas faltantes y más." },
+    "maintenance": { "title": "Mantenimiento de Techo", "short": "Inspecciones anuales y cuidado preventivo para extender la vida de su techo." },
+    "storm-damage": { "title": "Restauración por Daños de Tormenta", "short": "Cubierta de emergencia, inspecciones y restauración completa por daños de huracán." },
+    "specialty-roofing": { "title": "Techos Especializados", "short": "Tragaluces, tapajuntas custom, copete de chimeneas y techos arquitectónicos únicos." },
+    "gutters": { "title": "Canaletas", "short": "Canaletas de aluminio sin costuras, bajantes y protectores instalados según especificación." },
+    "roof-coating": { "title": "Recubrimiento y Restauración de Techo", "short": "Sistemas de recubrimiento reflectivo que extienden la vida del techo y reducen costos de energía." }
+  },
+  "materials": {
+    "asphalt-shingles": { "title": "Tejas Asfálticas", "short": "Económicas, durables y disponibles en docenas de colores y estilos." },
+    "metal": { "title": "Techos de Metal", "short": "Metal de junta alzada — el estándar de oro para resistencia a huracanes." },
+    "tile": { "title": "Techos de Teja", "short": "Tejas de concreto y arcilla — el look clásico del suroeste de Florida." },
+    "flat": { "title": "Techos Planos y TPO", "short": "Sistemas planos eficientes en energía para hogares comerciales y modernos." }
+  }
+}

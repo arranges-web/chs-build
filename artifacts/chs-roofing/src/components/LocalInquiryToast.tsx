@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, MapPin, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const SERVICE_AREAS = [
   "Cape Coral",
@@ -17,25 +18,8 @@ const SERVICE_AREAS = [
 
 // We deliberately do not use fictional first names — fake personalized
 // social proof is a Google/Meta Ads policy concern. We keep messaging
-// abstract: city + service-area inquiry only.
-const SERVICES_REL = [
-  "a free roof inspection",
-  "a roof repair quote",
-  "a hurricane-damage assessment",
-  "a metal roof estimate",
-  "a tile re-roof quote",
-  "a maintenance plan",
-  "a flat-roof repair",
-  "a gutter installation quote",
-] as const;
-
-const TIME_LABELS = [
-  "today",
-  "this morning",
-  "this afternoon",
-  "earlier today",
-  "this week",
-] as const;
+// abstract: city + service-area inquiry only. Service & time labels
+// come from i18n so they translate with language switch.
 
 const STORAGE_KEY = "chs.inquiry.toast.dismissed.v1";
 const FIRST_DELAY_MS = 8000;
@@ -45,24 +29,32 @@ const GAP_MS = 18000;
 type Notice = {
   id: number;
   city: string;
-  service: string;
-  time: string;
+  serviceIndex: number;
+  timeIndex: number;
 };
+
+function pickIndex(len: number): number {
+  return Math.floor(Math.random() * len);
+}
 
 function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+const SERVICE_COUNT = 8;
+const TIME_COUNT = 5;
+
 function buildNotice(id: number): Notice {
   return {
     id,
     city: pick(SERVICE_AREAS),
-    service: pick(SERVICES_REL),
-    time: pick(TIME_LABELS),
+    serviceIndex: pickIndex(SERVICE_COUNT),
+    timeIndex: pickIndex(TIME_COUNT),
   };
 }
 
 export default function LocalInquiryToast() {
+  const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
   const [dismissed, setDismissed] = useState(true);
   const [current, setCurrent] = useState<Notice | null>(null);
@@ -141,22 +133,36 @@ export default function LocalInquiryToast() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary mb-0.5">
-                  Service area activity
+                  {t("toast.label")}
                 </p>
                 <p className="text-[13px] text-foreground leading-snug">
-                  Inquiry from{" "}
-                  <span className="inline-flex items-center gap-0.5 font-semibold">
-                    <MapPin className="w-3 h-3 text-primary" />
-                    {current.city}
-                  </span>{" "}
-                  for {current.service}.
+                  {t("toast.body", {
+                    city: current.city,
+                    service: t(`toast.services.${current.serviceIndex}`),
+                  })
+                    .split(current.city)
+                    .map((part, idx) =>
+                      idx === 0 ? (
+                        <span key={idx}>{part}</span>
+                      ) : (
+                        <span key={idx}>
+                          <span className="inline-flex items-center gap-0.5 font-semibold">
+                            <MapPin className="w-3 h-3 text-primary" />
+                            {current.city}
+                          </span>
+                          {part}
+                        </span>
+                      ),
+                    )}
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-1">Received {current.time}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  {t("toast.received", { when: t(`toast.times.${current.timeIndex}`) })}
+                </p>
               </div>
               <button
                 type="button"
                 onClick={dismiss}
-                aria-label="Dismiss notification"
+                aria-label={t("toast.dismiss")}
                 className="absolute top-2 right-2 w-6 h-6 rounded-md text-muted-foreground hover:text-foreground hover:bg-foreground/5 flex items-center justify-center transition-colors"
               >
                 <X className="w-3.5 h-3.5" />

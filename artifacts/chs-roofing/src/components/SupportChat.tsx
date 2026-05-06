@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { SITE, SERVICES } from "@/lib/site-config";
 
@@ -28,6 +29,7 @@ const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const isValidPhone = (v: string) => v.replace(/\D/g, "").length >= 10;
 
 export default function SupportChat() {
+  const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("intro");
@@ -37,7 +39,6 @@ export default function SupportChat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Restore any prior lead so users don't re-enter info on the same device.
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(STORAGE_KEY);
@@ -76,7 +77,7 @@ export default function SupportChat() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const messages = useMemo(() => buildTranscript(step, lead), [step, lead]);
+  const messages = useMemo(() => buildTranscript(step, lead, t), [step, lead, t]);
 
   const advance = () => {
     setError(null);
@@ -86,21 +87,21 @@ export default function SupportChat() {
       return;
     }
     if (step === "name") {
-      if (v.length < 2) return setError("Please share your first name.");
+      if (v.length < 2) return setError(t("supportChat.errors.name"));
       setLead((l) => ({ ...l, name: v }));
       setDraft("");
       setStep("phone");
       return;
     }
     if (step === "phone") {
-      if (!isValidPhone(v)) return setError("A 10-digit phone number works best.");
+      if (!isValidPhone(v)) return setError(t("supportChat.errors.phone"));
       setLead((l) => ({ ...l, phone: v }));
       setDraft("");
       setStep("email");
       return;
     }
     if (step === "email") {
-      if (!isValidEmail(v)) return setError("That email doesn't look quite right.");
+      if (!isValidEmail(v)) return setError(t("supportChat.errors.email"));
       setLead((l) => ({ ...l, email: v }));
       setDraft("");
       setStep("service");
@@ -136,11 +137,11 @@ export default function SupportChat() {
   const placeholder = (() => {
     switch (step) {
       case "name":
-        return "Your first name";
+        return t("supportChat.placeholders.name");
       case "phone":
-        return "(239) 555-0199";
+        return t("supportChat.placeholders.phone");
       case "email":
-        return "you@example.com";
+        return t("supportChat.placeholders.email");
       default:
         return "";
     }
@@ -150,13 +151,12 @@ export default function SupportChat() {
 
   return (
     <>
-      {/* Launcher */}
       <motion.button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={open ? "Close chat" : "Open chat support"}
+        aria-label={open ? t("supportChat.launcherClose") : t("supportChat.launcherOpen")}
         aria-expanded={open}
-        className={`fixed z-[60] right-4 md:right-6 bottom-24 md:bottom-6 h-14 w-14 md:h-[60px] md:w-[60px] rounded-full bg-primary text-white shadow-xl shadow-primary/40 flex items-center justify-center transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
+        className="fixed z-[60] right-4 md:right-6 bottom-24 md:bottom-6 h-14 w-14 md:h-[60px] md:w-[60px] rounded-full bg-primary text-white shadow-xl shadow-primary/40 flex items-center justify-center transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         initial={false}
         animate={{ rotate: open ? 90 : 0 }}
         transition={{ type: "spring", stiffness: 260, damping: 22 }}
@@ -172,38 +172,36 @@ export default function SupportChat() {
           <motion.div
             ref={panelRef}
             role="dialog"
-            aria-label="CHS Roofing support chat"
+            aria-label={t("supportChat.headerTitle")}
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="fixed z-[60] right-4 md:right-6 bottom-44 md:bottom-24 w-[calc(100vw-2rem)] sm:w-[380px] max-h-[min(560px,calc(100vh-9rem))] bg-card border border-border/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
           >
-            {/* Header */}
             <div className="bg-secondary text-white px-5 py-4 flex items-center gap-3 border-b border-white/5">
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-md shadow-primary/40">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-display font-bold tracking-tight text-base leading-tight">
-                  CHS Roofing Support
+                  {t("supportChat.headerTitle")}
                 </p>
                 <p className="text-[11px] text-white/70 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Typically replies within minutes
+                  {t("supportChat.headerStatus")}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="Close chat"
+                aria-label={t("supportChat.launcherClose")}
                 className="text-white/70 hover:text-white p-1.5 rounded-md hover:bg-white/10 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Transcript */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-muted/30">
               {messages.map((m, i) => (
                 <ChatBubble key={i} from={m.from} reducedMotion={!!reducedMotion}>
@@ -212,7 +210,6 @@ export default function SupportChat() {
               ))}
             </div>
 
-            {/* Input area */}
             <div className="border-t border-border/60 bg-card p-3">
               {error && (
                 <p role="alert" className="text-[11px] text-destructive mb-2 px-1">
@@ -226,7 +223,7 @@ export default function SupportChat() {
                   onClick={advance}
                   className="w-full inline-flex items-center justify-center gap-2 bg-primary text-white px-4 py-3 rounded-xl font-semibold text-sm tracking-tight shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 active:scale-[0.98] transition-all"
                 >
-                  Get started
+                  {t("supportChat.getStarted")}
                   <ChevronRight className="w-4 h-4" />
                 </button>
               )}
@@ -250,7 +247,7 @@ export default function SupportChat() {
                   <button
                     type="button"
                     onClick={advance}
-                    aria-label="Send"
+                    aria-label={t("supportChat.send")}
                     className="h-11 w-11 rounded-xl bg-primary text-white flex items-center justify-center shadow-md shadow-primary/30 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all"
                   >
                     <Send className="w-4 h-4" />
@@ -260,16 +257,19 @@ export default function SupportChat() {
 
               {step === "service" && (
                 <div className="grid grid-cols-1 gap-1.5 max-h-44 overflow-y-auto -mx-1 px-1">
-                  {SERVICES.map((s) => (
-                    <button
-                      key={s.slug}
-                      type="button"
-                      onClick={() => pickService(s.slug, s.title)}
-                      className="text-left text-sm font-medium px-3.5 py-2.5 rounded-xl border border-border/60 bg-background hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
-                    >
-                      {s.title}
-                    </button>
-                  ))}
+                  {SERVICES.map((s) => {
+                    const label = t(`services.${s.slug}.title`, { defaultValue: s.title });
+                    return (
+                      <button
+                        key={s.slug}
+                        type="button"
+                        onClick={() => pickService(s.slug, label)}
+                        className="text-left text-sm font-medium px-3.5 py-2.5 rounded-xl border border-border/60 bg-background hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 
@@ -278,7 +278,7 @@ export default function SupportChat() {
                   <div className="flex items-start gap-2 bg-primary/5 border border-primary/20 rounded-xl p-3">
                     <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-[12px] text-foreground/80 leading-relaxed">
-                      Thanks{lead.name ? `, ${lead.name}` : ""}! Our team will reach out shortly. Want to talk now?
+                      {t("supportChat.thanks", { name: lead.name ? `, ${lead.name}` : "" })}
                     </p>
                   </div>
                   <a
@@ -286,14 +286,14 @@ export default function SupportChat() {
                     className="w-full inline-flex items-center justify-center gap-2 bg-primary text-white px-4 py-3 rounded-xl font-semibold text-sm tracking-tight shadow-md shadow-primary/30 hover:-translate-y-0.5 transition-all"
                   >
                     <Phone className="w-4 h-4" />
-                    Call {SITE.phoneDisplay}
+                    {t("supportChat.callNow", { phone: SITE.phoneDisplay })}
                   </a>
                   <Link
                     href="/contact"
                     onClick={() => setOpen(false)}
                     className="w-full inline-flex items-center justify-center gap-2 bg-card border border-border/60 text-foreground px-4 py-3 rounded-xl font-semibold text-sm tracking-tight hover:border-primary/40 hover:text-primary transition-colors"
                   >
-                    Continue to free quote form
+                    {t("supportChat.continueForm")}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <button
@@ -301,7 +301,7 @@ export default function SupportChat() {
                     onClick={reset}
                     className="w-full text-[11px] text-muted-foreground hover:text-foreground py-1.5"
                   >
-                    Start over
+                    {t("supportChat.startOver")}
                   </button>
                 </div>
               )}
@@ -343,49 +343,51 @@ function ChatBubble({
   );
 }
 
-function buildTranscript(step: Step, lead: Lead) {
+function buildTranscript(
+  step: Step,
+  lead: Lead,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+) {
   const out: { from: "agent" | "user"; body: React.ReactNode }[] = [];
 
-  out.push({
-    from: "agent",
-    body: (
-      <>
-        Hi! 👋 I'm the CHS Roofing assistant. I can connect you with the right person — I just need a few quick details first.
-      </>
-    ),
-  });
+  out.push({ from: "agent", body: t("supportChat.intro") });
 
   if (step === "intro") return out;
 
-  out.push({ from: "agent", body: <>What's your <strong>first name</strong>?</> });
+  out.push({
+    from: "agent",
+    body: <Trans i18nKey="supportChat.askName" components={{ strong: <strong /> }} />,
+  });
   if (lead.name) out.push({ from: "user", body: lead.name });
   if (step === "name") return out;
 
   out.push({
     from: "agent",
-    body: <>Thanks{lead.name ? `, ${lead.name}` : ""}! What's the best <strong>phone number</strong> to reach you?</>,
+    body: (
+      <Trans
+        i18nKey="supportChat.askPhone"
+        values={{ name: lead.name ? `, ${lead.name}` : "" }}
+        components={{ strong: <strong /> }}
+      />
+    ),
   });
   if (lead.phone) out.push({ from: "user", body: lead.phone });
   if (step === "phone") return out;
 
-  out.push({ from: "agent", body: <>Great. And your <strong>email</strong>?</> });
+  out.push({
+    from: "agent",
+    body: <Trans i18nKey="supportChat.askEmail" components={{ strong: <strong /> }} />,
+  });
   if (lead.email) out.push({ from: "user", body: lead.email });
   if (step === "email") return out;
 
   out.push({
     from: "agent",
-    body: <>Last one — <strong>which service</strong> do you need help with?</>,
+    body: <Trans i18nKey="supportChat.askService" components={{ strong: <strong /> }} />,
   });
   if (lead.service) out.push({ from: "user", body: lead.service });
   if (step === "service") return out;
 
-  out.push({
-    from: "agent",
-    body: (
-      <>
-        Perfect — I have everything I need. A CHS rep will reach out within business hours. If you'd like to talk now, give us a call or jump to the full quote form.
-      </>
-    ),
-  });
+  out.push({ from: "agent", body: t("supportChat.ready") });
   return out;
 }

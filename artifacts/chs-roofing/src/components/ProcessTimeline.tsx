@@ -1,57 +1,38 @@
 import { motion } from "framer-motion";
 import { Search, Shield, Wrench, Droplets, Hammer, ClipboardCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { PHOTOS } from "@/lib/site-config";
 
-const steps = [
-  {
-    icon: Search,
-    title: "Free Inspection",
-    desc: "Full evaluation of roof condition with photo documentation and a no-obligation report.",
-    image: PHOTOS.greyMetalHip,
-  },
-  {
-    icon: Shield,
-    title: "Site Preparation",
-    desc: "Protect property and prep the job site — landscaping, pool, and driveway covered.",
-    image: PHOTOS.flatPrepRedLine,
-  },
-  {
-    icon: Wrench,
-    title: "Tear-Off",
-    desc: "Remove old roofing materials safely down to clean, sound decking.",
-    image: PHOTOS.tearOff,
-  },
-  {
-    icon: Droplets,
-    title: "Dry-In",
-    desc: "Install premium underlayment for full waterproofing before finish material goes on.",
-    image: PHOTOS.shingleInstallTopdown,
-  },
-  {
-    icon: Hammer,
-    title: "Install",
-    desc: "Install your new roofing system with code-rated fastening and precision finish work.",
-    image: PHOTOS.whiteStandingSeam,
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Final Walkthrough",
-    desc: "Quality check, magnet sweep, written warranty, and client approval before we leave.",
-    image: PHOTOS.finishedGreyShingle,
-  },
+const STEP_ICONS = [Search, Shield, Wrench, Droplets, Hammer, ClipboardCheck];
+const STEP_IMAGES = [
+  PHOTOS.greyMetalHip,
+  PHOTOS.flatPrepRedLine,
+  PHOTOS.tearOff,
+  PHOTOS.shingleInstallTopdown,
+  PHOTOS.whiteStandingSeam,
+  PHOTOS.finishedGreyShingle,
 ];
 
 export default function ProcessTimeline() {
+  const { t } = useTranslation();
+  const steps = (
+    t("process.steps", { returnObjects: true }) as { title: string; desc: string }[]
+  ).map((s, i) => ({
+    ...s,
+    icon: STEP_ICONS[i] ?? Search,
+    image: STEP_IMAGES[i] ?? PHOTOS.greyMetalHip,
+  }));
+
   return (
     <section className="py-28 bg-background bg-wash-cool relative overflow-hidden">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">How We Work</h4>
+          <h4 className="text-primary font-semibold tracking-[0.2em] uppercase mb-3 text-xs">{t("process.eyebrow")}</h4>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
-            Our 6-Step Process
+            {t("process.title")}
           </h2>
           <p className="text-muted-foreground mt-6 text-lg leading-relaxed max-w-2xl mx-auto">
-            A straightforward process built on transparency, craftsmanship, and respect for your home — from first inspection to final walkthrough.
+            {t("process.subtitle")}
           </p>
         </div>
 

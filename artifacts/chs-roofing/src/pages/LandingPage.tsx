@@ -15,9 +15,11 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import ContactForm from "@/components/ContactForm";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { PHOTOS, SITE, TESTIMONIALS } from "@/lib/site-config";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
@@ -32,76 +34,34 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 );
 
 export default function LandingPage() {
-  // Set focused page title for paid traffic landing.
+  const { t } = useTranslation();
+
+  // Set focused page title for paid traffic landing — re-runs on language change.
   useEffect(() => {
     const previous = document.title;
-    document.title = `Free Roof Inspection in SWFL — ${SITE.brand}`;
+    document.title = t("lp.docTitle", { brand: SITE.brand });
     return () => {
       document.title = previous;
     };
-  }, []);
+  }, [t]);
 
-  const benefits = [
-    {
-      icon: ShieldCheck,
-      title: "Licensed & Insured",
-      desc: `Florida State License ${SITE.license}. Fully insured. BBB Accredited A+.`,
-    },
-    {
-      icon: Clock,
-      title: "Quote in 24 Hours",
-      desc: "On-site inspection scheduled in days. Written quote within 24–48 hours.",
-    },
-    {
-      icon: HardHat,
-      title: "In-House Crews",
-      desc: "Never day labor. Owner-supervised installs you can actually trust.",
-    },
-    {
-      icon: HomeIcon,
-      title: `Family-Owned Since ${SITE.established}`,
-      desc: `Local to ${SITE.city}. Hundreds of completed projects across Southwest Florida.`,
-    },
-  ];
+  const benefitIcons = [ShieldCheck, Clock, HardHat, HomeIcon];
+  const benefits = (
+    t("lp.benefits", {
+      returnObjects: true,
+      license: SITE.license,
+      year: SITE.established,
+      city: SITE.city,
+    }) as { title: string; desc: string }[]
+  ).map((b, i) => ({ ...b, icon: benefitIcons[i] ?? ShieldCheck }));
 
-  const process = [
-    {
-      n: "1",
-      title: "Book your free inspection",
-      desc: "Fill out the form or call. We confirm a time that works for you.",
-    },
-    {
-      n: "2",
-      title: "We inspect, you don't lift a finger",
-      desc: "On-site evaluation with photos and documentation. No pressure, no upsell.",
-    },
-    {
-      n: "3",
-      title: "Get a transparent written quote",
-      desc: "Line-itemed estimate within 24–48 hours so you know exactly what you're paying for.",
-    },
-  ];
+  const process = (
+    t("lp.process", { returnObjects: true }) as { title: string; desc: string }[]
+  ).map((p, i) => ({ ...p, n: String(i + 1) }));
 
   const reviews = [TESTIMONIALS[0], TESTIMONIALS[1], TESTIMONIALS[3]];
 
-  const faqs = [
-    {
-      q: "Is the inspection really free?",
-      a: "Yes. We do not charge for an on-site roof inspection or a written estimate. There is no obligation to book the project with us.",
-    },
-    {
-      q: "How quickly can you start?",
-      a: "Most replacements are scheduled within 2–4 weeks; emergency repairs can usually be addressed the same week.",
-    },
-    {
-      q: "Do you handle insurance claims?",
-      a: "Yes — we document storm and hurricane damage thoroughly and work directly with your insurance carrier when needed.",
-    },
-    {
-      q: "What areas do you serve?",
-      a: `All of Southwest Florida — Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Punta Gorda, Sanibel, North Port, and surrounding areas.`,
-    },
-  ];
+  const faqs = t("lp.faqs", { returnObjects: true }) as { q: string; a: string }[];
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
@@ -120,6 +80,7 @@ export default function LandingPage() {
             </div>
           </Link>
           <div className="flex items-center gap-2.5">
+            <LanguageSwitcher />
             <a
               href={`tel:${SITE.phoneTel}`}
               className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-foreground hover:text-primary"
@@ -131,7 +92,7 @@ export default function LandingPage() {
               href="#quote-form"
               className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-full font-semibold text-sm tracking-tight shadow-md shadow-primary/30 transition-all"
             >
-              Free Quote
+              {t("common.freeQuote")}
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -157,27 +118,28 @@ export default function LandingPage() {
               <div className="text-white">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-[11px] font-semibold tracking-wide uppercase shadow-md backdrop-blur-md border border-white/20 mb-5">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Free Inspection · No Obligation
+                  {t("lp.heroBadge")}
                 </div>
                 <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.05] mb-5 drop-shadow-lg">
-                  A Free Roof Inspection in <span className="text-primary">Southwest Florida</span>
+                  {t("lp.heroTitleStart")} <span className="text-primary">{t("lp.heroTitleAccent")}</span>
                 </h1>
                 <p className="text-lg md:text-xl text-gray-200/95 leading-relaxed mb-7 max-w-xl">
-                  Licensed, insured, and family-owned since {SITE.established}. Get a transparent, line-itemed quote within 24 hours — no high-pressure sales tactics.
+                  {t("lp.heroSubtitle", { year: SITE.established })}
                 </p>
 
                 <ul className="space-y-2.5 mb-7">
-                  {[
-                    "Free, no-obligation on-site inspection",
-                    "Written quote within 24–48 hours",
-                    "Insurance-claim documentation included",
-                    `Florida License ${SITE.license} · Fully insured`,
-                  ].map((item) => (
+                  {(t("lp.heroBullets", { returnObjects: true }) as string[]).map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-white">
                       <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <span className="font-medium text-[15px] leading-snug">{item}</span>
                     </li>
                   ))}
+                  <li className="flex items-start gap-2.5 text-white">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span className="font-medium text-[15px] leading-snug">
+                      {t("lp.heroLicensedLine", { license: SITE.license })}
+                    </span>
+                  </li>
                 </ul>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -185,7 +147,7 @@ export default function LandingPage() {
                     href="#quote-form"
                     className="bg-primary hover:bg-primary/90 text-white px-7 py-4 rounded-full font-semibold text-base tracking-tight shadow-lg shadow-primary/40 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2"
                   >
-                    Get My Free Quote
+                    {t("common.getMyFreeQuote")}
                     <ArrowRight className="w-4 h-4" />
                   </a>
                   <a
@@ -193,17 +155,17 @@ export default function LandingPage() {
                     className="bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/25 text-white px-7 py-4 rounded-full font-semibold text-base tracking-tight inline-flex items-center justify-center gap-2"
                   >
                     <Phone className="w-4 h-4" />
-                    Call {SITE.phoneDisplay}
+                    {t("common.callLabel", { phone: SITE.phoneDisplay })}
                   </a>
                 </div>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3 text-white/90 text-sm">
                   <GoogleReviewsBadge variant="dark" />
                   <span className="flex items-center gap-1.5 font-semibold">
-                    <ShieldCheck className="w-4 h-4 text-primary" /> BBB A+ Accredited
+                    <ShieldCheck className="w-4 h-4 text-primary" /> {t("lp.trust.bbbAccredited")}
                   </span>
                   <span className="flex items-center gap-1.5 font-semibold">
-                    <Users className="w-4 h-4 text-primary" /> 500+ Projects
+                    <Users className="w-4 h-4 text-primary" /> {t("lp.trust.projects")}
                   </span>
                 </div>
               </div>
@@ -223,19 +185,19 @@ export default function LandingPage() {
           <div className="container mx-auto max-w-6xl px-4">
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-bold text-foreground">
               <span className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary" /> License {SITE.license}
+                <CheckCircle2 className="w-4 h-4 text-primary" /> {t("trust.license", { license: SITE.license })}
               </span>
               <span className="hidden md:block w-px h-5 bg-border" />
               <span className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-primary" /> Fully Insured
+                <ShieldCheck className="w-4 h-4 text-primary" /> {t("trust.fullyInsured")}
               </span>
               <span className="hidden md:block w-px h-5 bg-border" />
               <span className="flex items-center gap-2">
-                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" /> Google 5.0
+                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" /> {t("lp.trust.fiveStar")}
               </span>
               <span className="hidden md:block w-px h-5 bg-border" />
               <span className="flex items-center gap-2">
-                <HomeIcon className="w-4 h-4 text-primary" /> Family-Owned Since {SITE.established}
+                <HomeIcon className="w-4 h-4 text-primary" /> {t("trust.familyOwnedSince", { year: SITE.established })}
               </span>
             </div>
           </div>
@@ -246,7 +208,7 @@ export default function LandingPage() {
           <div className="container mx-auto max-w-6xl px-4">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-foreground leading-tight">
-                Why homeowners across SWFL choose {SITE.brand}
+                {t("lp.benefitsTitle", { brand: SITE.brand })}
               </h2>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -272,7 +234,7 @@ export default function LandingPage() {
           <div className="container mx-auto max-w-6xl px-4">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-foreground leading-tight">
-                3 simple steps from inquiry to quote
+                {t("lp.processTitle")}
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -298,10 +260,10 @@ export default function LandingPage() {
           <div className="container mx-auto max-w-6xl px-4">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary mb-2">
-                5-Star Reviews
+                {t("lp.reviewsEyebrow")}
               </p>
               <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-foreground leading-tight">
-                Real customers, real results
+                {t("lp.reviewsTitle")}
               </h2>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -334,7 +296,7 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 bg-card border border-border/60 hover:border-primary/40 px-5 py-2.5 rounded-full text-sm font-semibold text-foreground hover:text-primary transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
               >
                 <GoogleLogo size={16} />
-                Read all reviews on Google
+                {t("common.readAllReviewsOnGoogle")}
                 <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -346,7 +308,7 @@ export default function LandingPage() {
           <div className="container mx-auto max-w-3xl px-4">
             <div className="text-center mb-10">
               <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-foreground leading-tight">
-                Common questions
+                {t("lp.faqTitle")}
               </h2>
             </div>
             <div className="space-y-3">
@@ -376,17 +338,17 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary to-primary/15" />
           <div className="container mx-auto max-w-4xl px-4 relative z-10 text-center">
             <h2 className="font-display font-bold text-3xl md:text-4xl lg:text-5xl tracking-tight leading-tight mb-5">
-              Ready for your <span className="text-primary">free roof inspection?</span>
+              {t("lp.finalCtaTitle")} <span className="text-primary">{t("lp.finalCtaAccent")}</span>
             </h2>
             <p className="text-gray-300/95 text-lg leading-relaxed max-w-2xl mx-auto mb-8">
-              Tell us a bit about your property — our team will reach out within one business day to schedule.
+              {t("lp.finalCtaSubtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
               <a
                 href="#quote-form"
                 className="bg-primary hover:bg-primary/90 text-white px-7 py-4 rounded-full font-semibold text-base tracking-tight shadow-lg shadow-primary/40 hover:-translate-y-0.5 transition-all inline-flex items-center justify-center gap-2"
               >
-                Get My Free Quote
+                {t("common.getMyFreeQuote")}
                 <ArrowRight className="w-4 h-4" />
               </a>
               <a
@@ -394,7 +356,7 @@ export default function LandingPage() {
                 className="bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/25 text-white px-7 py-4 rounded-full font-semibold text-base tracking-tight inline-flex items-center justify-center gap-2"
               >
                 <Phone className="w-4 h-4" />
-                Call {SITE.phoneDisplay}
+                {t("common.callLabel", { phone: SITE.phoneDisplay })}
               </a>
             </div>
             <BBBBadges variant="dark" />
@@ -410,10 +372,10 @@ export default function LandingPage() {
               {SITE.legalName} <span className="text-secondary-foreground/60 font-normal">({SITE.brand})</span>
             </p>
             <p className="text-secondary-foreground/70 mt-1">
-              License {SITE.license} · Fully Insured · BBB A+
+              {t("trust.license", { license: SITE.license })} · {t("trust.fullyInsured")} · {t("trust.bbbAccredited")} A+
             </p>
             <p className="text-secondary-foreground/70 mt-1">
-              {SITE.city} · Serving all of {SITE.region}
+              {SITE.city} · {t("footer.servingSWFL")}
             </p>
           </div>
           <div className="flex md:justify-center">
@@ -424,9 +386,9 @@ export default function LandingPage() {
           </div>
           <div className="md:text-right">
             <ul className="space-y-1.5">
-              <li><Link href="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-primary">Terms of Service</Link></li>
-              <li><Link href="/" className="hover:text-primary">Full Website</Link></li>
+              <li><Link href="/privacy" className="hover:text-primary">{t("footer.privacy")}</Link></li>
+              <li><Link href="/terms" className="hover:text-primary">{t("footer.terms")}</Link></li>
+              <li><Link href="/" className="hover:text-primary">{t("lp.fullSite")}</Link></li>
             </ul>
           </div>
         </div>
