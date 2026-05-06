@@ -152,27 +152,27 @@ export default function Header() {
 
   return (
     <>
-      {/* Top Utility Bar — desktop only */}
-      <div className="bg-secondary text-secondary-foreground py-2 px-4 text-xs font-medium hidden md:block border-b border-white/5">
-        <div className="container mx-auto max-w-7xl flex justify-between items-center gap-4">
-          <div className="flex items-center gap-6 min-w-0">
-            <span className="flex items-center gap-1.5 whitespace-nowrap">
+      {/* Top Utility Bar — desktop only. Slim, breathable, just the
+          two most useful things (quick call + serving area) plus the
+          contextual hurricane pill and language switcher. */}
+      <div className="bg-secondary text-secondary-foreground py-2.5 px-4 text-xs font-medium hidden md:block border-b border-white/5">
+        <div className="container mx-auto max-w-7xl flex justify-between items-center gap-6">
+          <div className="flex items-center gap-5 min-w-0">
+            <a
+              href={`tel:${SITE.phoneTel}`}
+              className="flex items-center gap-2 hover:text-primary transition-colors whitespace-nowrap"
+            >
+              <Phone className="w-3.5 h-3.5 text-primary" />
+              <span className="font-semibold">{SITE.phoneDisplay}</span>
+            </a>
+            <span className="hidden lg:flex items-center gap-2 text-secondary-foreground/70 whitespace-nowrap">
               <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-              {t("header.topBar.licensed", { license: SITE.license })}
-            </span>
-            <span className="hidden lg:flex items-center gap-1.5 whitespace-nowrap">
-              <Star className="w-3.5 h-3.5 text-[hsl(var(--accent-gold))] fill-[hsl(var(--accent-gold))]" />
-              {t("header.topBar.googleStar")}
-            </span>
-            <span className="hidden xl:flex items-center gap-1.5 whitespace-nowrap">
-              <HomeIcon className="w-3.5 h-3.5 text-primary" />
-              {t("trust.familyOwnedSince", { year: SITE.established })}
+              {t("trust.license", { license: SITE.license })}
             </span>
           </div>
-          <div className="flex items-center gap-3 lg:gap-4 shrink-0">
+          <div className="flex items-center gap-4 shrink-0">
             <HurricaneSeasonPill />
-            <span className="hidden xl:inline text-secondary-foreground/80">{t("trust.bilingual")}</span>
-            <span className="hidden lg:inline text-[hsl(var(--accent-gold))] font-semibold whitespace-nowrap">
+            <span className="hidden xl:inline text-[hsl(var(--accent-gold))] font-semibold whitespace-nowrap">
               {t("trust.servingAllSWFL")}
             </span>
             <LanguageSwitcher variant="dark" />
