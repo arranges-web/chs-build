@@ -83,7 +83,7 @@ export default function About() {
                     loading="lazy"
                     src={m.image}
                     alt={m.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
                 <div className="p-4">
@@ -98,7 +98,7 @@ export default function About() {
             {TEAM.map(m => (
               <div key={`bio-${m.name}`} className="bg-card border border-border/60 rounded-2xl p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <img loading="lazy" src={m.image} alt="" aria-hidden="true" className="w-12 h-12 rounded-full object-cover" />
+                  <img loading="lazy" src={m.image} alt="" aria-hidden="true" className="w-12 h-12 rounded-full object-cover object-top" />
                   <div>
                     <h3 className="font-display font-bold tracking-tight text-foreground">{m.name}</h3>
                     <p className="text-[11px] uppercase tracking-[0.15em] text-primary font-semibold">{m.role}</p>
