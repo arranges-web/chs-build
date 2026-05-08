@@ -36,6 +36,7 @@ export default function StormDamage() {
         { title: "Priority scheduling", desc: "Storm-damaged homes go to the front of the queue." },
       ]}
       testimonialIndices={[3, 5, 6]}
+      showProcess={false}
       extra={
         <section className="py-16 bg-secondary text-white">
           <div className="container mx-auto max-w-7xl px-4">

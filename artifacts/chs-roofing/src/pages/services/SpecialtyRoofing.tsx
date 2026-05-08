@@ -43,6 +43,7 @@ export default function SpecialtyRoofing() {
       ]}
       testimonialIndices={[0, 4, 6]}
       showFaq={false}
+      showProcess={false}
       extra={
         <section className="py-20 bg-background">
           <div className="container mx-auto max-w-7xl px-4">

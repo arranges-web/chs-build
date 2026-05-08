@@ -33,6 +33,7 @@ export default function Installation() {
         { title: "10-year workmanship warranty", desc: "Written labor guarantee on every installation we perform." },
         { title: "Daily clean-up + magnet sweep", desc: "Your driveway and yard left cleaner than we found them." },
       ]}
+      showProcess={false}
       extra={
         <section className="py-20 bg-background">
           <div className="container mx-auto max-w-7xl px-4">
