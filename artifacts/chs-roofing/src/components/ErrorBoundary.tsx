@@ -44,8 +44,8 @@ export default class ErrorBoundary extends Component<Props, State> {
           </h1>
           <p style={{ color: "#555", marginBottom: 20, lineHeight: 1.5 }}>
             CHS Roofing — please try refreshing. If this keeps happening, call{" "}
-            <a href="tel:+12390000000" style={{ color: "#a4133c" }}>
-              (239) XXX-XXXX
+            <a href="tel:+12397371758" style={{ color: "#a4133c" }}>
+              (239) 737-1758
             </a>
             .
           </p>

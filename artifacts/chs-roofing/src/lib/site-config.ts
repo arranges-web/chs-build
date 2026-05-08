@@ -5,6 +5,7 @@ import teamGustavo from "@assets/image_1776908399820.png";
 import teamDaniel from "@assets/image_1776908406154.png";
 import teamRoberto from "@assets/image_1776908417253.png";
 import teamMaria from "@assets/team_maria.png";
+import teamAmado from "@assets/team_amado.png";
 
 import photoBeachfrontMetal from "@assets/image_1777343219176.png";
 import photoCanalMetalInstall from "@assets/image_1777343230206.png";
@@ -57,8 +58,8 @@ export const SITE = {
   city: "Cape Coral, FL",
   region: "Southwest Florida",
   license: "#CCC1333902",
-  phoneDisplay: "(239) XXX-XXXX",
-  phoneTel: "+12390000000",
+  phoneDisplay: "(239) 737-1758",
+  phoneTel: "+12397371758",
   email: "info@chs-roofing.com",
   hours: "Mon – Fri: 8am – 5pm · Weekend emergency service",
   established: "2010",
@@ -103,9 +104,15 @@ export const TEAM = [
   },
   {
     name: "Roberto",
+    role: "Project Manager",
+    bio: "Coordinates schedules, materials, and on-site teams so every project lands on time, on budget, and to spec.",
+    image: teamRoberto,
+  },
+  {
+    name: "Amado",
     role: "Crew Foreman",
     bio: "Leads our installation crews with safety, speed, and quality top of mind. Every job he runs gets done right.",
-    image: teamRoberto,
+    image: teamAmado,
   },
 ] as const;
 
