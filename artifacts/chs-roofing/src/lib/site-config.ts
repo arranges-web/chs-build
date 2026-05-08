@@ -7,6 +7,9 @@ import teamRoberto from "@assets/image_1776908417253.png";
 import teamMaria from "@assets/team_maria.png";
 import teamAmado from "@assets/team_amado.png";
 
+import tamkoLogo from "@assets/tamko_logo.jpg";
+import triAllianceLogo from "@assets/tri_alliance_2024.webp";
+
 import photoBeachfrontMetal from "@assets/image_1777343219176.png";
 import photoCanalMetalInstall from "@assets/image_1777343230206.png";
 import photoFlatTpoCrew from "@assets/image_1777343244574.png";
@@ -369,15 +372,15 @@ export const MATERIALS = [
   },
 ] as const;
 
-export const PARTNERS = [
+export const PARTNERS: Array<{ name: string; url: string; logo?: string; logoAlt?: string }> = [
   { name: "Carlisle", url: "https://www.carlislesyntec.com/" },
   { name: "GAF", url: "https://www.gaf.com/en-us/residential" },
   { name: "Metal Alliance", url: "https://www.metalalliance.com/" },
   { name: "ABC Supply", url: "https://www.abcsupply.com/" },
-  { name: "TAMKO", url: "https://www.tamko.com/" },
-  { name: "TRI Alliance Tile Roofing", url: "https://trialliance.com/" },
+  { name: "TAMKO", url: "https://www.tamko.com/", logo: tamkoLogo, logoAlt: "TAMKO Building Products LLC" },
+  { name: "TRI Alliance Tile Roofing", url: "https://trialliance.com/", logo: triAllianceLogo, logoAlt: "Tile Roofing Industry Alliance — Main Manual Certification 2024" },
   { name: "Westlake Royal Roofing", url: "https://westlakeroyalroofing.com/" },
-] as const;
+];
 
 // Real Google reviews. Anonymous reviewers attributed as "Verified Google
 // Review" — fictional names are never used (ad-policy and trust hygiene).

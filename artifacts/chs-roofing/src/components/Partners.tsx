@@ -14,11 +14,20 @@ export default function Partners({ compact = false }: { compact?: boolean }) {
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-3 rounded-2xl border border-border/60 bg-card hover:border-primary/40 hover:shadow-md transition-all hover:-translate-y-0.5"
+              className="flex items-center justify-center px-5 py-3 rounded-2xl border border-border/60 bg-card hover:border-primary/40 hover:shadow-md transition-all hover:-translate-y-0.5"
             >
-              <span className="font-display font-bold tracking-tight text-foreground text-base md:text-lg">
-                {p.name}
-              </span>
+              {p.logo ? (
+                <img
+                  src={p.logo}
+                  alt={p.logoAlt ?? p.name}
+                  className="h-10 w-auto max-w-[140px] object-contain"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="font-display font-bold tracking-tight text-foreground text-base md:text-lg">
+                  {p.name}
+                </span>
+              )}
             </a>
           ))}
         </div>
