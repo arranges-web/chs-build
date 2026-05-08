@@ -357,12 +357,19 @@
       "colorOptionDesc": "Adds ${{adder}} per square for a factory-baked color finish."
     },
     "pitch": {
-      "title": "Roof pitch",
+      "title": "Roof Pitch",
+      "subtitle": "Pick the option that best matches your roof. Pitch determines actual roof area on top of your home's footprint.",
       "items": {
-        "low": "Low slope (≤4/12)",
-        "standard": "Standard (5/12 – 7/12)",
-        "steep": "Steep (8/12 – 12/12)",
-        "very-steep": "Very steep (>12/12)"
+        "low": "Flat Roof",
+        "standard": "Shallow Pitch",
+        "steep": "Medium Pitch",
+        "very-steep": "Steep Pitch"
+      },
+      "subItems": {
+        "low": "Falls under low slope",
+        "standard": "Falls under standard slope",
+        "steep": "Falls under steep slope",
+        "very-steep": "Falls under very steep slope"
       },
       "areaSuffix": "× area"
     },

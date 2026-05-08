@@ -2,15 +2,37 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 import ServicePageTemplate from "@/components/ServicePageTemplate";
-import { PHOTOS } from "@/lib/site-config";
+import StepsTimeline from "@/components/StepsTimeline";
+import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
 
 const REPAIR_GALLERY = [
-  { src: PHOTOS.tearOff, alt: "Damaged decking exposed during a roof repair tear-off" },
-  { src: PHOTOS.shingleInstallTopdown, alt: "Replacement shingle field laid in during a section repair" },
-  { src: PHOTOS.flatPrepRedLine, alt: "Flat-roof leak boundary marked and prepped for patching" },
-  { src: PHOTOS.greyMetalHip, alt: "Repaired metal hip roof restored to a clean weathertight finish" },
-  { src: PHOTOS.finishedGreyShingle, alt: "Finished color-matched shingle repair blended into the roof field" },
-  { src: PHOTOS.silverMetalPorch, alt: "Repaired silver metal roof and porch ready for handoff" },
+  { src: FOUNDER_PHOTOS.repair[0], alt: "CHS roof repair — leak source identified" },
+  { src: FOUNDER_PHOTOS.repair[1], alt: "Damaged decking exposed during repair" },
+  { src: FOUNDER_PHOTOS.repair[2], alt: "Color-matched shingle replacement" },
+  { src: FOUNDER_PHOTOS.repair[3], alt: "Flashing rebuild on a complex roof transition" },
+  { src: FOUNDER_PHOTOS.repair[4], alt: "Pipe-boot replacement with new seal" },
+  { src: FOUNDER_PHOTOS.repair[5], alt: "Completed repair, weathertight again" },
+];
+
+const REPAIR_STEPS = [
+  {
+    title: "Inspect Roof & Water Test to Find the Leak",
+    desc: "We perform a detailed roof inspection and water test when needed to identify the exact source of the leak — not just the area where water is showing inside.",
+    image: FOUNDER_PHOTOS.repair[0],
+    imageAlt: "Inspector locating the source of a roof leak",
+  },
+  {
+    title: "Inspection Report With Photos & Solutions",
+    desc: "After the inspection we provide a clear report with pictures, notes, and repair recommendations so the homeowner understands what is happening and what needs to be done.",
+    image: FOUNDER_PHOTOS.repair[1],
+    imageAlt: "Photo report and repair recommendations",
+  },
+  {
+    title: "Complete the Repair & Final Water Test",
+    desc: "Once the repair is completed, we run a final water test when possible to confirm the leak has been repaired properly.",
+    image: FOUNDER_PHOTOS.repair[2],
+    imageAlt: "Final water test confirming the repair",
+  },
 ];
 
 export default function Repair() {
@@ -18,7 +40,7 @@ export default function Repair() {
     <ServicePageTemplate
       eyebrow="Service · Repair"
       title={<>Roof <span className="text-primary">Repair</span> Done Right</>}
-      subtitle="Fast, honest repair work — leaks, missing shingles, flashing failures, and post-storm damage. We come out, diagnose accurately, and fix it the first time."
+      subtitle="Fast, honest repair work — leaks, missing shingles, flashing failures, and post-storm damage. We diagnose accurately and fix it the first time."
       image={PHOTOS.tearOff}
       imageAlt="Roof tear-off and decking inspection in progress"
       crumbs={[{ label: "Services" }, { label: "Repair" }]}
@@ -44,8 +66,16 @@ export default function Repair() {
         { title: "30-day repair warranty", desc: "If our repair fails in 30 days, we come back and fix it free." },
       ]}
       testimonialIndices={[3, 4, 6]}
+      showProcess={false}
       extra={
         <>
+          <StepsTimeline
+            eyebrow="Our 3-Step Repair Process"
+            title="Find it. Fix it. Prove it's fixed."
+            subtitle="A focused process built for accurate diagnoses and lasting repairs."
+            steps={REPAIR_STEPS}
+            background="bg-background bg-wash-cool"
+          />
           <section className="py-20 bg-background">
             <div className="container mx-auto max-w-7xl px-4">
               <div className="text-center max-w-3xl mx-auto mb-12">
@@ -53,9 +83,6 @@ export default function Repair() {
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                   Real repairs. Lasting results.
                 </h2>
-                <p className="text-muted-foreground mt-5 text-lg leading-relaxed max-w-2xl mx-auto">
-                  A look at recent repair projects across SWFL — leaks traced, decking replaced, and roofs restored to weathertight.
-                </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                 {REPAIR_GALLERY.map((g, i) => (
@@ -65,7 +92,7 @@ export default function Repair() {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: i * 0.06 }}
-                    className="aspect-square overflow-hidden rounded-2xl border border-border/60 shadow-sm group"
+                    className="aspect-square overflow-hidden rounded-2xl border border-border/60 shadow-sm group bg-muted/30"
                   >
                     <img
                       loading="lazy"

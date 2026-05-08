@@ -3,17 +3,15 @@ import {
   AlertTriangle,
   ArrowRight,
   Calculator,
-  Clipboard,
   Compass,
   HardHat,
-  Home as HomeIcon,
   Info,
   MapPin,
   Phone,
   Ruler,
   ShieldCheck,
   Sparkles,
-  Wrench,
+  Triangle,
 } from "lucide-react";
 import { Link } from "wouter";
 import { useMemo, useState } from "react";
@@ -43,6 +41,92 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 const fmtUSD = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
+// Inline SVG icons for each material type — small, on-brand,
+// no extra image assets required.
+function ShingleIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 28h36M10 38h28" />
+      <path d="M10 28l4-6h6l-4 6m6 0l4-6h6l-4 6m6 0l4-6h6l-4 6" />
+    </svg>
+  );
+}
+
+function StandingSeamIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 38L24 12l18 26" />
+      <path d="M14 30l3.5-5M22 18l3.5-5M30 30l-3.5-5" />
+    </svg>
+  );
+}
+
+function FiveVIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 36h40M4 36l4-4 4 4 4-4 4 4 4-4 4 4 4-4 4 4 4-4 4 4" />
+      <path d="M4 36L24 10l20 26" />
+    </svg>
+  );
+}
+
+function TileIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 22c0 0 3-4 6-4s3 4 6 4 3-4 6-4 3 4 6 4 3-4 6-4 3 4 6 4" />
+      <path d="M6 32c0 0 3-4 6-4s3 4 6 4 3-4 6-4 3 4 6 4 3-4 6-4 3 4 6 4" />
+    </svg>
+  );
+}
+
+function FlatRoofIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="6" y="22" width="36" height="14" rx="1" />
+      <path d="M6 22h36M10 28h4M18 28h4M26 28h4M34 28h4" />
+    </svg>
+  );
+}
+
+const MATERIAL_ICONS: Record<string, (p: { className?: string }) => React.ReactElement> = {
+  shingle: ShingleIcon,
+  "metal-standing-seam": StandingSeamIcon,
+  "metal-5v": FiveVIcon,
+  "tile-on-tile": TileIcon,
+  "tile-to-standing-seam": StandingSeamIcon,
+};
+
+// Visual roof-pitch silhouettes for each pitch option. Each one
+// renders a tiny SVG of a roof at the right steepness so the
+// customer can pick what matches their home.
+function PitchVisual({ slug, className = "" }: { slug: string; className?: string }) {
+  // Heights drive the apex height: bigger = steeper.
+  const apex: Record<string, number> = {
+    low: 4,
+    standard: 12,
+    steep: 22,
+    "very-steep": 30,
+  };
+  const h = apex[slug] ?? 12;
+  return (
+    <svg
+      viewBox="0 0 80 40"
+      className={className}
+      role="img"
+      aria-label={`Pitch profile: ${slug}`}
+    >
+      {/* House body */}
+      <rect x="8" y={40 - 12} width="64" height="12" fill="currentColor" opacity="0.12" />
+      {/* Roof line */}
+      <path
+        d={`M4 ${40 - 12} L40 ${40 - 12 - h} L76 ${40 - 12} Z`}
+        fill="currentColor"
+        opacity="0.85"
+      />
+    </svg>
+  );
+}
+
 export default function EstimatorPage() {
   const { t } = useTranslation();
   const [address, setAddress] = useState("");
@@ -54,10 +138,7 @@ export default function EstimatorPage() {
     useState<(typeof ESTIMATOR_PITCH_OPTIONS)[number]["slug"]>("standard");
   const [complexitySlug, setComplexitySlug] =
     useState<(typeof ESTIMATOR_COMPLEXITY_OPTIONS)[number]["slug"]>("simple");
-  const [wasteSlug, setWasteSlug] =
-    useState<(typeof ESTIMATOR_WASTE_OPTIONS)[number]["slug"]>("standard");
-  const [permitInput, setPermitInput] = useState<string>("750");
-  const [deckingInput, setDeckingInput] = useState<string>("500");
+  const [wasteSlug] = useState<(typeof ESTIMATOR_WASTE_OPTIONS)[number]["slug"]>("standard");
 
   const material = ESTIMATOR_MATERIALS.find((m) => m.slug === materialSlug)!;
   const pitch = ESTIMATOR_PITCH_OPTIONS.find((p) => p.slug === pitchSlug)!;
@@ -66,8 +147,9 @@ export default function EstimatorPage() {
 
   const computed = useMemo(() => {
     const footprintSf = Math.max(0, Number(footprintInput) || 0);
-    const permit = Math.max(0, Number(permitInput) || 0);
-    const decking = Math.max(0, Number(deckingInput) || 0);
+    // Defaults internally — allowances are no longer user-facing.
+    const permit = 750;
+    const decking = 500;
     const adjustedSf = footprintSf * pitch.multiplier;
     const squares = adjustedSf / 100;
     const colorAdder =
@@ -96,7 +178,7 @@ export default function EstimatorPage() {
       lowEstimate,
       highEstimate,
     };
-  }, [footprintInput, permitInput, deckingInput, pitch, material, colorOption, complexity, waste]);
+  }, [footprintInput, pitch, material, colorOption, complexity, waste]);
 
   const mapsEmbed = address.trim()
     ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=k&z=19&ie=UTF8&iwloc=&output=embed`
@@ -223,6 +305,7 @@ export default function EstimatorPage() {
                         const selected = m.slug === materialSlug;
                         const label = t(`estimator.material.items.${m.slug}.label`, { defaultValue: m.label });
                         const short = t(`estimator.material.items.${m.slug}.short`, { defaultValue: m.short });
+                        const Icon = MATERIAL_ICONS[m.slug] ?? FlatRoofIcon;
                         return (
                           <button
                             key={m.slug}
@@ -234,15 +317,21 @@ export default function EstimatorPage() {
                                 : "border-border/60 bg-background hover:border-primary/40"
                             }`}
                           >
-                            <div className="flex items-baseline justify-between gap-2">
-                              <p className="font-semibold text-foreground tracking-tight text-sm leading-tight">
-                                {label}
-                              </p>
-                              <p className="font-display font-bold text-primary text-sm whitespace-nowrap">
-                                ${m.pricePerSquare}{t("estimator.material.perSquare")}
-                              </p>
+                            <div className="flex items-start gap-3">
+                              <div
+                                className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                                  selected ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                                }`}
+                              >
+                                <Icon className="w-6 h-6" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-foreground tracking-tight text-sm leading-tight">
+                                  {label}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1 leading-snug">{short}</p>
+                              </div>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1.5 leading-snug">{short}</p>
                           </button>
                         );
                       })}
@@ -261,7 +350,7 @@ export default function EstimatorPage() {
                             {t("estimator.material.colorOption")}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {t("estimator.material.colorOptionDesc", { adder: (material as { colorAdderPerSquare?: number }).colorAdderPerSquare ?? 0 })}
+                            Adds a factory-baked color finish to your metal roof.
                           </span>
                         </span>
                       </label>
@@ -270,129 +359,92 @@ export default function EstimatorPage() {
                 </div>
               </FadeIn>
 
-              {/* Pitch / complexity / waste */}
+              {/* Roof pitch with visual */}
               <FadeIn delay={0.1}>
-                <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-7 shadow-sm space-y-6">
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <HomeIcon className="w-4.5 h-4.5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-display font-bold tracking-tight text-foreground text-base">
-                          {t("estimator.pitch.title")}
-                        </h3>
-                      </div>
+                <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-7 shadow-sm">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <Triangle className="w-5 h-5 text-primary" />
                     </div>
-                    <Picker
-                      options={ESTIMATOR_PITCH_OPTIONS.map((o) => ({
-                        slug: o.slug,
-                        label: t(`estimator.pitch.items.${o.slug}`, { defaultValue: o.label }),
-                        sub: `×${o.multiplier.toFixed(2)} ${t("estimator.pitch.areaSuffix")}`,
-                      }))}
-                      value={pitchSlug}
-                      onChange={(v) => setPitchSlug(v as typeof pitchSlug)}
-                    />
+                    <div className="flex-1">
+                      <h3 className="font-display font-bold tracking-tight text-foreground text-lg">
+                        {t("estimator.pitch.title")}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
+                        {t("estimator.pitch.subtitle")}
+                      </p>
+                    </div>
                   </div>
-
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <HardHat className="w-4.5 h-4.5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-display font-bold tracking-tight text-foreground text-base">
-                          {t("estimator.complexity.title")}
-                        </h3>
-                      </div>
-                    </div>
-                    <Picker
-                      options={ESTIMATOR_COMPLEXITY_OPTIONS.map((o) => ({
-                        slug: o.slug,
-                        label: t(`estimator.complexity.items.${o.slug}`, { defaultValue: o.label }),
-                        sub: `×${o.multiplier.toFixed(2)}`,
-                      }))}
-                      value={complexitySlug}
-                      onChange={(v) => setComplexitySlug(v as typeof complexitySlug)}
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Wrench className="w-4.5 h-4.5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-display font-bold tracking-tight text-foreground text-base">
-                          {t("estimator.waste.title")}
-                        </h3>
-                      </div>
-                    </div>
-                    <Picker
-                      options={ESTIMATOR_WASTE_OPTIONS.map((o) => ({
-                        slug: o.slug,
-                        label: t(`estimator.waste.items.${o.slug}`, { defaultValue: o.label }),
-                      }))}
-                      value={wasteSlug}
-                      onChange={(v) => setWasteSlug(v as typeof wasteSlug)}
-                    />
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    {ESTIMATOR_PITCH_OPTIONS.map((opt) => {
+                      const selected = opt.slug === pitchSlug;
+                      const label = t(`estimator.pitch.items.${opt.slug}`, { defaultValue: opt.label });
+                      const sub = t(`estimator.pitch.subItems.${opt.slug}`, { defaultValue: "" });
+                      return (
+                        <button
+                          key={opt.slug}
+                          type="button"
+                          onClick={() => setPitchSlug(opt.slug)}
+                          className={`text-center rounded-2xl border p-3 transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                            selected
+                              ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/30"
+                              : "border-border/60 bg-background hover:border-primary/40"
+                          }`}
+                          aria-pressed={selected}
+                        >
+                          <div
+                            className={`mx-auto mb-2 w-full h-12 flex items-end justify-center ${
+                              selected ? "text-primary" : "text-foreground/60"
+                            }`}
+                          >
+                            <PitchVisual slug={opt.slug} className="w-full max-w-[80px] h-12" />
+                          </div>
+                          <p className="font-semibold text-sm text-foreground tracking-tight leading-tight">
+                            {label}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{sub}</p>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </FadeIn>
 
-              {/* Allowances */}
-              <FadeIn delay={0.15}>
+              {/* Complexity */}
+              <FadeIn delay={0.12}>
                 <div className="bg-card border border-border/60 rounded-3xl p-6 md:p-7 shadow-sm">
                   <div className="flex items-start gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clipboard className="w-5 h-5 text-primary" />
+                      <HardHat className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-display font-bold tracking-tight text-foreground text-lg">
-                        {t("estimator.allowances.title")}
+                        {t("estimator.complexity.title")}
                       </h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">
-                        {t("estimator.allowances.subtitle")}
-                      </p>
                     </div>
                   </div>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-foreground mb-1.5">
-                        {t("estimator.allowances.permit")}
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
-                        <input
-                          type="number"
-                          inputMode="numeric"
-                          min={0}
-                          step={50}
-                          value={permitInput}
-                          onChange={(e) => setPermitInput(e.target.value)}
-                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          aria-label={t("estimator.allowances.permit")}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-foreground mb-1.5">
-                        {t("estimator.allowances.decking")}
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
-                        <input
-                          type="number"
-                          inputMode="numeric"
-                          min={0}
-                          step={50}
-                          value={deckingInput}
-                          onChange={(e) => setDeckingInput(e.target.value)}
-                          className="w-full h-10 pl-7 pr-3 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          aria-label={t("estimator.allowances.decking")}
-                        />
-                      </div>
-                    </div>
+                  <div className="grid sm:grid-cols-3 gap-2.5">
+                    {ESTIMATOR_COMPLEXITY_OPTIONS.map((opt) => {
+                      const selected = opt.slug === complexitySlug;
+                      const label = t(`estimator.complexity.items.${opt.slug}`, { defaultValue: opt.label });
+                      return (
+                        <button
+                          key={opt.slug}
+                          type="button"
+                          onClick={() => setComplexitySlug(opt.slug)}
+                          className={`text-left rounded-xl border p-3.5 transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                            selected
+                              ? "border-primary bg-primary/5 ring-2 ring-primary/30"
+                              : "border-border/60 bg-background hover:border-primary/40"
+                          }`}
+                          aria-pressed={selected}
+                        >
+                          <p className="font-semibold text-sm text-foreground tracking-tight leading-tight">
+                            {label}
+                          </p>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </FadeIn>
@@ -430,35 +482,6 @@ export default function EstimatorPage() {
                       sf: Math.round(computed.adjustedSf).toLocaleString(),
                     })}
                   </p>
-
-                  <div className="mt-5 pt-5 border-t border-white/10 space-y-2 text-sm">
-                    <Row
-                      label={`${t(`estimator.material.items.${material.slug}.label`, { defaultValue: material.label })}${colorOption && material.colorOptionAvailable ? ` + ${t("estimator.material.colorOption")}` : ""}`}
-                      value={`${computed.squares.toFixed(1)} sq × ${fmtUSD(computed.perSquareTotal)} = ${fmtUSD(computed.baseMaterial)}`}
-                    />
-                    {computed.complexityAdj > 0 && (
-                      <Row
-                        label={t("estimator.result.rows.complexity", {
-                          label: t(`estimator.complexity.items.${complexity.slug}`, { defaultValue: complexity.label }).split(" (")[0],
-                        })}
-                        value={fmtUSD(computed.complexityAdj)}
-                      />
-                    )}
-                    <Row
-                      label={t("estimator.result.rows.waste", { pct: t(`estimator.waste.items.${waste.slug}`, { defaultValue: waste.label }) })}
-                      value={fmtUSD(computed.wasteAdj)}
-                    />
-                    <Row label={t("estimator.result.rows.permit")} value={fmtUSD(computed.permit)} />
-                    <Row label={t("estimator.result.rows.decking")} value={fmtUSD(computed.decking)} />
-                    <div className="pt-3 mt-3 border-t border-white/10 flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-[0.18em] font-semibold text-white/70">
-                        {t("estimator.result.rows.total")}
-                      </span>
-                      <span className="font-display font-bold text-lg text-primary">
-                        {fmtUSD(computed.subtotal)}
-                      </span>
-                    </div>
-                  </div>
 
                   <div className="mt-5 flex flex-col gap-2">
                     <Link
@@ -514,49 +537,5 @@ export default function EstimatorPage() {
         subtitle={t("estimator.ctaSubtitle")}
       />
     </>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3 text-sm">
-      <span className="text-white/70">{label}</span>
-      <span className="font-semibold text-white whitespace-nowrap">{value}</span>
-    </div>
-  );
-}
-
-function Picker({
-  options,
-  value,
-  onChange,
-}: {
-  options: { slug: string; label: string; sub?: string }[];
-  value: string;
-  onChange: (slug: string) => void;
-}) {
-  return (
-    <div className="grid sm:grid-cols-2 gap-2">
-      {options.map((opt) => {
-        const selected = opt.slug === value;
-        return (
-          <button
-            key={opt.slug}
-            type="button"
-            onClick={() => onChange(opt.slug)}
-            className={`text-left rounded-xl border p-3 transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-              selected
-                ? "border-primary bg-primary/5 ring-2 ring-primary/30"
-                : "border-border/60 bg-background hover:border-primary/40"
-            }`}
-          >
-            <p className="font-semibold text-sm text-foreground tracking-tight leading-tight">
-              {opt.label}
-            </p>
-            {opt.sub && <p className="text-[11px] text-muted-foreground mt-0.5">{opt.sub}</p>}
-          </button>
-        );
-      })}
-    </div>
   );
 }

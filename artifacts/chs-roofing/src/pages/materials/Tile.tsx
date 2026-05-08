@@ -1,5 +1,5 @@
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
-import { PHOTOS } from "@/lib/site-config";
+import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
 
 export default function Tile() {
   return (
@@ -40,6 +40,7 @@ export default function Tile() {
         { src: PHOTOS.terracottaWaterfront, alt: "Completed terracotta tile roof on a Naples waterfront residence" },
         { src: PHOTOS.multiToneTile, alt: "Completed multi-tone concrete tile roof, aerial view, Bonita Springs" },
         { src: PHOTOS.salmonBarrelTile, alt: "Completed salmon barrel-tile roof, Estero" },
+        { src: FOUNDER_PHOTOS.tileTreasureCay, alt: "Completed tile roof project — Treasure Cay" },
       ]}
     />
   );

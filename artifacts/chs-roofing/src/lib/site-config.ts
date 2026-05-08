@@ -28,6 +28,64 @@ import photoDarkMetalEstate from "@assets/image_1777343458019.png";
 import photoTanShingleAerial2 from "@assets/image_1777343468789.png";
 import photoFinishedGreyShingle from "@assets/image_1777343477966.png";
 
+// Founder-supplied photos (currently 1×1 placeholder PNGs — overwrite
+// each file at attached_assets/<name>.png with the real photo from
+// the corresponding Google Drive folder.)
+import repair1 from "@assets/repair_1.png";
+import repair2 from "@assets/repair_2.png";
+import repair3 from "@assets/repair_3.png";
+import repair4 from "@assets/repair_4.png";
+import repair5 from "@assets/repair_5.png";
+import repair6 from "@assets/repair_6.png";
+import gutter1 from "@assets/gutter_1.png";
+import gutter2 from "@assets/gutter_2.png";
+import gutter3 from "@assets/gutter_3.png";
+import gutter4 from "@assets/gutter_4.png";
+import gutter5 from "@assets/gutter_5.png";
+import gutter6 from "@assets/gutter_6.png";
+import coatingHero from "@assets/coating_hero.png";
+import coating1 from "@assets/coating_1.png";
+import coating2 from "@assets/coating_2.png";
+import coating3 from "@assets/coating_3.png";
+import coating4 from "@assets/coating_4.png";
+import coating5 from "@assets/coating_5.png";
+import metalStandingSeamPhoto from "@assets/metal_standing_seam.png";
+import metal5VPhoto from "@assets/metal_5v.png";
+import tileTreasureCayPhoto from "@assets/tile_treasurecay.png";
+import flat1 from "@assets/flat_1.png";
+import flat2 from "@assets/flat_2.png";
+import flat3 from "@assets/flat_3.png";
+import flat4 from "@assets/flat_4.png";
+import multifamily1 from "@assets/multifamily_1.png";
+import multifamily2 from "@assets/multifamily_2.png";
+import multifamily3 from "@assets/multifamily_3.png";
+import multifamily4 from "@assets/multifamily_4.png";
+import multifamily5 from "@assets/multifamily_5.png";
+import multifamily6 from "@assets/multifamily_6.png";
+import baBefore1 from "@assets/ba_1_before.png";
+import baAfter1 from "@assets/ba_1_after.png";
+import baBefore2 from "@assets/ba_2_before.png";
+import baAfter2 from "@assets/ba_2_after.png";
+import baBefore3 from "@assets/ba_3_before.png";
+import baAfter3 from "@assets/ba_3_after.png";
+
+export const FOUNDER_PHOTOS = {
+  repair: [repair1, repair2, repair3, repair4, repair5, repair6] as const,
+  gutter: [gutter1, gutter2, gutter3, gutter4, gutter5, gutter6] as const,
+  coatingHero,
+  coating: [coating1, coating2, coating3, coating4, coating5] as const,
+  metalStandingSeam: metalStandingSeamPhoto,
+  metal5V: metal5VPhoto,
+  tileTreasureCay: tileTreasureCayPhoto,
+  flat: [flat1, flat2, flat3, flat4] as const,
+  multifamily: [multifamily1, multifamily2, multifamily3, multifamily4, multifamily5, multifamily6] as const,
+  beforeAfter: [
+    { before: baBefore1, after: baAfter1 },
+    { before: baBefore2, after: baAfter2 },
+    { before: baBefore3, after: baAfter3 },
+  ] as const,
+};
+
 export const PHOTOS = {
   beachfrontMetal: photoBeachfrontMetal,
   canalMetalInstall: photoCanalMetalInstall,
@@ -380,15 +438,21 @@ export const GALLERY_RESIDENTIAL = [
 export const GALLERY_COMMERCIAL = [
   { src: photoFlatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof", label: "Cape Coral" },
   { src: photoFlatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line", label: "Fort Myers" },
-  { src: photoCanalMetalInstall, alt: "Modern dark metal roof mid-install on a canal-front commercial property", label: "Naples" },
+  { src: flat1, alt: "Completed TPO commercial roof, Southwest Florida", label: "Cape Coral" },
+  { src: flat2, alt: "TPO roof on a Cape Coral commercial property", label: "Cape Coral" },
+  { src: flat3, alt: "Mechanic shop TPO flat roof installation", label: "Fort Myers" },
+  { src: flat4, alt: "Completed TPO commercial flat roof with rooftop HVAC", label: "Naples" },
+  { src: baBefore1, alt: "Commercial flat roof before restoration", label: "Before · Restoration" },
+  { src: baAfter1, alt: "Commercial flat roof after coating restoration", label: "After · Restoration" },
+  { src: baBefore2, alt: "Failing roof system before tear-off", label: "Before · Re-roof" },
+  { src: baAfter2, alt: "New TPO roof installed on commercial property", label: "After · Re-roof" },
 ] as const;
 
-// TODO: Replace placeholder images with real multifamily project photos when available.
 export const GALLERY_MULTIFAMILY = [
-  { src: photoFlatTpoCrew, alt: "Multifamily flat roof system on a Cape Coral condo complex", label: "Cape Coral · Condos" },
-  { src: photoTanShingleAerial, alt: "Aerial of a re-roofed apartment community in Fort Myers", label: "Fort Myers · Apartments" },
-  { src: photoTanShingleAerial2, alt: "Two-tone shingle re-roof across a multi-building condo", label: "Naples · Condos" },
-  { src: photoCanalMetalInstall, alt: "Standing-seam metal roof on a multifamily waterfront property", label: "Bonita Springs · Apartments" },
-  { src: photoFlatPrepRedLine, alt: "Commercial flat-roof prep on a multifamily building", label: "Estero · Condos" },
-  { src: photoDarkMetalEstate, alt: "Estate-scale roofing project across multiple buildings", label: "Sarasota · Apartments" },
+  { src: multifamily1, alt: "Multifamily roof project, Southwest Florida", label: "Cape Coral · Condos" },
+  { src: multifamily2, alt: "Apartment community re-roof, Fort Myers", label: "Fort Myers · Apartments" },
+  { src: multifamily3, alt: "Multi-building condo re-roof", label: "Naples · Condos" },
+  { src: multifamily4, alt: "Multifamily waterfront roof project", label: "Bonita Springs · Apartments" },
+  { src: multifamily5, alt: "Multifamily building roof restoration", label: "Estero · Condos" },
+  { src: multifamily6, alt: "Estate-scale multifamily roofing project", label: "Sarasota · Apartments" },
 ] as const;

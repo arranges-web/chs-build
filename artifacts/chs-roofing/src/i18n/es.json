@@ -357,12 +357,19 @@
       "colorOptionDesc": "Agrega ${{adder}} por cuadro por un acabado de color de fábrica."
     },
     "pitch": {
-      "title": "Pendiente del techo",
+      "title": "Pendiente del Techo",
+      "subtitle": "Elija la opción que mejor describe su techo. La pendiente determina el área real del techo sobre la base de la casa.",
       "items": {
-        "low": "Pendiente baja (≤4/12)",
-        "standard": "Estándar (5/12 – 7/12)",
-        "steep": "Empinada (8/12 – 12/12)",
-        "very-steep": "Muy empinada (>12/12)"
+        "low": "Techo Plano",
+        "standard": "Pendiente Suave",
+        "steep": "Pendiente Media",
+        "very-steep": "Pendiente Empinada"
+      },
+      "subItems": {
+        "low": "Cae bajo pendiente baja",
+        "standard": "Cae bajo pendiente estándar",
+        "steep": "Cae bajo pendiente empinada",
+        "very-steep": "Cae bajo pendiente muy empinada"
       },
       "areaSuffix": "× área"
     },

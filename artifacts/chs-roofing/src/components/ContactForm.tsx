@@ -36,7 +36,7 @@ import {
   Paintbrush,
   Droplets,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -110,6 +110,33 @@ export default function ContactForm() {
       message: "",
     },
   });
+
+  // Pre-fill from URL params:
+  //   /contact?service=maintenance&plan=basic
+  // The maintenance plan cards link in here; we drop the customer
+  // straight onto step 2 (property) with their service + a friendly
+  // pre-filled message identifying the plan they're interested in.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const serviceParam = params.get("service");
+    const planParam = params.get("plan");
+    const validService = SERVICE_OPTIONS.find((s) => s.value === serviceParam)?.value;
+    if (validService && !form.getValues("serviceType")) {
+      form.setValue("serviceType", validService, { shouldValidate: false });
+      // Skip past the service-picker step since it's already chosen.
+      setStep((s) => (s === 1 ? 2 : s));
+    }
+    if (planParam && !form.getValues("message")) {
+      const planLabel = planParam.charAt(0).toUpperCase() + planParam.slice(1);
+      form.setValue(
+        "message",
+        `I'm interested in the ${planLabel} maintenance plan — please send more details.`,
+      );
+    }
+    // Run only on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const goNext = async () => {
     const fields = STEPS[step - 1].fields;

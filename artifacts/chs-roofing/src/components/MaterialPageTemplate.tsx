@@ -13,6 +13,8 @@ type Props = {
   bestFor: string[];
   manufacturers: string[];
   galleryImages: { src: string; alt: string }[];
+  /** Optional content rendered above the gallery (e.g. material variant comparisons). */
+  extra?: React.ReactNode;
 };
 
 const STATS_ICONS = [Clock, Wind, Droplets, Flame];
@@ -25,6 +27,7 @@ export default function MaterialPageTemplate({
   bestFor,
   manufacturers,
   galleryImages,
+  extra,
 }: Props) {
   const material = MATERIALS.find(m => m.slug === slug)!;
   const otherMaterials = MATERIALS.filter(m => m.slug !== slug);
@@ -143,6 +146,8 @@ export default function MaterialPageTemplate({
       </section>
 
       {/* Gallery Strip */}
+      {extra}
+
       {galleryImages.length > 0 && (
         <section className="py-20 bg-muted/40">
           <div className="container mx-auto max-w-7xl px-4">

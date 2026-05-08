@@ -1,5 +1,5 @@
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
-import { PHOTOS } from "@/lib/site-config";
+import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
 
 export default function Flat() {
   return (
@@ -39,8 +39,10 @@ export default function Flat() {
       galleryImages={[
         { src: PHOTOS.flatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof" },
         { src: PHOTOS.flatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line" },
-        { src: PHOTOS.canalMetalInstall, alt: "Modern dark metal roof mid-install on a canal-front property" },
-        { src: PHOTOS.darkMetalAerial, alt: "Finished dark metal roof aerial view, Southwest Florida" },
+        { src: FOUNDER_PHOTOS.flat[0], alt: "Completed TPO commercial roof, Southwest Florida" },
+        { src: FOUNDER_PHOTOS.flat[1], alt: "TPO roof on a Cape Coral commercial property" },
+        { src: FOUNDER_PHOTOS.flat[2], alt: "Mechanic shop TPO flat roof installation" },
+        { src: FOUNDER_PHOTOS.flat[3], alt: "Completed TPO commercial flat roof with rooftop HVAC" },
       ]}
     />
   );
