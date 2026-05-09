@@ -66,6 +66,12 @@ import commercialTpoDowntown1 from "@assets/DJI_0274_1778361272890.JPG";
 import commercialTpoDowntown2 from "@assets/DJI_0280_1778361272890.JPG";
 import commercialRetailTpo from "@assets/DJI_0367_1778361272890.JPG";
 import commercialLuxuryFlat from "@assets/DJI_0822_1778361272891.JPG";
+import autoShopBefore from "@assets/DJI_0748_1778361438701.JPG";
+import autoShopAfter from "@assets/DJI_0771_1778361438702.JPG";
+import schoolRoofStrip from "@assets/DJI_0398_1778361491434.JPG";
+import schoolRoofBefore from "@assets/DJI_0402_1778361491435.JPG";
+import schoolRoofAfter from "@assets/DJI_0425_1778361491435.JPG";
+import schoolRoofCrew from "@assets/DJI_0444_1778361491435.JPG";
 import multifamily1 from "@assets/DJI_0165_1778361118012.JPG";
 import multifamily2 from "@assets/DJI_0168_1778361118012.JPG";
 import multifamily3 from "@assets/DJI_0172_1778361118012.JPG";
@@ -472,6 +478,12 @@ export const GALLERY_COMMERCIAL = [
   { src: flat4, alt: "Top-down aerial of completed white TPO flat roof on luxury new-build", label: "Naples · New Construction" },
   { src: baBefore1, alt: "Commercial flat roof before restoration", label: "Before · Restoration" },
   { src: baAfter1, alt: "Commercial flat roof after coating restoration", label: "After · Restoration" },
+  { src: schoolRoofBefore, alt: "Top-down aerial of large school campus roof before re-roof", label: "Fort Myers · School · Before" },
+  { src: schoolRoofStrip, alt: "CHS crew stripping old ribbed roof panels on school building", label: "Fort Myers · School · In Progress" },
+  { src: schoolRoofAfter, alt: "Completed white flat roof on large commercial school building", label: "Fort Myers · School · Completed" },
+  { src: schoolRoofCrew, alt: "CHS crew installing white metal panels across Oak Creek Charter School campus", label: "Bonita Springs · Charter School" },
+  { src: autoShopBefore, alt: "CHS crew tearing off old flat roof on Falken auto shop building", label: "Fort Myers · Auto Shop · Before" },
+  { src: autoShopAfter, alt: "Completed white TPO flat roof on auto shop — wide aerial with road view", label: "Fort Myers · Auto Shop · Completed" },
 ] as const;
 
 export const GALLERY_MULTIFAMILY = [
