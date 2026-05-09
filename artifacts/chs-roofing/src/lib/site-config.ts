@@ -31,15 +31,18 @@ import photoDarkMetalEstate from "@assets/image_1777343458019.png";
 import photoTanShingleAerial2 from "@assets/image_1777343468789.png";
 import photoFinishedGreyShingle from "@assets/image_1777343477966.png";
 
-// Founder-supplied photos (currently 1×1 placeholder PNGs — overwrite
-// each file at attached_assets/<name>.png with the real photo from
-// the corresponding Google Drive folder.)
-import repair1 from "@assets/repair_1.png";
-import repair2 from "@assets/repair_2.png";
-import repair3 from "@assets/repair_3.png";
-import repair4 from "@assets/repair_4.png";
-import repair5 from "@assets/repair_5.png";
-import repair6 from "@assets/repair_6.png";
+// Real repair before/after photos
+import repairCricketBefore from "@assets/cricket_before__1778360839718.jpg";
+import repairCricketAfter from "@assets/cricket_after__1778360839718.jpg";
+import repairDeadValleyBefore from "@assets/dead_valley_repair_shingles_before__1778360839719.jpg";
+import repairDeadValleyAfter from "@assets/dead_valley_repair_shingles_after__1778360839718.jpg";
+import repairFasciaAfter from "@assets/Fascia_repair_after__1778360839719.jpg";
+import repairShingleBefore from "@assets/shingle_repair_before__1778360839719.png";
+import repairShingleAfter from "@assets/shingle_repair_after__1778360839719.png";
+import repairShingleValleyBefore from "@assets/Shingle_valley_repair_before__1778360839720.jpg";
+import repairShingleValleyAfter from "@assets/Shingle_valley_repair_after__1778360839719.jpg";
+import repairTileBefore from "@assets/Tile_repair_before__1778360839720.jpg";
+import repairTileAfter from "@assets/tile_repair_after__1778360839720.jpg";
 import gutter1 from "@assets/gutter_1.png";
 import gutter2 from "@assets/gutter_2.png";
 import gutter3 from "@assets/gutter_3.png";
@@ -72,8 +75,24 @@ import baAfter2 from "@assets/ba_2_after.png";
 import baBefore3 from "@assets/ba_3_before.png";
 import baAfter3 from "@assets/ba_3_after.png";
 
+export const REPAIR_PAIRS = [
+  { before: repairCricketBefore,      after: repairCricketAfter,      label: "Cricket repair" },
+  { before: repairDeadValleyBefore,   after: repairDeadValleyAfter,   label: "Dead-valley shingle repair" },
+  { before: null,                     after: repairFasciaAfter,       label: "Fascia repair" },
+  { before: repairShingleBefore,      after: repairShingleAfter,      label: "Shingle replacement" },
+  { before: repairShingleValleyBefore,after: repairShingleValleyAfter,label: "Shingle valley repair" },
+  { before: repairTileBefore,         after: repairTileAfter,         label: "Tile repair" },
+] as const;
+
 export const FOUNDER_PHOTOS = {
-  repair: [repair1, repair2, repair3, repair4, repair5, repair6] as const,
+  repair: [
+    repairCricketAfter,
+    repairDeadValleyAfter,
+    repairFasciaAfter,
+    repairShingleAfter,
+    repairShingleValleyAfter,
+    repairTileAfter,
+  ] as const,
   gutter: [gutter1, gutter2, gutter3, gutter4, gutter5, gutter6] as const,
   coatingHero,
   coating: [coating1, coating2, coating3, coating4, coating5] as const,

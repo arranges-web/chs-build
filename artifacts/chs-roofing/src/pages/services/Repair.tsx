@@ -3,35 +3,26 @@ import { motion } from "framer-motion";
 import { AlertCircle } from "lucide-react";
 import ServicePageTemplate from "@/components/ServicePageTemplate";
 import StepsTimeline from "@/components/StepsTimeline";
-import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
-
-const REPAIR_GALLERY = [
-  { src: FOUNDER_PHOTOS.repair[0], alt: "CHS roof repair — leak source identified" },
-  { src: FOUNDER_PHOTOS.repair[1], alt: "Damaged decking exposed during repair" },
-  { src: FOUNDER_PHOTOS.repair[2], alt: "Color-matched shingle replacement" },
-  { src: FOUNDER_PHOTOS.repair[3], alt: "Flashing rebuild on a complex roof transition" },
-  { src: FOUNDER_PHOTOS.repair[4], alt: "Pipe-boot replacement with new seal" },
-  { src: FOUNDER_PHOTOS.repair[5], alt: "Completed repair, weathertight again" },
-];
+import { FOUNDER_PHOTOS, PHOTOS, REPAIR_PAIRS } from "@/lib/site-config";
 
 const REPAIR_STEPS = [
   {
     title: "Inspect Roof & Water Test to Find the Leak",
     desc: "We perform a detailed roof inspection and water test when needed to identify the exact source of the leak — not just the area where water is showing inside.",
-    image: FOUNDER_PHOTOS.repair[0],
-    imageAlt: "Inspector locating the source of a roof leak",
+    image: FOUNDER_PHOTOS.repair[3],
+    imageAlt: "Shingle damage identified during roof inspection",
   },
   {
     title: "Inspection Report With Photos & Solutions",
     desc: "After the inspection we provide a clear report with pictures, notes, and repair recommendations so the homeowner understands what is happening and what needs to be done.",
-    image: FOUNDER_PHOTOS.repair[1],
-    imageAlt: "Photo report and repair recommendations",
+    image: FOUNDER_PHOTOS.repair[4],
+    imageAlt: "Shingle valley damage documented for repair report",
   },
   {
     title: "Complete the Repair & Final Water Test",
     desc: "Once the repair is completed, we run a final water test when possible to confirm the leak has been repaired properly.",
-    image: FOUNDER_PHOTOS.repair[2],
-    imageAlt: "Final water test confirming the repair",
+    image: FOUNDER_PHOTOS.repair[5],
+    imageAlt: "Completed tile repair — weathertight and color-matched",
   },
 ];
 
@@ -76,6 +67,8 @@ export default function Repair() {
             steps={REPAIR_STEPS}
             background="bg-background bg-wash-cool"
           />
+
+          {/* Before / After Gallery */}
           <section className="py-20 bg-background">
             <div className="container mx-auto max-w-7xl px-4">
               <div className="text-center max-w-3xl mx-auto mb-12">
@@ -83,28 +76,68 @@ export default function Repair() {
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold tracking-tight text-foreground leading-[1.05]">
                   Real repairs. Lasting results.
                 </h2>
+                <p className="mt-4 text-muted-foreground">
+                  Every job documented with before-and-after photos.
+                </p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-                {REPAIR_GALLERY.map((g, i) => (
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {REPAIR_PAIRS.map((pair, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: i * 0.06 }}
-                    className="aspect-square overflow-hidden rounded-2xl border border-border/60 shadow-sm group bg-muted/30"
+                    transition={{ duration: 0.4, delay: i * 0.07 }}
+                    className="rounded-2xl border border-border/60 overflow-hidden shadow-sm bg-card"
                   >
-                    <img
-                      loading="lazy"
-                      src={g.src}
-                      alt={g.alt}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                    {pair.before ? (
+                      <div className="grid grid-cols-2 divide-x divide-border/60">
+                        <div className="relative">
+                          <img
+                            loading="lazy"
+                            src={pair.before}
+                            alt={`${pair.label} — before`}
+                            className="w-full aspect-[4/3] object-cover"
+                          />
+                          <span className="absolute top-2 left-2 bg-black/60 text-white text-[10px] font-semibold tracking-widest uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                            Before
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <img
+                            loading="lazy"
+                            src={pair.after}
+                            alt={`${pair.label} — after`}
+                            className="w-full aspect-[4/3] object-cover"
+                          />
+                          <span className="absolute top-2 left-2 bg-primary/90 text-white text-[10px] font-semibold tracking-widest uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                            After
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <img
+                          loading="lazy"
+                          src={pair.after}
+                          alt={`${pair.label} — completed`}
+                          className="w-full aspect-[16/9] object-cover"
+                        />
+                        <span className="absolute top-2 left-2 bg-primary/90 text-white text-[10px] font-semibold tracking-widest uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                          After
+                        </span>
+                      </div>
+                    )}
+                    <div className="px-4 py-3">
+                      <p className="text-sm font-medium text-foreground">{pair.label}</p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
             </div>
           </section>
+
           <section className="py-12 bg-primary/5 border-y border-primary/10">
             <div className="container mx-auto max-w-5xl px-4 flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-4">
