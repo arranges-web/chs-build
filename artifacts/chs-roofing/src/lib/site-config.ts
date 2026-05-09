@@ -85,6 +85,15 @@ import baAfter2 from "@assets/ba_2_after.png";
 import baBefore3 from "@assets/ba_3_before.png";
 import baAfter3 from "@assets/ba_3_after.png";
 
+export const BEFORE_AFTER_PAIRS = [
+  { before: schoolRoofBefore, after: schoolRoofAfter, label: "School re-roof — Fort Myers" },
+  { before: autoShopBefore, after: autoShopAfter, label: "Auto shop flat roof — Fort Myers" },
+  { before: repairCricketBefore, after: repairCricketAfter, label: "Cricket flashing repair" },
+  { before: repairDeadValleyBefore, after: repairDeadValleyAfter, label: "Dead-valley shingle repair" },
+  { before: repairTileBefore, after: repairTileAfter, label: "Tile repair" },
+  { before: repairShingleBefore, after: repairShingleAfter, label: "Shingle replacement" },
+] as const;
+
 export const REPAIR_PAIRS = [
   { before: repairCricketBefore,      after: repairCricketAfter,      label: "Cricket repair" },
   { before: repairDeadValleyBefore,   after: repairDeadValleyAfter,   label: "Dead-valley shingle repair" },
@@ -395,7 +404,7 @@ export const MATERIALS = [
     title: "Flat & TPO Roofing",
     short: "Energy-efficient flat systems for commercial and modern homes.",
     href: "/materials/flat",
-    image: photoFlatTpoCrew,
+    image: commercialLuxuryFlat,
     lifespan: "20–30 years",
     manufacturers: ["Carlisle", "GAF"],
   },

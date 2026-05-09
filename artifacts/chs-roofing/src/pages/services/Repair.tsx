@@ -32,8 +32,8 @@ export default function Repair() {
       eyebrow="Service · Repair"
       title={<>Roof <span className="text-primary">Repair</span> Done Right</>}
       subtitle="Fast, honest repair work — leaks, missing shingles, flashing failures, and post-storm damage. We diagnose accurately and fix it the first time."
-      image={PHOTOS.tearOff}
-      imageAlt="Roof tear-off and decking inspection in progress"
+      image={PHOTOS.finishedGreyShingle}
+      imageAlt="Clean finished shingle roof — repair completed"
       crumbs={[{ label: "Services" }, { label: "Repair" }]}
       intro={
         <>

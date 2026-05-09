@@ -17,7 +17,7 @@ import TestimonialMarquee from "@/components/TestimonialMarquee";
 import RoofDivider from "@/components/RoofDivider";
 import ShingleDivider from "@/components/ShingleDivider";
 import RaindropOverlay from "@/components/RaindropOverlay";
-import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS, PHOTOS } from "@/lib/site-config";
+import { TEAM, SITE, SERVICES, MATERIALS, TESTIMONIALS, PHOTOS, BEFORE_AFTER_PAIRS } from "@/lib/site-config";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -106,58 +106,43 @@ function TestimonialsCarousel() {
   );
 }
 
-function FeaturedProjectsGallery() {
-  const projects = [
-    { src: PHOTOS.beachfrontMetal, label: "Standing Seam · Sanibel", category: "Residential · Metal" },
-    { src: PHOTOS.terracottaWaterfront, label: "Terracotta Tile · Naples", category: "Residential · Tile" },
-    { src: PHOTOS.flatTpoCrew, label: "TPO Flat · Cape Coral", category: "Commercial · Flat" },
-    { src: PHOTOS.darkMetalAerial, label: "Dark Metal Aerial · Fort Myers", category: "Residential · Metal" },
-    { src: PHOTOS.multiToneTile, label: "Multi-Tone Tile · Bonita Springs", category: "Residential · Tile" },
-    { src: PHOTOS.whiteStandingSeam, label: "White Standing Seam · Cape Coral", category: "Residential · Metal" },
-    { src: PHOTOS.silverMetalPoolCage, label: "Silver Metal · Punta Gorda", category: "Residential · Metal" },
-    { src: PHOTOS.finishedGreyShingle, label: "Architectural Shingle · Fort Myers", category: "Residential · Shingle" },
-  ];
-
-  // Index of the spans in CSS-grid units to vary heights without overflowing.
-  const heights = [
-    "row-span-2",
-    "",
-    "",
-    "row-span-2",
-    "",
-    "",
-    "",
-    "",
-  ];
-
+function BeforeAfterShowcase() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] md:auto-rows-[210px] gap-3 md:gap-4">
-      {projects.map((p, i) => (
-        <motion.figure
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {BEFORE_AFTER_PAIRS.map((pair, i) => (
+        <motion.div
           key={i}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.45, delay: (i % 4) * 0.06 }}
-          className={`relative rounded-2xl overflow-hidden border border-border/60 shadow-sm group ${heights[i] ?? ""}`}
+          transition={{ duration: 0.45, delay: (i % 3) * 0.07 }}
+          className="rounded-2xl overflow-hidden shadow-sm border border-border/60 bg-card"
         >
-          <img
-            loading="lazy"
-            decoding="async"
-            src={p.src}
-            alt={p.label}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-          <figcaption className="absolute bottom-3 left-3 right-3 text-white">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/85">
-              {p.category}
-            </p>
-            <p className="font-display font-bold tracking-tight text-sm md:text-base leading-tight drop-shadow">
-              {p.label}
-            </p>
-          </figcaption>
-        </motion.figure>
+          <div className="grid grid-cols-2 divide-x divide-border/60">
+            <div className="relative">
+              <img
+                loading="lazy"
+                src={pair.before}
+                alt=""
+                className="w-full aspect-[4/3] object-cover"
+              />
+              <span className="absolute top-2 left-2 bg-black/65 text-white text-[10px] font-semibold tracking-[0.18em] uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                Before
+              </span>
+            </div>
+            <div className="relative">
+              <img
+                loading="lazy"
+                src={pair.after}
+                alt=""
+                className="w-full aspect-[4/3] object-cover"
+              />
+              <span className="absolute top-2 left-2 bg-primary/95 text-white text-[10px] font-semibold tracking-[0.18em] uppercase px-2 py-0.5 rounded-full backdrop-blur-sm">
+                After
+              </span>
+            </div>
+          </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -537,7 +522,7 @@ export default function HomePage() {
                 {t("featuredProjects.subtitle")}
               </p>
             </div>
-            <FeaturedProjectsGallery />
+            <BeforeAfterShowcase />
             <div className="text-center mt-12 flex flex-wrap justify-center gap-3">
               <Link
                 href="/gallery/residential"

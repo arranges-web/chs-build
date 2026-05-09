@@ -23,7 +23,7 @@ import {
   ESTIMATOR_MATERIALS,
   ESTIMATOR_PITCH_OPTIONS,
   ESTIMATOR_WASTE_OPTIONS,
-  PHOTOS,
+  FOUNDER_PHOTOS,
   SITE,
 } from "@/lib/site-config";
 
@@ -194,7 +194,7 @@ export default function EstimatorPage() {
           </>
         }
         subtitle={t("estimator.subtitle")}
-        image={PHOTOS.beachfrontMetal}
+        image={FOUNDER_PHOTOS.flat[3]}
         imageAlt={t("estimator.imageAlt")}
         crumbs={[{ label: t("header.nav.estimator") }]}
       />

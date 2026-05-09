@@ -25,13 +25,13 @@ export default function MultifamilyGallery() {
         <div className="container mx-auto max-w-7xl px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {GALLERY_MULTIFAMILY.map((g, i) => (
-              <motion.figure
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: (i % 3) * 0.08 }}
-                className="group bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-md shingle-lift"
+                className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-md shingle-lift bg-muted/30"
               >
                 <div className="aspect-[4/3] overflow-hidden">
                   <img
@@ -41,11 +41,7 @@ export default function MultifamilyGallery() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-                <figcaption className="p-5">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{g.label}</p>
-                  <p className="font-display font-bold tracking-tight text-foreground mt-1">{g.alt}</p>
-                </figcaption>
-              </motion.figure>
+              </motion.div>
             ))}
           </div>
 
