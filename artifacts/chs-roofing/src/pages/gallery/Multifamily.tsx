@@ -5,7 +5,7 @@ import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import ShingleDivider from "@/components/ShingleDivider";
-import { GALLERY_MULTIFAMILY, PHOTOS } from "@/lib/site-config";
+import { GALLERY_MULTIFAMILY, FOUNDER_PHOTOS } from "@/lib/site-config";
 
 export default function MultifamilyGallery() {
   return (
@@ -14,8 +14,8 @@ export default function MultifamilyGallery() {
         eyebrow="Gallery · Multifamily"
         title={<>Multifamily <span className="text-primary">Project Gallery</span></>}
         subtitle="Condos, apartment communities, and multi-building properties across Southwest Florida — re-roofed to weather hurricane season and last."
-        image={PHOTOS.tanShingleAerial}
-        imageAlt="Aerial of a multifamily community re-roofed by CHS"
+        image={FOUNDER_PHOTOS.multifamily[0]}
+        imageAlt="Aerial of a full condo community being re-roofed by CHS in Cape Coral"
         crumbs={[{ label: "Gallery" }, { label: "Multifamily" }]}
       />
 

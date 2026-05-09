@@ -62,12 +62,12 @@ import flat1 from "@assets/flat_1.png";
 import flat2 from "@assets/flat_2.png";
 import flat3 from "@assets/flat_3.png";
 import flat4 from "@assets/flat_4.png";
-import multifamily1 from "@assets/multifamily_1.png";
-import multifamily2 from "@assets/multifamily_2.png";
-import multifamily3 from "@assets/multifamily_3.png";
-import multifamily4 from "@assets/multifamily_4.png";
-import multifamily5 from "@assets/multifamily_5.png";
-import multifamily6 from "@assets/multifamily_6.png";
+import multifamily1 from "@assets/DJI_0165_1778361118012.JPG";
+import multifamily2 from "@assets/DJI_0168_1778361118012.JPG";
+import multifamily3 from "@assets/DJI_0172_1778361118012.JPG";
+import multifamily4 from "@assets/DJI_0203_1778361118013.JPG";
+import multifamily5 from "@assets/harbor_walk_binder__Page_06_1778361125130.jpg";
+import multifamily6 from "@assets/harbor_walk_binder__Page_12_1778361125130.jpg";
 import baBefore1 from "@assets/ba_1_before.png";
 import baAfter1 from "@assets/ba_1_after.png";
 import baBefore2 from "@assets/ba_2_before.png";
@@ -471,10 +471,10 @@ export const GALLERY_COMMERCIAL = [
 ] as const;
 
 export const GALLERY_MULTIFAMILY = [
-  { src: multifamily1, alt: "Multifamily roof project, Southwest Florida", label: "Cape Coral · Condos" },
-  { src: multifamily2, alt: "Apartment community re-roof, Fort Myers", label: "Fort Myers · Apartments" },
-  { src: multifamily3, alt: "Multi-building condo re-roof", label: "Naples · Condos" },
-  { src: multifamily4, alt: "Multifamily waterfront roof project", label: "Bonita Springs · Apartments" },
-  { src: multifamily5, alt: "Multifamily building roof restoration", label: "Estero · Condos" },
-  { src: multifamily6, alt: "Estate-scale multifamily roofing project", label: "Sarasota · Apartments" },
+  { src: multifamily1, alt: "Aerial of full condo community mid re-roof — Cape Coral", label: "Cape Coral · Condo Community" },
+  { src: multifamily2, alt: "Red standing-seam metal panels staged during condo re-roof", label: "Cape Coral · In Progress" },
+  { src: multifamily3, alt: "Completed red standing-seam metal roofs across condo complex", label: "Cape Coral · Completed" },
+  { src: multifamily4, alt: "CHS crew installing sage-green metal roof on waterfront high-rise", label: "Fort Myers · Harbor Walk" },
+  { src: multifamily5, alt: "Completed sage-green standing-seam metal roofs at Harbor Walk waterfront condos", label: "Fort Myers · Harbor Walk" },
+  { src: multifamily6, alt: "Top-down aerial of finished green metal roof at Harbor Walk — river views", label: "Fort Myers · Harbor Walk" },
 ] as const;
