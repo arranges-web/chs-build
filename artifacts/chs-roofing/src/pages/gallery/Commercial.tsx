@@ -5,7 +5,7 @@ import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import ShingleDivider from "@/components/ShingleDivider";
-import { GALLERY_COMMERCIAL, PHOTOS } from "@/lib/site-config";
+import { GALLERY_COMMERCIAL, FOUNDER_PHOTOS } from "@/lib/site-config";
 
 export default function CommercialGallery() {
   return (
@@ -14,8 +14,8 @@ export default function CommercialGallery() {
         eyebrow="Gallery · Commercial"
         title={<>Commercial <span className="text-primary">Project Gallery</span></>}
         subtitle="From flat TPO systems on warehouses to standing-seam metal on retail spaces, we deliver code-compliant commercial roofing across SWFL."
-        image={PHOTOS.flatTpoCrew}
-        imageAlt="CHS crew installing TPO on a commercial flat roof"
+        image={FOUNDER_PHOTOS.flat[1]}
+        imageAlt="Aerial of CHS crew installing white TPO flat roof on commercial building"
         crumbs={[{ label: "Gallery" }, { label: "Commercial" }]}
       />
 

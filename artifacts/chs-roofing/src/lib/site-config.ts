@@ -58,10 +58,14 @@ import coating5 from "@assets/coating_5.png";
 import metalStandingSeamPhoto from "@assets/metal_standing_seam.png";
 import metal5VPhoto from "@assets/metal_5v.png";
 import tileTreasureCayPhoto from "@assets/tile_treasurecay.png";
-import flat1 from "@assets/flat_1.png";
-import flat2 from "@assets/flat_2.png";
-import flat3 from "@assets/flat_3.png";
-import flat4 from "@assets/flat_4.png";
+import flat1 from "@assets/DJI_0634_1778361272891.JPG";
+import flat2 from "@assets/DJI_0635_1778361272891.JPG";
+import flat3 from "@assets/DJI_0640_1778361272891.JPG";
+import flat4 from "@assets/DJI_0821_1778361272891.JPG";
+import commercialTpoDowntown1 from "@assets/DJI_0274_1778361272890.JPG";
+import commercialTpoDowntown2 from "@assets/DJI_0280_1778361272890.JPG";
+import commercialRetailTpo from "@assets/DJI_0367_1778361272890.JPG";
+import commercialLuxuryFlat from "@assets/DJI_0822_1778361272891.JPG";
 import multifamily1 from "@assets/DJI_0165_1778361118012.JPG";
 import multifamily2 from "@assets/DJI_0168_1778361118012.JPG";
 import multifamily3 from "@assets/DJI_0172_1778361118012.JPG";
@@ -458,16 +462,16 @@ export const GALLERY_RESIDENTIAL = [
 ] as const;
 
 export const GALLERY_COMMERCIAL = [
-  { src: photoFlatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof", label: "Cape Coral" },
-  { src: photoFlatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line", label: "Fort Myers" },
-  { src: flat1, alt: "Completed TPO commercial roof, Southwest Florida", label: "Cape Coral" },
-  { src: flat2, alt: "TPO roof on a Cape Coral commercial property", label: "Cape Coral" },
-  { src: flat3, alt: "Mechanic shop TPO flat roof installation", label: "Fort Myers" },
-  { src: flat4, alt: "Completed TPO commercial flat roof with rooftop HVAC", label: "Naples" },
+  { src: commercialTpoDowntown2, alt: "CHS crew installing white TPO on multi-story downtown new construction", label: "Fort Myers · New Construction" },
+  { src: commercialTpoDowntown1, alt: "Completed white TPO flat roof on downtown commercial building", label: "Fort Myers · Completed" },
+  { src: commercialRetailTpo, alt: "CHS crew laying TPO membrane on a commercial retail building", label: "Naples · Retail" },
+  { src: commercialLuxuryFlat, alt: "Angled aerial of white TPO flat roof on luxury residential new build", label: "Naples · Luxury Residential" },
+  { src: flat1, alt: "CHS crew finishing TPO edge trim on commercial flat roof", label: "Cape Coral · TPO" },
+  { src: flat2, alt: "Aerial of full TPO flat roof installation on commercial building", label: "Cape Coral · TPO" },
+  { src: flat3, alt: "CHS crew installing Polyglass underlayment on commercial flat roof edge", label: "Cape Coral · TPO" },
+  { src: flat4, alt: "Top-down aerial of completed white TPO flat roof on luxury new-build", label: "Naples · New Construction" },
   { src: baBefore1, alt: "Commercial flat roof before restoration", label: "Before · Restoration" },
   { src: baAfter1, alt: "Commercial flat roof after coating restoration", label: "After · Restoration" },
-  { src: baBefore2, alt: "Failing roof system before tear-off", label: "Before · Re-roof" },
-  { src: baAfter2, alt: "New TPO roof installed on commercial property", label: "After · Re-roof" },
 ] as const;
 
 export const GALLERY_MULTIFAMILY = [

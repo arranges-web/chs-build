@@ -39,10 +39,10 @@ export default function Flat() {
       galleryImages={[
         { src: PHOTOS.flatTpoCrew, alt: "CHS crew installing TPO membrane on a commercial flat roof" },
         { src: PHOTOS.flatPrepRedLine, alt: "Large commercial flat-roof prep with marked boundary line" },
-        { src: FOUNDER_PHOTOS.flat[0], alt: "Completed TPO commercial roof, Southwest Florida" },
-        { src: FOUNDER_PHOTOS.flat[1], alt: "TPO roof on a Cape Coral commercial property" },
-        { src: FOUNDER_PHOTOS.flat[2], alt: "Mechanic shop TPO flat roof installation" },
-        { src: FOUNDER_PHOTOS.flat[3], alt: "Completed TPO commercial flat roof with rooftop HVAC" },
+        { src: FOUNDER_PHOTOS.flat[0], alt: "CHS crew finishing TPO edge trim on commercial flat roof" },
+        { src: FOUNDER_PHOTOS.flat[1], alt: "Aerial of full TPO flat roof installation on commercial building" },
+        { src: FOUNDER_PHOTOS.flat[2], alt: "CHS crew installing Polyglass underlayment on flat roof edge" },
+        { src: FOUNDER_PHOTOS.flat[3], alt: "Top-down aerial of completed white TPO flat roof on luxury new-build" },
       ]}
     />
   );
