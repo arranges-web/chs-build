@@ -172,6 +172,12 @@ export default function Header() {
           </div>
           <div className="flex items-center gap-4 shrink-0">
             <HurricaneSeasonPill />
+            <Link
+              href="/portal"
+              className="hidden lg:inline-flex items-center gap-1 text-secondary-foreground/85 hover:text-white whitespace-nowrap font-semibold"
+            >
+              {t("header.topBar.customerPortal", { defaultValue: "Customer Portal" })}
+            </Link>
             <span className="hidden xl:inline text-[hsl(var(--accent-gold))] font-semibold whitespace-nowrap">
               {t("trust.servingAllSWFL")}
             </span>
@@ -489,8 +495,20 @@ export default function Header() {
                   );
                 })}
 
+                {/* Customer portal quick link */}
+                <Link
+                  href="/portal"
+                  onClick={closeAll}
+                  className="mt-4 mx-2 flex items-center justify-between px-3.5 py-3 rounded-xl bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
+                >
+                  <span className="text-sm font-semibold text-primary">
+                    {t("header.topBar.customerPortal")}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-primary" />
+                </Link>
+
                 {/* Trust strip */}
-                <div className="mt-4 mx-2 px-3.5 py-3 rounded-xl bg-muted/40 border border-border/60 text-[11px] text-muted-foreground space-y-1.5">
+                <div className="mt-3 mx-2 px-3.5 py-3 rounded-xl bg-muted/40 border border-border/60 text-[11px] text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                     <span>{t("header.topBar.licensed", { license: SITE.license })}</span>

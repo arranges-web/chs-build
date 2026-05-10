@@ -28,6 +28,7 @@ import LandingPage from "@/pages/LandingPage";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Admin from "@/pages/Admin";
+import Portal from "@/pages/Portal";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ function Router() {
           chrome — minimal nav, no chat widget, no social-proof toast. */}
       <Route path="/free-quote" component={LandingPage} />
       <Route path="/admin" component={Admin} />
+      <Route path="/portal" component={Portal} />
       <Route>
         <MainSiteRoutes />
       </Route>

@@ -159,7 +159,7 @@ export const SITE = {
   license: "#CCC1333902",
   phoneDisplay: "(239) 737-1758",
   phoneTel: "+12397371758",
-  email: "info@chs-roofing.com",
+  email: "info@cordovahomeservices.com",
   hours: "Mon – Fri: 8am – 5pm · Weekend emergency service",
   established: "2010",
   logo: chsLogo,

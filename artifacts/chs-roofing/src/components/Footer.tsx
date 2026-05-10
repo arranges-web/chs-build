@@ -109,6 +109,7 @@ export default function Footer() {
             <li><Link href="/gallery/commercial" className="hover:text-primary transition-colors">{t("header.nav.commercialGallery")}</Link></li>
             <li><Link href="/gallery/multifamily" className="hover:text-primary transition-colors">{t("header.nav.multifamilyGallery")}</Link></li>
             <li><Link href="/estimator" className="hover:text-primary transition-colors">{t("footer.roofingEstimator")}</Link></li>
+            <li><Link href="/portal" className="hover:text-primary transition-colors">{t("header.topBar.customerPortal")}</Link></li>
             <li><Link href="/about" className="hover:text-primary transition-colors">{t("footer.aboutUs")}</Link></li>
             <li><Link href="/contact" className="hover:text-primary transition-colors">{t("footer.contact")}</Link></li>
           </ul>

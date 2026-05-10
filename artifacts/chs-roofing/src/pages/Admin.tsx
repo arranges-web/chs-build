@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Lock, LogOut, RefreshCw, Mail, Phone, MapPin, Calculator, Inbox } from "lucide-react";
+import { Lock, LogOut, RefreshCw, Mail, Phone, MapPin, Calculator, Inbox, Users } from "lucide-react";
 import { api } from "@/lib/api";
 import { SITE } from "@/lib/site-config";
+import Clients from "@/components/admin/Clients";
 
 type AnyRow = Record<string, unknown>;
 
@@ -27,7 +28,7 @@ export default function AdminPage() {
   const [estimates, setEstimates] = useState<AnyRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<"leads" | "estimates">("leads");
+  const [tab, setTab] = useState<"clients" | "leads" | "estimates">("clients");
 
   useEffect(() => {
     const previous = document.title;
@@ -185,11 +186,25 @@ export default function AdminPage() {
           </div>
         </header>
 
-        <div className="flex items-center gap-2 border-b border-border/60 mb-6">
+        <div className="flex items-center gap-2 border-b border-border/60 mb-6 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setTab("clients")}
+            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
+              tab === "clients"
+                ? "border-primary text-primary"
+                : "border-transparent text-foreground/60 hover:text-foreground"
+            }`}
+          >
+            <span className="inline-flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Clients
+            </span>
+          </button>
           <button
             type="button"
             onClick={() => setTab("leads")}
-            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
+            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
               tab === "leads"
                 ? "border-primary text-primary"
                 : "border-transparent text-foreground/60 hover:text-foreground"
@@ -203,7 +218,7 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => setTab("estimates")}
-            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors ${
+            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors whitespace-nowrap ${
               tab === "estimates"
                 ? "border-primary text-primary"
                 : "border-transparent text-foreground/60 hover:text-foreground"
@@ -222,7 +237,9 @@ export default function AdminPage() {
           </div>
         )}
 
-        {loading && rows.length === 0 ? (
+        {tab === "clients" ? (
+          <Clients adminKey={authedKey} />
+        ) : loading && rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : rows.length === 0 ? (
           <div className="bg-card border border-border/60 rounded-2xl p-10 text-center">

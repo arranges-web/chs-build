@@ -60,7 +60,8 @@
     "closeMenu": "Close menu",
     "topBar": {
       "licensed": "Licensed {{license}} & Insured",
-      "googleStar": "Google 5-Star Rated"
+      "googleStar": "Google 5-Star Rated",
+      "customerPortal": "Customer Portal"
     },
     "nav": {
       "services": "Services",
