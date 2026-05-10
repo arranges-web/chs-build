@@ -37,6 +37,7 @@ import {
   Droplets,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { api } from "@/lib/api";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -158,9 +159,19 @@ export default function ContactForm() {
     setStep(target);
   };
 
-  const onSubmit = async (_data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
+    // Pull plan param if the user landed via /contact?plan=basic so it
+    // ends up in the admin panel alongside the lead.
+    const plan =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("plan")
+        : null;
+    await api.submitLead({
+      ...data,
+      plan,
+      source: "contact-form",
+    });
     setIsSubmitting(false);
     setIsSuccess(true);
     toast({

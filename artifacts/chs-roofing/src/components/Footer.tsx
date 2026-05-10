@@ -152,6 +152,21 @@ export default function Footer() {
           <Link href="/terms" className="hover:text-white transition-colors">{t("footer.terms")}</Link>
         </div>
       </div>
+
+      {/* Designer credit — minimal, low contrast, dead-center. */}
+      <div className="container mx-auto max-w-7xl px-4 pt-3 text-center">
+        <p className="text-[10px] tracking-wider text-secondary-foreground/40">
+          Designed by{" "}
+          <a
+            href="https://arrangesmarketing.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-secondary-foreground/70 transition-colors underline-offset-2 hover:underline"
+          >
+            Arranges Marketing
+          </a>
+        </p>
+      </div>
     </footer>
   );
 }

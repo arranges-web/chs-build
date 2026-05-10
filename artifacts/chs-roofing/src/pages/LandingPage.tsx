@@ -395,6 +395,19 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-6xl px-4 pt-6 mt-6 border-t border-white/10 text-xs text-secondary-foreground/60 text-center">
           © {new Date().getFullYear()} {SITE.legalName}. All rights reserved.
         </div>
+        <div className="container mx-auto max-w-6xl px-4 pt-2 text-center">
+          <p className="text-[10px] tracking-wider text-secondary-foreground/40">
+            Designed by{" "}
+            <a
+              href="https://arrangesmarketing.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-secondary-foreground/70 transition-colors underline-offset-2 hover:underline"
+            >
+              Arranges Marketing
+            </a>
+          </p>
+        </div>
       </footer>
     </div>
   );

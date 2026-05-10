@@ -26,6 +26,8 @@ import {
   FOUNDER_PHOTOS,
   SITE,
 } from "@/lib/site-config";
+import { api } from "@/lib/api";
+import { CheckCircle2, Save } from "lucide-react";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
@@ -139,6 +141,14 @@ export default function EstimatorPage() {
   const [complexitySlug, setComplexitySlug] =
     useState<(typeof ESTIMATOR_COMPLEXITY_OPTIONS)[number]["slug"]>("simple");
   const [wasteSlug] = useState<(typeof ESTIMATOR_WASTE_OPTIONS)[number]["slug"]>("standard");
+
+  // "Save my estimate" state — saves a snapshot to the admin portal
+  // so the team can follow up.
+  const [saveEmail, setSaveEmail] = useState("");
+  const [saveName, setSaveName] = useState("");
+  const [savePhone, setSavePhone] = useState("");
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveOpen, setSaveOpen] = useState(false);
 
   const material = ESTIMATOR_MATERIALS.find((m) => m.slug === materialSlug)!;
   const pitch = ESTIMATOR_PITCH_OPTIONS.find((p) => p.slug === pitchSlug)!;
@@ -498,6 +508,98 @@ export default function EstimatorPage() {
                       <Phone className="w-4 h-4" />
                       {t("common.callLabel", { phone: SITE.phoneDisplay })}
                     </a>
+
+                    {/* Save my estimate */}
+                    {!saveOpen && saveStatus !== "saved" && (
+                      <button
+                        type="button"
+                        onClick={() => setSaveOpen(true)}
+                        className="w-full inline-flex items-center justify-center gap-2 text-white/85 hover:text-white text-xs font-semibold tracking-tight py-2 transition-colors"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        Save my estimate & get a follow-up
+                      </button>
+                    )}
+                    {saveOpen && saveStatus !== "saved" && (
+                      <div className="mt-2 p-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                        <input
+                          value={saveName}
+                          onChange={(e) => setSaveName(e.target.value)}
+                          placeholder="Your name"
+                          className="w-full h-9 px-3 rounded-lg bg-white/10 border border-white/10 text-white text-sm placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                        />
+                        <input
+                          value={savePhone}
+                          onChange={(e) => setSavePhone(e.target.value)}
+                          placeholder="Phone"
+                          type="tel"
+                          inputMode="tel"
+                          className="w-full h-9 px-3 rounded-lg bg-white/10 border border-white/10 text-white text-sm placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                        />
+                        <input
+                          value={saveEmail}
+                          onChange={(e) => setSaveEmail(e.target.value)}
+                          placeholder="Email"
+                          type="email"
+                          inputMode="email"
+                          className="w-full h-9 px-3 rounded-lg bg-white/10 border border-white/10 text-white text-sm placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                        />
+                        {saveStatus === "error" && (
+                          <p className="text-[11px] text-rose-300">
+                            Save failed. Please try again or call us.
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              setSaveStatus("saving");
+                              const res = await api.submitEstimate({
+                                name: saveName || null,
+                                phone: savePhone || null,
+                                email: saveEmail || null,
+                                address: address || null,
+                                material: material.slug,
+                                colorOption: colorOption ? "yes" : "no",
+                                pitch: pitch.slug,
+                                complexity: complexity.slug,
+                                footprintSf: String(computed.footprintSf),
+                                squares: computed.squares.toFixed(1),
+                                lowEstimate: computed.lowEstimate.toFixed(0),
+                                highEstimate: computed.highEstimate.toFixed(0),
+                                midEstimate: computed.subtotal.toFixed(0),
+                                source: "estimator",
+                              });
+                              setSaveStatus(res ? "saved" : "error");
+                            }}
+                            disabled={saveStatus === "saving"}
+                            className="flex-1 inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-colors disabled:opacity-60"
+                          >
+                            <Save className="w-3.5 h-3.5" />
+                            {saveStatus === "saving" ? "Saving…" : "Save estimate"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSaveOpen(false)}
+                            className="text-xs text-white/60 hover:text-white px-2"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-white/50 leading-relaxed">
+                          We'll save this estimate to your account and a CHS rep
+                          will follow up. Your info is never sold or shared.
+                        </p>
+                      </div>
+                    )}
+                    {saveStatus === "saved" && (
+                      <div className="mt-2 p-3 rounded-xl bg-primary/15 border border-primary/30 flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <p className="text-[12px] text-white/90 leading-relaxed">
+                          Estimate saved. We'll reach out within one business day.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
