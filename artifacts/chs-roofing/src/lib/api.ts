@@ -6,6 +6,16 @@
  */
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? "/api").replace(/\/$/, "");
 
+async function readError(res: Response): Promise<string> {
+  try {
+    const body = (await res.json()) as { error?: string };
+    if (body?.error) return body.error;
+  } catch {
+    // fall through
+  }
+  return `Request failed (${res.status})`;
+}
+
 async function postJson<T extends object>(path: string, body: unknown): Promise<T | null> {
   try {
     const res = await fetch(`${BASE}${path}`, {
@@ -17,6 +27,43 @@ async function postJson<T extends object>(path: string, body: unknown): Promise<
     return (await res.json()) as T;
   } catch {
     return null;
+  }
+}
+
+/** Like postJson but returns either the parsed body or { error }. */
+async function postJsonResult<T extends object>(
+  path: string,
+  body: unknown,
+  headers: Record<string, string> = {},
+): Promise<{ data: T } | { error: string }> {
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return { error: await readError(res) };
+    return { data: (await res.json()) as T };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
+async function patchJsonResult<T extends object>(
+  path: string,
+  body: unknown,
+  headers: Record<string, string> = {},
+): Promise<{ data: T } | { error: string }> {
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return { error: await readError(res) };
+    return { data: (await res.json()) as T };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
   }
 }
 
@@ -190,14 +237,14 @@ export const api = {
   createCustomer: (
     payload: { name: string; email?: string; phone?: string; address?: string; notes?: string },
     key: string,
-  ) => postJsonAuthed<{ row: Customer }>("/admin/customers", payload, key),
+  ) => postJsonResult<{ row: Customer }>("/admin/customers", payload, { "x-admin-key": key }),
   updateCustomer: (
     id: number,
     payload: Partial<Customer> & { notes?: string },
     key: string,
   ) =>
-    patchJson<{ row: Customer }>(`/admin/customers/${id}`, payload, {
-      headers: { "x-admin-key": key },
+    patchJsonResult<{ row: Customer }>(`/admin/customers/${id}`, payload, {
+      "x-admin-key": key,
     }),
 
   createJob: (
@@ -211,25 +258,23 @@ export const api = {
       estimatedCompletion?: string;
     },
     key: string,
-  ) => postJsonAuthed<{ row: Job }>("/admin/jobs", payload, key),
+  ) => postJsonResult<{ row: Job }>("/admin/jobs", payload, { "x-admin-key": key }),
   updateJob: (id: number, payload: Partial<Job>, key: string) =>
-    patchJson<{ row: Job }>(`/admin/jobs/${id}`, payload, {
-      headers: { "x-admin-key": key },
-    }),
+    patchJsonResult<{ row: Job }>(`/admin/jobs/${id}`, payload, { "x-admin-key": key }),
   deleteJob: (id: number, key: string) =>
     deleteJson(`/admin/jobs/${id}`, { headers: { "x-admin-key": key } }),
 
   addJobUpdate: (
     payload: { jobId: number; body: string; authorName?: string },
     key: string,
-  ) => postJsonAuthed<{ row: JobUpdate }>("/admin/job-updates", payload, key),
+  ) => postJsonResult<{ row: JobUpdate }>("/admin/job-updates", payload, { "x-admin-key": key }),
   deleteJobUpdate: (id: number, key: string) =>
     deleteJson(`/admin/job-updates/${id}`, { headers: { "x-admin-key": key } }),
 
   addJobPhoto: (
     payload: { jobId: number; url: string; caption?: string },
     key: string,
-  ) => postJsonAuthed<{ row: JobPhoto }>("/admin/job-photos", payload, key),
+  ) => postJsonResult<{ row: JobPhoto }>("/admin/job-photos", payload, { "x-admin-key": key }),
   deleteJobPhoto: (id: number, key: string) =>
     deleteJson(`/admin/job-photos/${id}`, { headers: { "x-admin-key": key } }),
 };

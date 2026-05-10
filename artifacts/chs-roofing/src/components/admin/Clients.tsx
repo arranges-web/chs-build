@@ -173,6 +173,7 @@ function NewCustomerForm({
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <form
@@ -181,6 +182,7 @@ function NewCustomerForm({
         e.preventDefault();
         if (!name.trim()) return;
         setSaving(true);
+        setError(null);
         const res = await api.createCustomer(
           {
             name: name.trim(),
@@ -191,7 +193,11 @@ function NewCustomerForm({
           adminKey,
         );
         setSaving(false);
-        if (res) onCreated(res.row);
+        if ("data" in res) {
+          onCreated(res.data.row);
+        } else {
+          setError(res.error);
+        }
       }}
     >
       <h3 className="font-display font-bold text-foreground text-lg mb-3">New customer</h3>
@@ -201,6 +207,11 @@ function NewCustomerForm({
         <Field label="Phone" value={phone} onChange={setPhone} type="tel" />
         <Field label="Address" value={address} onChange={setAddress} />
       </div>
+      {error && (
+        <div className="mt-3 p-3 rounded-lg border border-destructive/40 bg-destructive/5 text-xs text-destructive whitespace-pre-line">
+          {error}
+        </div>
+      )}
       <div className="mt-4 flex items-center gap-2">
         <button
           type="submit"
@@ -245,13 +256,19 @@ function CustomerDetail({
   const [address, setAddress] = useState(c.address ?? "");
 
   const [addingJob, setAddingJob] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const save = async () => {
-    await api.updateCustomer(
+    setSaveError(null);
+    const res = await api.updateCustomer(
       c.id,
       { name, email: email || null, phone: phone || null, address: address || null },
       adminKey,
     );
+    if ("error" in res) {
+      setSaveError(res.error);
+      return;
+    }
     setEditing(false);
     onChanged();
   };
@@ -293,6 +310,11 @@ function CustomerDetail({
             <Field label="Phone" value={phone} onChange={setPhone} type="tel" />
             <Field label="Address" value={address} onChange={setAddress} />
             <div className="sm:col-span-2">
+              {saveError && (
+                <div className="mb-2 p-3 rounded-lg border border-destructive/40 bg-destructive/5 text-xs text-destructive whitespace-pre-line">
+                  {saveError}
+                </div>
+              )}
               <button
                 type="button"
                 onClick={save}
