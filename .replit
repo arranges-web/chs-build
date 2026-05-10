@@ -42,3 +42,8 @@ externalPort = 3001
 [[ports]]
 localPort = 8084
 externalPort = 3003
+
+[userenv]
+
+[userenv.shared]
+ADMIN_KEY = "Gustavo"
