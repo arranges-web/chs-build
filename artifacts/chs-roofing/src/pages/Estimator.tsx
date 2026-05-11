@@ -14,7 +14,7 @@ import {
   Triangle,
 } from "lucide-react";
 import { Link } from "wouter";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
@@ -128,10 +128,40 @@ function PitchVisual({ slug, className = "" }: { slug: string; className?: strin
   );
 }
 
+/**
+ * Pull the 5-digit ZIP from a free-form address string. We use it
+ * to pre-fill a "typical SWFL home size" baseline so the customer
+ * sees a believable starting estimate as soon as they type their
+ * address. This is a regional average — NOT a real measurement of
+ * the home — so we always tell the user to adjust it.
+ */
+function extractZip(addr: string): string | null {
+  const m = addr.match(/\b(\d{5})(?:-\d{4})?\b/);
+  return m ? m[1] : null;
+}
+
+function baselineFootprintForZip(zip: string | null): number {
+  if (!zip) return 2000;
+  const z = parseInt(zip, 10);
+  if (Number.isNaN(z)) return 2000;
+  // Collier County (Naples / Bonita / Marco Island) — bigger homes
+  if (z >= 34100 && z <= 34145) return 2400;
+  // Lee County (Cape Coral, Fort Myers, Sanibel, Estero, Lehigh)
+  if (z >= 33900 && z <= 33994) return 2000;
+  // Charlotte County (Port Charlotte, Punta Gorda)
+  if (z >= 33946 && z <= 33983) return 1800;
+  // Sarasota / Venice / North Port
+  if (z >= 34200 && z <= 34295) return 2200;
+  return 2000;
+}
+
 export default function EstimatorPage() {
   const { t } = useTranslation();
   const [address, setAddress] = useState("");
   const [footprintInput, setFootprintInput] = useState<string>("2000");
+  const [footprintTouched, setFootprintTouched] = useState(false);
+  // The baseline we last auto-filled, so the advisory can mention it.
+  const [baselineFootprint, setBaselineFootprint] = useState<number | null>(null);
   const [materialSlug, setMaterialSlug] =
     useState<(typeof ESTIMATOR_MATERIALS)[number]["slug"]>("shingle");
   const [colorOption, setColorOption] = useState(false);
@@ -153,6 +183,23 @@ export default function EstimatorPage() {
   const material = ESTIMATOR_MATERIALS.find((m) => m.slug === materialSlug)!;
   const pitch = ESTIMATOR_PITCH_OPTIONS.find((p) => p.slug === pitchSlug)!;
   const complexity = ESTIMATOR_COMPLEXITY_OPTIONS.find((c) => c.slug === complexitySlug)!;
+
+  // Watch the address and auto-prefill a regional baseline footprint
+  // as soon as we can parse a ZIP. We never overwrite a value the
+  // user has hand-edited (tracked via footprintTouched).
+  useEffect(() => {
+    const trimmed = address.trim();
+    if (!trimmed) {
+      setBaselineFootprint(null);
+      return;
+    }
+    const zip = extractZip(trimmed);
+    const baseline = baselineFootprintForZip(zip);
+    setBaselineFootprint(baseline);
+    if (!footprintTouched) {
+      setFootprintInput(String(baseline));
+    }
+  }, [address, footprintTouched]);
 
   // Per-material waste factor lives on the material itself. It is
   // applied ONCE as an area multiplier (more roof → more squares),
@@ -285,7 +332,10 @@ export default function EstimatorPage() {
                         min={200}
                         step={50}
                         value={footprintInput}
-                        onChange={(e) => setFootprintInput(e.target.value)}
+                        onChange={(e) => {
+                          setFootprintInput(e.target.value);
+                          setFootprintTouched(true);
+                        }}
                         className="w-full h-11 pl-4 pr-16 rounded-xl border border-border/60 bg-background text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         aria-label={t("estimator.footprint.title")}
                       />
@@ -293,6 +343,49 @@ export default function EstimatorPage() {
                         {t("estimator.footprint.unit")}
                       </span>
                     </div>
+
+                    {/* Address-baseline advisory — only when an address
+                        has been entered and we've pre-filled a starting
+                        sq-ft for the user. */}
+                    {address.trim() && baselineFootprint !== null && (
+                      <div
+                        className={`mt-3 rounded-xl border p-3 text-xs leading-relaxed flex items-start gap-2.5 ${
+                          footprintTouched
+                            ? "bg-primary/5 border-primary/20 text-foreground/80"
+                            : "bg-[hsl(var(--accent-gold))]/10 border-[hsl(var(--accent-gold))]/30 text-foreground"
+                        }`}
+                      >
+                        <Info
+                          className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
+                            footprintTouched ? "text-primary" : "text-[hsl(var(--accent-gold))]"
+                          }`}
+                        />
+                        <div className="min-w-0">
+                          {!footprintTouched ? (
+                            <>
+                              <p>
+                                <strong>We started you at ~{baselineFootprint.toLocaleString()} sq ft</strong>
+                                {" "}based on a typical home in your ZIP. This is a
+                                regional baseline, not a measurement of your home —{" "}
+                                <strong>please adjust the field above to your home's actual square footage</strong>{" "}
+                                for a more accurate estimate.
+                              </p>
+                              <p className="mt-1 text-muted-foreground">
+                                Tip: find your home's sq ft on your county property
+                                appraiser (Lee / Collier / Charlotte / Sarasota) or
+                                your latest home-insurance declaration page.
+                              </p>
+                            </>
+                          ) : (
+                            <p>
+                              Thanks — using <strong>{Number(footprintInput || 0).toLocaleString()} sq ft</strong>{" "}
+                              for the estimate. Final pricing always requires an on-site
+                              inspection.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
