@@ -302,65 +302,75 @@ export const MAINTENANCE_PLANS = [
   },
 ] as const;
 
-// Pricing per "square" (100 sq ft of roof area). Source: CHS Roofing founder.
-// Used by the Estimator page to produce a rough budget figure only.
+// Estimator pricing config. Source: CHS Roofing founder.
+//
+//   squares = (footprint_sqft × pitchMultiplier × (1 + wasteFactor)) / 100
+//   price   = squares × internalBase × complexityMultiplier
+//
+// The internal base + waste factor + complexity multiplier are tuned
+// so that at the founder's assumed average complexity (1.08) the
+// price per BARE square lands on the "final starting price" the
+// customer should see for that material. Waste and complexity are
+// only applied once each — we do NOT double-apply them on top of a
+// pre-loaded final price.
 export const ESTIMATOR_MATERIALS = [
   {
     slug: "shingle",
     label: "GAF Shingle Roof",
-    pricePerSquare: 460,
+    internalBase: 380,
+    wasteFactor: 0.12,
     colorOptionAvailable: false,
     short: "Premium GAF asphalt shingle system.",
   },
   {
     slug: "metal-standing-seam",
     label: "Metal Standing Seam",
-    pricePerSquare: 775,
+    internalBase: 574,
+    internalBaseWithColor: 692,
+    wasteFactor: 0.18,
     colorOptionAvailable: true,
-    colorAdderPerSquare: 150,
     short: "Hurricane-rated standing seam metal roof.",
   },
   {
     slug: "metal-5v",
     label: "Metal 5V",
-    pricePerSquare: 665,
+    internalBase: 535,
+    internalBaseWithColor: 656,
+    wasteFactor: 0.15,
     colorOptionAvailable: true,
-    colorAdderPerSquare: 150,
     short: "Classic 5V exposed-fastener metal roof.",
   },
   {
     slug: "tile-on-tile",
     label: "Tile Off / Tile On",
-    pricePerSquare: 1000,
+    internalBase: 805,
+    wasteFactor: 0.15,
     colorOptionAvailable: false,
     short: "Tear off existing tile and install new tile.",
   },
   {
     slug: "tile-to-standing-seam",
     label: "Tile Off / Standing Seam (with color)",
-    pricePerSquare: 1100,
+    internalBase: 863,
+    wasteFactor: 0.18,
     colorOptionAvailable: false,
     short: "Tear off existing tile, install standing seam metal in your color.",
   },
 ] as const;
 
 export const ESTIMATOR_PITCH_OPTIONS = [
-  { slug: "low", label: "Low slope (≤4/12)", multiplier: 1.05 },
-  { slug: "standard", label: "Standard (5/12 – 7/12)", multiplier: 1.12 },
-  { slug: "steep", label: "Steep (8/12 – 12/12)", multiplier: 1.2 },
-  { slug: "very-steep", label: "Very steep (>12/12)", multiplier: 1.3 },
+  { slug: "low", label: "Flat Roof", multiplier: 1.05 },
+  { slug: "standard", label: "Shallow Pitch", multiplier: 1.12 },
+  { slug: "steep", label: "Medium Pitch", multiplier: 1.2 },
+  { slug: "very-steep", label: "Steep Pitch", multiplier: 1.3 },
 ] as const;
 
+// Multipliers calibrated so "moderate" (the default, ~1.08) lands a
+// roof at the founder's published starting price.
 export const ESTIMATOR_COMPLEXITY_OPTIONS = [
   { slug: "simple", label: "Simple (single ridge, few penetrations)", multiplier: 1.0 },
-  { slug: "moderate", label: "Moderate (multiple hips & valleys)", multiplier: 1.06 },
-  { slug: "complex", label: "Complex (cut-up roof, dormers, skylights)", multiplier: 1.12 },
-] as const;
-
-export const ESTIMATOR_WASTE_OPTIONS = [
-  { slug: "low", label: "10%", value: 0.1 },
-  { slug: "standard", label: "15% (recommended)", value: 0.15 },
-  { slug: "high", label: "20%", value: 0.2 },
+  { slug: "moderate", label: "Moderate (multiple hips & valleys)", multiplier: 1.08 },
+  { slug: "complex", label: "Complex (cut-up roof, dormers, skylights)", multiplier: 1.16 },
 ] as const;
 
 export const MAINTENANCE_STEPS = [

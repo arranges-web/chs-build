@@ -22,7 +22,6 @@ import {
   ESTIMATOR_COMPLEXITY_OPTIONS,
   ESTIMATOR_MATERIALS,
   ESTIMATOR_PITCH_OPTIONS,
-  ESTIMATOR_WASTE_OPTIONS,
   FOUNDER_PHOTOS,
   SITE,
 } from "@/lib/site-config";
@@ -138,9 +137,10 @@ export default function EstimatorPage() {
   const [colorOption, setColorOption] = useState(false);
   const [pitchSlug, setPitchSlug] =
     useState<(typeof ESTIMATOR_PITCH_OPTIONS)[number]["slug"]>("standard");
+  // Default complexity = moderate so the estimate lands on the
+  // founder's published starting price for an average roof.
   const [complexitySlug, setComplexitySlug] =
-    useState<(typeof ESTIMATOR_COMPLEXITY_OPTIONS)[number]["slug"]>("simple");
-  const [wasteSlug] = useState<(typeof ESTIMATOR_WASTE_OPTIONS)[number]["slug"]>("standard");
+    useState<(typeof ESTIMATOR_COMPLEXITY_OPTIONS)[number]["slug"]>("moderate");
 
   // "Save my estimate" state — saves a snapshot to the admin portal
   // so the team can follow up.
@@ -153,42 +153,41 @@ export default function EstimatorPage() {
   const material = ESTIMATOR_MATERIALS.find((m) => m.slug === materialSlug)!;
   const pitch = ESTIMATOR_PITCH_OPTIONS.find((p) => p.slug === pitchSlug)!;
   const complexity = ESTIMATOR_COMPLEXITY_OPTIONS.find((c) => c.slug === complexitySlug)!;
-  const waste = ESTIMATOR_WASTE_OPTIONS.find((w) => w.slug === wasteSlug)!;
 
+  // Per-material waste factor lives on the material itself. It is
+  // applied ONCE as an area multiplier (more roof → more squares),
+  // never as a price multiplier on top of an already-final price.
   const computed = useMemo(() => {
     const footprintSf = Math.max(0, Number(footprintInput) || 0);
-    // Defaults internally — allowances are no longer user-facing.
-    const permit = 750;
-    const decking = 500;
+    // 1) footprint × pitch = estimated roof area
     const adjustedSf = footprintSf * pitch.multiplier;
-    const squares = adjustedSf / 100;
-    const colorAdder =
-      material.colorOptionAvailable && colorOption
-        ? (material as { colorAdderPerSquare?: number }).colorAdderPerSquare ?? 0
-        : 0;
-    const perSquareTotal = material.pricePerSquare + colorAdder;
-    const baseMaterial = squares * perSquareTotal;
-    const complexityAdj = baseMaterial * (complexity.multiplier - 1);
-    const wasteAdj = (baseMaterial + complexityAdj) * waste.value;
-    const subtotal = baseMaterial + complexityAdj + wasteAdj + permit + decking;
+    // 2) + waste factor = total roof area
+    const totalRoofArea = adjustedSf * (1 + material.wasteFactor);
+    // 3) total roof area ÷ 100 = roofing squares
+    const squares = totalRoofArea / 100;
+    // Color toggle (when offered) switches to the higher internal
+    // base — we do NOT add a flat $/sq on top of an already-tuned
+    // base price.
+    const useColorBase = material.colorOptionAvailable && colorOption;
+    const basePrice = useColorBase
+      ? (material as { internalBaseWithColor?: number }).internalBaseWithColor ??
+        material.internalBase
+      : material.internalBase;
+    // 4) squares × internal base × complexity = starting estimate
+    const subtotal = squares * basePrice * complexity.multiplier;
     const lowEstimate = subtotal * 0.92;
     const highEstimate = subtotal * 1.08;
     return {
       footprintSf,
       adjustedSf,
+      totalRoofArea,
       squares,
-      colorAdder,
-      perSquareTotal,
-      baseMaterial,
-      complexityAdj,
-      wasteAdj,
-      permit,
-      decking,
+      basePrice,
       subtotal,
       lowEstimate,
       highEstimate,
     };
-  }, [footprintInput, pitch, material, colorOption, complexity, waste]);
+  }, [footprintInput, pitch, material, colorOption, complexity]);
 
   const mapsEmbed = address.trim()
     ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=k&z=19&ie=UTF8&iwloc=&output=embed`
@@ -389,7 +388,6 @@ export default function EstimatorPage() {
                     {ESTIMATOR_PITCH_OPTIONS.map((opt) => {
                       const selected = opt.slug === pitchSlug;
                       const label = t(`estimator.pitch.items.${opt.slug}`, { defaultValue: opt.label });
-                      const sub = t(`estimator.pitch.subItems.${opt.slug}`, { defaultValue: "" });
                       return (
                         <button
                           key={opt.slug}
@@ -412,7 +410,6 @@ export default function EstimatorPage() {
                           <p className="font-semibold text-sm text-foreground tracking-tight leading-tight">
                             {label}
                           </p>
-                          <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{sub}</p>
                         </button>
                       );
                     })}

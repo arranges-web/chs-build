@@ -354,8 +354,7 @@
         "tile-on-tile": { "label": "Tile Off / Tile On", "short": "Tear off existing tile and install new tile." },
         "tile-to-standing-seam": { "label": "Tile Off / Standing Seam (with color)", "short": "Tear off existing tile, install standing seam metal in your color." }
       },
-      "colorOption": "Color / standard color finish",
-      "colorOptionDesc": "Adds ${{adder}} per square for a factory-baked color finish."
+      "colorOption": "Color / standard color finish"
     },
     "pitch": {
       "title": "Roof Pitch",
@@ -365,12 +364,6 @@
         "standard": "Shallow Pitch",
         "steep": "Medium Pitch",
         "very-steep": "Steep Pitch"
-      },
-      "subItems": {
-        "low": "Falls under low slope",
-        "standard": "Falls under standard slope",
-        "steep": "Falls under steep slope",
-        "very-steep": "Falls under very steep slope"
       },
       "areaSuffix": "× area"
     },

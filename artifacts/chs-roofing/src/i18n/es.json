@@ -354,8 +354,7 @@
         "tile-on-tile": { "label": "Quitar Teja / Instalar Teja", "short": "Remover la teja existente e instalar teja nueva." },
         "tile-to-standing-seam": { "label": "Quitar Teja / Instalar Junta Alzada (con color)", "short": "Remover la teja existente, instalar metal de junta alzada en su color." }
       },
-      "colorOption": "Acabado de color estándar",
-      "colorOptionDesc": "Agrega ${{adder}} por cuadro por un acabado de color de fábrica."
+      "colorOption": "Acabado de color estándar"
     },
     "pitch": {
       "title": "Pendiente del Techo",
@@ -365,12 +364,6 @@
         "standard": "Pendiente Suave",
         "steep": "Pendiente Media",
         "very-steep": "Pendiente Empinada"
-      },
-      "subItems": {
-        "low": "Cae bajo pendiente baja",
-        "standard": "Cae bajo pendiente estándar",
-        "steep": "Cae bajo pendiente empinada",
-        "very-steep": "Cae bajo pendiente muy empinada"
       },
       "areaSuffix": "× área"
     },
