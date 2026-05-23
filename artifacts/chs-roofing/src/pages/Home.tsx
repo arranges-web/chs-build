@@ -199,6 +199,10 @@ export default function HomePage() {
               alt="Premium Florida Roofing"
               style={{ y: parallaxY, scale: 1.15 }}
               className="w-full h-full object-cover object-center"
+              fetchPriority="high"
+              decoding="async"
+              width={1920}
+              height={1280}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/30"></div>
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-secondary/40"></div>

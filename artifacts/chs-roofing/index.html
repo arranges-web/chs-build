@@ -28,6 +28,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Speed: warm the connection to third-party origins we render on every page. -->
+    <link rel="preconnect" href="https://maps.google.com">
+    <link rel="dns-prefetch" href="https://maps.google.com">
+    <link rel="dns-prefetch" href="https://maps.gstatic.com">
+    <link rel="dns-prefetch" href="https://seal-westflorida.bbb.org">
+
+    <!-- Hero image lives in /public; preload it so the LCP element starts downloading
+         alongside the initial JS instead of waiting for React to mount. -->
+    <link rel="preload" as="image" href="/images/hero-roof.png" fetchpriority="high">
     
     <script type="application/ld+json">
     {

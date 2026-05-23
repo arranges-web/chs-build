@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import MaterialPageTemplate from "@/components/MaterialPageTemplate";
 import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
@@ -12,6 +13,9 @@ const VARIANTS = [
       "Architectural Kynar PVDF finishes with 35-year color warranty",
       "Best for high-end residential, modern, and coastal homes",
     ],
+    // Try the founder-supplied photo first; if it's still a 1×1
+    // placeholder PNG (or fails to load), the <img> onError swaps
+    // in a known-good real photo.
     image: FOUNDER_PHOTOS.metalStandingSeam,
     fallbackImage: PHOTOS.whiteStandingSeam,
     accent: "primary" as const,
@@ -30,6 +34,41 @@ const VARIANTS = [
     accent: "gold" as const,
   },
 ];
+
+/**
+ * Renders an <img> that swaps to a fallback URL if the primary URL
+ * is a 1×1 placeholder (we ship transparent placeholders for the
+ * founder to overwrite). We detect "placeholder" by naturalWidth
+ * after load — anything <= 8px wide is treated as a stub.
+ */
+function ResilientImage({
+  primary,
+  fallback,
+  alt,
+  className,
+}: {
+  primary: string;
+  fallback: string;
+  alt: string;
+  className?: string;
+}) {
+  const [src, setSrc] = useState(primary);
+  return (
+    <img
+      loading="lazy"
+      src={src}
+      alt={alt}
+      className={className}
+      onLoad={(e) => {
+        const w = (e.currentTarget as HTMLImageElement).naturalWidth;
+        if (w > 0 && w <= 8 && src !== fallback) setSrc(fallback);
+      }}
+      onError={() => {
+        if (src !== fallback) setSrc(fallback);
+      }}
+    />
+  );
+}
 
 function MetalVariants() {
   return (
@@ -59,9 +98,9 @@ function MetalVariants() {
                 }`}
               >
                 <div className="h-56 overflow-hidden relative bg-muted/30">
-                  <img
-                    loading="lazy"
-                    src={v.image}
+                  <ResilientImage
+                    primary={v.image}
+                    fallback={v.fallbackImage}
                     alt={v.name}
                     className="w-full h-full object-cover"
                   />

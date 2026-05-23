@@ -108,6 +108,8 @@ export default function LandingPage() {
               alt=""
               aria-hidden="true"
               className="w-full h-full object-cover object-center"
+              fetchPriority="high"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/85 to-secondary/55" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-secondary/40" />
