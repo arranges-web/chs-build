@@ -195,7 +195,7 @@ export default function HomePage() {
         <section ref={heroRef} className="relative pt-24 pb-32 lg:pt-32 lg:pb-48 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <motion.img
-              src="/images/hero-roof.png"
+              src="/images/hero-roof.webp"
               alt="Premium Florida Roofing"
               style={{ y: parallaxY, scale: 1.15 }}
               className="w-full h-full object-cover object-center"
