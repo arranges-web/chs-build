@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Don't index admin / portal / scratch pages
+Disallow: /admin
+Disallow: /portal
+
+Sitemap: https://chs-roofing.com/sitemap.xml

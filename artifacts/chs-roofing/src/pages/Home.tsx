@@ -11,6 +11,7 @@ import Credentials from "@/components/Credentials";
 import Partners from "@/components/Partners";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
+import Seo, { faqSchema } from "@/components/Seo";
 import CountUp from "@/components/CountUp";
 import SectionEyebrow from "@/components/SectionEyebrow";
 import TestimonialMarquee from "@/components/TestimonialMarquee";
@@ -190,6 +191,29 @@ export default function HomePage() {
 
   return (
     <>
+      <Seo
+        title="Cape Coral Roofer | CHS Roofing — Southwest Florida's Trusted Roofing Contractor"
+        description="Licensed (CCC1333902) and insured roofing contractor in Cape Coral, Fort Myers & Naples FL. Shingle, metal, tile, flat roofs. Free estimates — call (239) 737-1758."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: "CHS Roofing — Cape Coral, Fort Myers & Naples Roofing Contractor",
+            url: "https://chs-roofing.com/",
+            description:
+              "Family-owned roofing contractor serving all of Southwest Florida. Free roof estimates, hurricane-rated installs, and on-time repairs.",
+            primaryImageOfPage: { "@type": "ImageObject", url: "https://chs-roofing.com/opengraph.jpg" },
+          },
+          faqSchema([
+            { q: "What areas does CHS Roofing serve?", a: "All of Southwest Florida — Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Sanibel, Punta Gorda, Lehigh Acres, North Port and Sarasota." },
+            { q: "Is the estimate really free?", a: "Yes. We do not charge for an on-site roof inspection or a written estimate, and there is no obligation to book the project with us." },
+            { q: "Are you licensed and insured?", a: "Yes — Florida State Certified Roofing Contractor (license CCC1333902), fully insured and BBB A+ accredited." },
+            { q: "What types of roofs do you install?", a: "Asphalt shingles (GAF, TAMKO), standing-seam and 5V metal, concrete and clay tile, and TPO / modified-bitumen flat roofing systems." },
+            { q: "Do you handle insurance claims after a hurricane?", a: "Yes. We document storm and hurricane damage thoroughly, provide Xactimate-aligned scopes, and work directly with your insurance carrier." },
+          ]),
+        ]}
+      />
       <main>
         {/* HERO SECTION */}
         <section ref={heroRef} className="relative pt-24 pb-32 lg:pt-32 lg:pb-48 overflow-hidden">

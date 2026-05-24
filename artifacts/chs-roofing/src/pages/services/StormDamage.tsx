@@ -14,6 +14,12 @@ export default function StormDamage() {
       imageAlt="Storm-damaged roof tear-off and decking inspection in progress"
       heroOverlay={<RaindropOverlay count={28} tint="light" />}
       crumbs={[{ label: "Services" }, { label: "Storm Damage" }]}
+      seo={{
+        title: "Hurricane & Storm Damage Roof Repair in Southwest Florida | CHS Roofing",
+        description: "Emergency hurricane and storm-damage roof repair in Cape Coral, Fort Myers & Naples. Insurance documentation, emergency tarping, and full restoration. Same-day response.",
+        path: "/services/storm-damage",
+        serviceName: "Storm Damage Roof Restoration",
+      }}
       intro={
         <>
           <p>

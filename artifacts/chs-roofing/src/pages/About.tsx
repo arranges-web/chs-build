@@ -5,11 +5,28 @@ import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import Credentials from "@/components/Credentials";
 import ServiceArea from "@/components/ServiceArea";
+import Seo, { breadcrumbSchema } from "@/components/Seo";
 import { TEAM, SITE, PHOTOS } from "@/lib/site-config";
 
 export default function About() {
   return (
     <>
+      <Seo
+        title="About CHS Roofing | Family-Owned Florida Roofing Contractor Since 2010"
+        description="Meet the family behind CHS Roofing (Cordova Home Services). Licensed Florida roofers serving Cape Coral, Fort Myers, Naples and all of Southwest Florida since 2010."
+        path="/about"
+        type="article"
+        jsonLd={[
+          breadcrumbSchema([{ name: "About", path: "/about" }]),
+          {
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            name: "About CHS Roofing",
+            url: "https://chs-roofing.com/about",
+            mainEntity: { "@id": "https://chs-roofing.com/#organization" },
+          },
+        ]}
+      />
       <PageHero
         eyebrow="About CHS Roofing"
         title={<>A family-owned <span className="text-primary">SWFL roofer</span></>}

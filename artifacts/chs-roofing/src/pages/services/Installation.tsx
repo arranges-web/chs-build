@@ -12,6 +12,12 @@ export default function Installation() {
       image={PHOTOS.beachfrontMetal}
       imageAlt="Standing-seam metal roof on a beachfront SWFL home"
       crumbs={[{ label: "Services" }, { label: "Installation" }]}
+      seo={{
+        title: "New Roof Installation in Cape Coral, Fort Myers & Naples FL | CHS Roofing",
+        description: "Licensed Florida roof installation for shingle, metal, tile, and flat roofs. Hurricane-rated, line-itemed estimates, in-house crews. Free quote in Cape Coral, Fort Myers & Naples.",
+        path: "/services/installation",
+        serviceName: "Roof Installation",
+      }}
       intro={
         <>
           <p>

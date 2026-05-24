@@ -5,11 +5,21 @@ import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import ShingleDivider from "@/components/ShingleDivider";
+import Seo, { breadcrumbSchema } from "@/components/Seo";
 import { GALLERY_COMMERCIAL, FOUNDER_PHOTOS } from "@/lib/site-config";
 
 export default function CommercialGallery() {
   return (
     <>
+      <Seo
+        title="Commercial Roofing Gallery — TPO, Flat & Metal Projects | CHS Roofing"
+        description="Recent commercial roofing projects across Southwest Florida — TPO flat roofs, metal systems, restorations, and before/after coatings in Cape Coral, Fort Myers and Naples."
+        path="/gallery/commercial"
+        jsonLd={breadcrumbSchema([
+          { name: "Gallery", path: "/gallery/residential" },
+          { name: "Commercial", path: "/gallery/commercial" },
+        ])}
+      />
       <PageHero
         eyebrow="Gallery · Commercial"
         title={<>Commercial <span className="text-primary">Project Gallery</span></>}

@@ -2,11 +2,27 @@ import { Phone, Mail, MapPin, Clock, ShieldCheck } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import ContactForm from "@/components/ContactForm";
 import ServiceArea from "@/components/ServiceArea";
+import Seo, { breadcrumbSchema } from "@/components/Seo";
 import { SITE, PHOTOS } from "@/lib/site-config";
 
 export default function Contact() {
   return (
     <>
+      <Seo
+        title="Contact CHS Roofing | Free Roof Quote in Cape Coral, Fort Myers & Naples FL"
+        description="Get a free, no-pressure roof estimate from a licensed Florida roofing contractor. Call (239) 737-1758, email info@cordovahomeservices.com, or request a quote online."
+        path="/contact"
+        jsonLd={[
+          breadcrumbSchema([{ name: "Contact", path: "/contact" }]),
+          {
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Contact CHS Roofing",
+            url: "https://chs-roofing.com/contact",
+            mainEntity: { "@id": "https://chs-roofing.com/#organization" },
+          },
+        ]}
+      />
       <PageHero
         eyebrow="Get In Touch"
         title={<>Get a <span className="text-primary">free quote</span></>}

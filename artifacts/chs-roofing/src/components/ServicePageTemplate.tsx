@@ -5,6 +5,7 @@ import PageHero from "./PageHero";
 import CtaSection from "./CtaSection";
 import ProcessTimeline from "./ProcessTimeline";
 import FAQ from "./FAQ";
+import Seo, { breadcrumbSchema, serviceSchema } from "./Seo";
 import { TESTIMONIALS, SITE } from "@/lib/site-config";
 
 type Props = {
@@ -22,6 +23,13 @@ type Props = {
   showProcess?: boolean;
   showFaq?: boolean;
   extra?: React.ReactNode;
+  /** SEO: page-specific <title>, meta description, route path, and short service name. */
+  seo?: {
+    title: string;
+    description: string;
+    path: string;
+    serviceName: string;
+  };
 };
 
 export default function ServicePageTemplate({
@@ -38,11 +46,29 @@ export default function ServicePageTemplate({
   showProcess = true,
   showFaq = true,
   extra,
+  seo,
 }: Props) {
   const reviews = testimonialIndices.map(i => TESTIMONIALS[i]).filter(Boolean);
 
   return (
     <>
+      {seo && (
+        <Seo
+          title={seo.title}
+          description={seo.description}
+          path={seo.path}
+          jsonLd={[
+            serviceSchema({
+              name: seo.serviceName,
+              description: seo.description,
+              path: seo.path,
+            }),
+            breadcrumbSchema(
+              (crumbs ?? []).map((c) => ({ name: c.label, path: c.href ?? seo.path })),
+            ),
+          ]}
+        />
+      )}
       <PageHero
         eyebrow={eyebrow}
         title={title}

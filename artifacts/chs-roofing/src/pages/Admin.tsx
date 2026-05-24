@@ -3,6 +3,7 @@ import { Lock, LogOut, RefreshCw, Mail, Phone, MapPin, Calculator, Inbox, Users 
 import { api } from "@/lib/api";
 import { SITE } from "@/lib/site-config";
 import Clients from "@/components/admin/Clients";
+import Seo from "@/components/Seo";
 
 type AnyRow = Record<string, unknown>;
 
@@ -104,6 +105,7 @@ export default function AdminPage() {
   if (!authedKey) {
     return (
       <main className="min-h-[80vh] bg-background flex items-center justify-center px-4 py-16">
+        <Seo title="Admin | CHS Roofing" description="Internal admin." noIndex path="/admin" />
         <div className="w-full max-w-md bg-card border border-border/60 rounded-3xl shadow-xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">

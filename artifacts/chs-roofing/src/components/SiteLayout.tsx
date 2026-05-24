@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import Header from "./Header";
 import Footer from "./Footer";
 import StickyMobileBar from "./StickyMobileBar";
-import ScrollProgress from "./ScrollProgress";
 
 // Defer the chat widget + social-proof toast — they aren't needed
 // for first paint and they pull in framer-motion + sessionStorage
@@ -45,7 +44,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <a href="#main" className="skip-link" data-testid="skip-to-content">
         Skip to main content
       </a>
-      <ScrollProgress />
       <Header />
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}

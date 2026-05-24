@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { api, type Job, type PortalLookupResponse } from "@/lib/api";
+import Seo from "@/components/Seo";
 import { SITE } from "@/lib/site-config";
 
 const STORAGE_KEY = "chs.portal.identifier.v1";
@@ -136,6 +137,12 @@ export default function PortalPage() {
   if (!data) {
     return (
       <main className="min-h-[80vh] bg-background flex items-center justify-center px-4 py-16">
+        <Seo
+          title="Customer Portal | CHS Roofing"
+          description="Sign in with your email or CHS account number to view your roofing project status, photos, and team updates."
+          path="/portal"
+          noIndex
+        />
         <div className="w-full max-w-md bg-card border border-border/60 rounded-3xl shadow-xl p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -194,6 +201,12 @@ export default function PortalPage() {
   // ─── Dashboard ─────────────────────────────────────────────────
   return (
     <main className="bg-background min-h-screen">
+      <Seo
+        title={`${data.customer.name.split(" ")[0]}'s Project | CHS Roofing Portal`}
+        description="View your CHS Roofing project status, progress, photos and team updates."
+        path="/portal"
+        noIndex
+      />
       <div className="container mx-auto max-w-4xl px-4 py-10">
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>

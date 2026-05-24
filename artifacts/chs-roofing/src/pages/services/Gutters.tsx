@@ -50,6 +50,12 @@ export default function Gutters() {
       image={PHOTOS.silverMetalPorch}
       imageAlt="Silver metal roof with covered porch and seamless gutters"
       crumbs={[{ label: "Services" }, { label: "Gutters" }]}
+      seo={{
+        title: "Seamless Gutters, Soffit & Fascia — Cape Coral, Fort Myers, Naples | CHS",
+        description: "On-site fabricated seamless aluminum gutters, fascia metal, soffit, and gutter guards. Florida Building Code compliant install with workmanship warranty.",
+        path: "/services/gutters",
+        serviceName: "Gutter Installation",
+      }}
       intro={
         <>
           <p>

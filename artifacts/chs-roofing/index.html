@@ -2,10 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>CHS Roofing | Southwest Florida's #1 Roofing Company | Free Estimates</title>
-    <meta name="description" content="Cordova Home Services — Licensed & insured roofing in Cape Coral & Southwest Florida. Shingles, metal, tile, flat roofing. Free estimates. Call now!" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Default <title> + description. Each page overrides at runtime via <Seo>. -->
+    <title>Cape Coral Roofer | CHS Roofing — Southwest Florida's Trusted Roofing Contractor</title>
+    <meta name="description" content="Family-owned, licensed (CCC1333902) and insured roofing contractor in Cape Coral, Fort Myers, Naples & Southwest Florida. Shingle, metal, tile and flat roof installation, repair, and free estimates. Call (239) 737-1758." />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
+    <meta name="author" content="Cordova Home Services LLC" />
+    <meta name="geo.region" content="US-FL" />
+    <meta name="geo.placename" content="Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Sanibel" />
+    <link rel="canonical" href="https://chs-roofing.com/" />
+
     <!-- Google Tag Manager Placeholder -->
     <!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -14,17 +21,29 @@
     })(window,document,'script','dataLayer','GTM-XXXXXXX');</script> -->
     <!-- End Google Tag Manager -->
 
-    <!-- Open Graph for Facebook Ads -->
-    <meta property="og:title" content="CHS Roofing | Southwest Florida's #1 Roofing Company" />
-    <meta property="og:description" content="Licensed & insured roofing in Cape Coral & Southwest Florida. Shingles, metal, tile, flat roofing. Free estimates." />
+    <!-- Open Graph (Facebook / LinkedIn / Slack previews) -->
+    <meta property="og:title" content="Cape Coral Roofer | CHS Roofing — Southwest Florida's Trusted Roofing Contractor" />
+    <meta property="og:description" content="Family-owned, licensed and insured roofing contractor serving Cape Coral, Fort Myers, Naples & Southwest Florida. Free estimates." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://chs-roofing.com/" />
-    <meta property="og:image" content="/opengraph.jpg" />
+    <meta property="og:image" content="https://chs-roofing.com/opengraph.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="CHS Roofing" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_US" />
+
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CHS Roofing — Cape Coral & Southwest Florida" />
+    <meta name="twitter:description" content="Licensed, insured, family-owned roofing in Cape Coral, Fort Myers & Naples. Free estimates." />
+    <meta name="twitter:image" content="https://chs-roofing.com/opengraph.jpg" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png" />
     <link rel="mask-icon" href="/favicon.svg" color="#C5172A" />
     <meta name="theme-color" content="#C5172A" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -38,23 +57,96 @@
     <!-- Hero image lives in /public; preload it so the LCP element starts downloading
          alongside the initial JS instead of waiting for React to mount. -->
     <link rel="preload" as="image" href="/images/hero-roof.webp" type="image/webp" fetchpriority="high">
-    
+
+    <!-- Primary organization schema. Each route also injects a page-specific JSON-LD block
+         via the <Seo> component, but this one is global so it's available to any crawler
+         that doesn't execute JavaScript. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "CHS Roofing (Cordova Home Services)",
-      "image": "https://chs-roofing.com/logo.png",
-      "telephone": "239-XXX-XXXX",
+      "@type": "RoofingContractor",
+      "@id": "https://chs-roofing.com/#organization",
+      "name": "CHS Roofing",
+      "legalName": "Cordova Home Services LLC",
+      "alternateName": "Cordova Home Services",
       "url": "https://chs-roofing.com",
+      "logo": "https://chs-roofing.com/apple-touch-icon-180.png",
+      "image": "https://chs-roofing.com/opengraph.jpg",
+      "telephone": "+1-239-737-1758",
+      "email": "info@cordovahomeservices.com",
+      "priceRange": "$$",
+      "description": "Family-owned, licensed (CCC1333902) and insured roofing contractor serving Cape Coral, Fort Myers, Naples and all of Southwest Florida. Shingle, metal, tile and flat roof installation, repair and free estimates.",
+      "foundingDate": "2010",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Cape Coral",
         "addressRegion": "FL",
+        "postalCode": "33904",
         "addressCountry": "US"
       },
-      "license": "CCC1333902",
-      "description": "Licensed and insured premium roofing company serving Southwest Florida."
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 26.5629,
+        "longitude": -81.9495
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Cape Coral" },
+        { "@type": "City", "name": "Fort Myers" },
+        { "@type": "City", "name": "Naples" },
+        { "@type": "City", "name": "Bonita Springs" },
+        { "@type": "City", "name": "Estero" },
+        { "@type": "City", "name": "Sanibel" },
+        { "@type": "City", "name": "Punta Gorda" },
+        { "@type": "City", "name": "Sarasota" },
+        { "@type": "City", "name": "Lehigh Acres" },
+        { "@type": "City", "name": "North Port" }
+      ],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+          "opens": "08:00",
+          "closes": "17:00"
+        }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Roofing services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "New Roof Installation" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roof Repair" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roof Maintenance" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Storm Damage Restoration" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Specialty Roofing" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gutters" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roof Coating & Restoration" } }
+        ]
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "7",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://www.facebook.com/profile.php?id=61567718997385",
+        "https://www.instagram.com/cordova_home_services/",
+        "https://g.page/r/CYyChCOA5U9MEAE",
+        "https://www.bbb.org/us/fl/cape-coral/profile/roofing-contractors/cordova-home-services-llc-0653-90450754"
+      ],
+      "license": "CCC1333902"
+    }
+    </script>
+
+    <!-- WebSite schema unlocks Google's sitelink searchbox if the site grows. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "CHS Roofing",
+      "url": "https://chs-roofing.com",
+      "inLanguage": ["en-US", "es-US"]
     }
     </script>
   </head>

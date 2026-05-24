@@ -44,6 +44,12 @@ export default function RoofCoating() {
       image={FOUNDER_PHOTOS.coatingHero}
       imageAlt="Completed reflective roof coating job by CHS"
       crumbs={[{ label: "Services" }, { label: "Roof Coating & Restoration" }]}
+      seo={{
+        title: "Commercial Roof Coating & Restoration in SWFL | CHS Roofing",
+        description: "Silicone and acrylic roof coating systems for TPO, modified bitumen and metal commercial roofs in Cape Coral, Fort Myers and Naples. Up to 15-year warranties.",
+        path: "/services/roof-coating",
+        serviceName: "Roof Coating & Restoration",
+      }}
       intro={
         <>
           <p>

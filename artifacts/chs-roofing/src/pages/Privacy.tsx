@@ -1,11 +1,17 @@
 import { Link } from "wouter";
 import { ShieldCheck } from "lucide-react";
+import Seo from "@/components/Seo";
 import { SITE } from "@/lib/site-config";
 
 export default function PrivacyPage() {
   const updated = "May 6, 2026";
   return (
     <main className="bg-background py-16 md:py-24">
+      <Seo
+        title="Privacy Policy | CHS Roofing"
+        description="How CHS Roofing (Cordova Home Services LLC) collects, uses and protects your information."
+        path="/privacy"
+      />
       <div className="container mx-auto max-w-3xl px-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">

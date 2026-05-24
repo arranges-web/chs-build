@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
+import Seo, { breadcrumbSchema } from "@/components/Seo";
 import {
   ESTIMATOR_COMPLEXITY_OPTIONS,
   ESTIMATOR_MATERIALS,
@@ -242,6 +243,12 @@ export default function EstimatorPage() {
 
   return (
     <>
+      <Seo
+        title="Free Roof Estimator | Instant Roofing Quote — Cape Coral, Fort Myers, Naples FL"
+        description="Get an instant roofing estimate for your Southwest Florida home. Shingle, metal, tile, and TPO flat roof pricing — no email required. Free on-site inspection on request."
+        path="/estimator"
+        jsonLd={breadcrumbSchema([{ name: "Estimator", path: "/estimator" }])}
+      />
       <PageHero
         eyebrow={t("estimator.eyebrow")}
         title={

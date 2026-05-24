@@ -20,6 +20,12 @@ export default function SpecialtyRoofing() {
       image={PHOTOS.redMetalAccent}
       imageAlt="Bold red standing-seam metal accent roof — specialty install"
       crumbs={[{ label: "Services" }, { label: "Specialty Roofing" }]}
+      seo={{
+        title: "Specialty Roofing in SWFL — Skylights, Chimney Caps, Custom Flashing | CHS",
+        description: "Skylight installs, custom-bent flashing, chimney caps, full metal crickets, and architectural roofing details across Cape Coral, Fort Myers and Naples FL.",
+        path: "/services/specialty-roofing",
+        serviceName: "Specialty Roofing",
+      }}
       intro={
         <>
           <p>

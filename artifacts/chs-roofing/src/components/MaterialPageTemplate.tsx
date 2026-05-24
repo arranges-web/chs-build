@@ -3,7 +3,27 @@ import { Link } from "wouter";
 import { Check, X, Clock, Droplets, Wind, Flame, ArrowRight } from "lucide-react";
 import PageHero from "./PageHero";
 import CtaSection from "./CtaSection";
+import Seo, { breadcrumbSchema } from "./Seo";
 import { MATERIALS } from "@/lib/site-config";
+
+const MATERIAL_SEO: Record<string, { title: string; description: string }> = {
+  "asphalt-shingles": {
+    title: "Asphalt Shingle Roofing in Cape Coral, Fort Myers & Naples FL | CHS",
+    description: "GAF and TAMKO architectural asphalt shingle roof installation across Southwest Florida. Hurricane-rated, color-matched, and code-compliant.",
+  },
+  metal: {
+    title: "Metal Roofing in SWFL — Standing Seam & 5V | CHS Roofing",
+    description: "Premium standing-seam and classic 5V metal roof installation in Cape Coral, Fort Myers and Naples FL. 50+ year service life, hurricane-rated.",
+  },
+  tile: {
+    title: "Concrete & Clay Tile Roofing in Naples, Bonita Springs & SWFL | CHS",
+    description: "Premium concrete and clay tile roofing — Mediterranean and Spanish-revival expertise across Naples, Bonita Springs and the rest of Southwest Florida.",
+  },
+  flat: {
+    title: "TPO & Flat Roofing for Commercial & Modern SWFL Buildings | CHS",
+    description: "TPO, modified-bitumen and built-up flat roofing for commercial buildings and modern residential designs in Cape Coral, Fort Myers and Naples.",
+  },
+};
 
 type Props = {
   slug: typeof MATERIALS[number]["slug"];
@@ -39,8 +59,21 @@ export default function MaterialPageTemplate({
     { icon: Flame, label: "Fire rating", value: "Class A available" },
   ];
 
+  const seoMeta = MATERIAL_SEO[slug];
+
   return (
     <>
+      {seoMeta && (
+        <Seo
+          title={seoMeta.title}
+          description={seoMeta.description}
+          path={material.href}
+          jsonLd={breadcrumbSchema([
+            { name: "Materials", path: "/materials/asphalt-shingles" },
+            { name: material.title, path: material.href },
+          ])}
+        />
+      )}
       <PageHero
         eyebrow="Roofing Material"
         title={<>{material.title}<span className="text-primary"> for SWFL Homes</span></>}

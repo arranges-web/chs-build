@@ -20,6 +20,7 @@ import ContactForm from "@/components/ContactForm";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import Seo, { faqSchema } from "@/components/Seo";
 import { PHOTOS, SITE, TESTIMONIALS } from "@/lib/site-config";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
@@ -65,6 +66,16 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
+      <Seo
+        title="Free Roof Inspection in Southwest Florida | CHS Roofing — Cape Coral, Fort Myers, Naples"
+        description="Free, no-obligation roof inspection from a licensed (CCC1333902) Florida roofing contractor. Written estimate within 24–48 hours. Call (239) 737-1758 or request online."
+        path="/free-quote"
+        jsonLd={[
+          faqSchema(
+            (t("lp.faqs", { returnObjects: true }) as Array<{ q: string; a: string }>) ?? [],
+          ),
+        ]}
+      />
       {/* Minimal sticky header — no nav distractions for paid traffic */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-border/60">
         <div className="container mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">

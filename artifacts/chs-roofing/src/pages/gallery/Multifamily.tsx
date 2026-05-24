@@ -5,11 +5,21 @@ import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import ShingleDivider from "@/components/ShingleDivider";
+import Seo, { breadcrumbSchema } from "@/components/Seo";
 import { GALLERY_MULTIFAMILY, FOUNDER_PHOTOS } from "@/lib/site-config";
 
 export default function MultifamilyGallery() {
   return (
     <>
+      <Seo
+        title="Multifamily Roofing Gallery — Condos & Apartments in SWFL | CHS Roofing"
+        description="Multifamily re-roofs across Southwest Florida — condos, apartment communities, and multi-building HOA properties in Cape Coral, Fort Myers, Naples and Bonita Springs."
+        path="/gallery/multifamily"
+        jsonLd={breadcrumbSchema([
+          { name: "Gallery", path: "/gallery/residential" },
+          { name: "Multifamily", path: "/gallery/multifamily" },
+        ])}
+      />
       <PageHero
         eyebrow="Gallery · Multifamily"
         title={<>Multifamily <span className="text-primary">Project Gallery</span></>}

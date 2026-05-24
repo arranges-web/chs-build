@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { ArrowRight, Phone } from "lucide-react";
 import Monogram from "@/components/Monogram";
 import ShingleDivider from "@/components/ShingleDivider";
+import Seo from "@/components/Seo";
 import { SITE } from "@/lib/site-config";
 
 const QUICK_LINKS = [
@@ -17,6 +18,11 @@ export default function NotFound() {
       className="min-h-[70vh] flex items-center justify-center bg-background bg-wash-warm py-24 px-4"
       data-testid="page-not-found"
     >
+      <Seo
+        title="Page not found | CHS Roofing"
+        description="We couldn't find what you were looking for. Browse our services, gallery, or get a free estimate."
+        noIndex
+      />
       <div className="max-w-2xl mx-auto text-center">
         <div className="mb-8 flex items-center justify-center">
           <Monogram className="w-24 h-24 opacity-95 drop-shadow-lg" />

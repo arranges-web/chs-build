@@ -5,11 +5,21 @@ import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
 import Partners from "@/components/Partners";
 import ShingleDivider from "@/components/ShingleDivider";
+import Seo, { breadcrumbSchema } from "@/components/Seo";
 import { GALLERY_RESIDENTIAL, PHOTOS } from "@/lib/site-config";
 
 export default function ResidentialGallery() {
   return (
     <>
+      <Seo
+        title="Residential Roofing Gallery — Cape Coral, Fort Myers & Naples | CHS Roofing"
+        description="Recent residential roofing projects across Southwest Florida — shingle, metal, and tile re-roofs in Cape Coral, Fort Myers, Naples, Sanibel, and Bonita Springs."
+        path="/gallery/residential"
+        jsonLd={breadcrumbSchema([
+          { name: "Gallery", path: "/gallery/residential" },
+          { name: "Residential", path: "/gallery/residential" },
+        ])}
+      />
       <PageHero
         eyebrow="Gallery · Residential"
         title={<>Residential <span className="text-primary">Project Gallery</span></>}

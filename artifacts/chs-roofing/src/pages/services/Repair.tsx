@@ -35,6 +35,12 @@ export default function Repair() {
       image={PHOTOS.finishedGreyShingle}
       imageAlt="Clean finished shingle roof — repair completed"
       crumbs={[{ label: "Services" }, { label: "Repair" }]}
+      seo={{
+        title: "Roof Repair in Cape Coral, Fort Myers & Naples FL | CHS Roofing",
+        description: "Fast, honest roof repair across Southwest Florida — leaks, missing shingles, flashing, pipe boots, and storm damage. Same-week service. Free inspection. Call (239) 737-1758.",
+        path: "/services/repair",
+        serviceName: "Roof Repair",
+      }}
       intro={
         <>
           <p>

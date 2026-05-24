@@ -172,6 +172,12 @@ export default function Maintenance() {
       image={PHOTOS.greyMetalHip}
       imageAlt="Clean grey metal hip roof on a Fort Myers home"
       crumbs={[{ label: "Services" }, { label: "Maintenance" }]}
+      seo={{
+        title: "Roof Maintenance Plans in Southwest Florida | CHS Roofing",
+        description: "Annual roof maintenance & inspection plans for Cape Coral, Fort Myers & Naples homes. Basic, Pro, and Premium plans for shingle, metal, tile, and flat roofs.",
+        path: "/services/maintenance",
+        serviceName: "Roof Maintenance",
+      }}
       intro={
         <>
           <p>
