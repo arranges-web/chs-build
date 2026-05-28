@@ -161,7 +161,7 @@ export const SITE = {
   phoneTel: "+12397371758",
   email: "info@cordovahomeservices.com",
   hours: "Mon – Fri: 8am – 5pm · Weekend emergency service",
-  established: "2010",
+  established: "2022",
   logo: chsLogo,
   social: {
     facebook: "https://www.facebook.com/profile.php?id=61567718997385",
@@ -304,57 +304,52 @@ export const MAINTENANCE_PLANS = [
 
 // Estimator pricing config. Source: CHS Roofing founder.
 //
-//   squares = (footprint_sqft × pitchMultiplier × (1 + wasteFactor)) / 100
-//   price   = squares × internalBase × complexityMultiplier
+//   squares  = (footprint_sqft × pitchMultiplier) / 100
+//   perSq    = pricePerSquare (+ colorAdderPerSquare if metal+color)
+//   estimate = squares × perSq × complexityMultiplier
 //
-// The internal base + waste factor + complexity multiplier are tuned
-// so that at the founder's assumed average complexity (1.08) the
-// price per BARE square lands on the "final starting price" the
-// customer should see for that material. Waste and complexity are
-// only applied once each — we do NOT double-apply them on top of a
-// pre-loaded final price.
+// Each pricePerSquare is the founder's published STARTING price per
+// roofing square — waste is already baked in. The complexity slider
+// is calibrated so the default "moderate" option lands exactly on
+// the starting price (multiplier 1.00); simple roofs go slightly
+// below, complex roofs slightly above.
 export const ESTIMATOR_MATERIALS = [
   {
     slug: "shingle",
     label: "GAF Shingle Roof",
-    internalBase: 380,
-    wasteFactor: 0.12,
+    pricePerSquare: 460,
     colorOptionAvailable: false,
     short: "Premium GAF asphalt shingle system.",
   },
   {
     slug: "metal-standing-seam",
     label: "Metal Standing Seam",
-    internalBase: 574,
-    internalBaseWithColor: 692,
-    wasteFactor: 0.18,
+    pricePerSquare: 732,
+    colorAdderPerSquare: 160,
     colorOptionAvailable: true,
     short: "Hurricane-rated standing seam metal roof.",
   },
   {
     slug: "metal-5v",
     label: "Metal 5V",
-    internalBase: 535,
-    internalBaseWithColor: 656,
-    wasteFactor: 0.15,
+    pricePerSquare: 665,
+    colorAdderPerSquare: 160,
     colorOptionAvailable: true,
     short: "Classic 5V exposed-fastener metal roof.",
   },
   {
     slug: "tile-on-tile",
     label: "Tile Off / Tile On",
-    internalBase: 805,
-    wasteFactor: 0.15,
+    pricePerSquare: 1000,
     colorOptionAvailable: false,
     short: "Tear off existing tile and install new tile.",
   },
   {
     slug: "tile-to-standing-seam",
-    label: "Tile Off / Standing Seam (with color)",
-    internalBase: 863,
-    wasteFactor: 0.18,
+    label: "Tile Off / Standing Seam Metal",
+    pricePerSquare: 1100,
     colorOptionAvailable: false,
-    short: "Tear off existing tile, install standing seam metal in your color.",
+    short: "Tear off existing tile, install standing seam metal.",
   },
 ] as const;
 
@@ -365,12 +360,13 @@ export const ESTIMATOR_PITCH_OPTIONS = [
   { slug: "very-steep", label: "Steep Pitch", multiplier: 1.3 },
 ] as const;
 
-// Multipliers calibrated so "moderate" (the default, ~1.08) lands a
-// roof at the founder's published starting price.
+// "Moderate" is the baseline that lands on the founder's published
+// starting price. Simple roofs run a touch cheaper, complex roofs
+// (lots of hips/valleys, dormers, skylights) run a touch higher.
 export const ESTIMATOR_COMPLEXITY_OPTIONS = [
-  { slug: "simple", label: "Simple (single ridge, few penetrations)", multiplier: 1.0 },
-  { slug: "moderate", label: "Moderate (multiple hips & valleys)", multiplier: 1.08 },
-  { slug: "complex", label: "Complex (cut-up roof, dormers, skylights)", multiplier: 1.16 },
+  { slug: "simple", label: "Simple (single ridge, few penetrations)", multiplier: 0.95 },
+  { slug: "moderate", label: "Moderate (multiple hips & valleys)", multiplier: 1.0 },
+  { slug: "complex", label: "Complex (cut-up roof, dormers, skylights)", multiplier: 1.1 },
 ] as const;
 
 export const MAINTENANCE_STEPS = [

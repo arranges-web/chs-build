@@ -202,35 +202,32 @@ export default function EstimatorPage() {
     }
   }, [address, footprintTouched]);
 
-  // Per-material waste factor lives on the material itself. It is
-  // applied ONCE as an area multiplier (more roof → more squares),
-  // never as a price multiplier on top of an already-final price.
+  // Pricing math — uses the founder's published per-square prices
+  // directly (waste is already baked into those starting prices).
+  // Color upgrade adds a flat $/sq on metal roofs only. Complexity
+  // is the only "live" multiplier shown to the user.
   const computed = useMemo(() => {
     const footprintSf = Math.max(0, Number(footprintInput) || 0);
     // 1) footprint × pitch = estimated roof area
     const adjustedSf = footprintSf * pitch.multiplier;
-    // 2) + waste factor = total roof area
-    const totalRoofArea = adjustedSf * (1 + material.wasteFactor);
-    // 3) total roof area ÷ 100 = roofing squares
-    const squares = totalRoofArea / 100;
-    // Color toggle (when offered) switches to the higher internal
-    // base — we do NOT add a flat $/sq on top of an already-tuned
-    // base price.
-    const useColorBase = material.colorOptionAvailable && colorOption;
-    const basePrice = useColorBase
-      ? (material as { internalBaseWithColor?: number }).internalBaseWithColor ??
-        material.internalBase
-      : material.internalBase;
-    // 4) squares × internal base × complexity = starting estimate
-    const subtotal = squares * basePrice * complexity.multiplier;
+    // 2) roof area ÷ 100 = roofing squares
+    const squares = adjustedSf / 100;
+    // 3) per-square price (+ color adder if metal+color selected)
+    const colorAdder =
+      material.colorOptionAvailable && colorOption
+        ? (material as { colorAdderPerSquare?: number }).colorAdderPerSquare ?? 0
+        : 0;
+    const pricePerSq = material.pricePerSquare + colorAdder;
+    // 4) squares × per-sq × complexity = starting estimate
+    const subtotal = squares * pricePerSq * complexity.multiplier;
     const lowEstimate = subtotal * 0.92;
     const highEstimate = subtotal * 1.08;
     return {
       footprintSf,
       adjustedSf,
-      totalRoofArea,
       squares,
-      basePrice,
+      pricePerSq,
+      colorAdder,
       subtotal,
       lowEstimate,
       highEstimate,
@@ -459,7 +456,7 @@ export default function EstimatorPage() {
                             {t("estimator.material.colorOption")}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            Adds a factory-baked color finish to your metal roof.
+                            Factory-baked color finish — adds $160 per roofing square.
                           </span>
                         </span>
                       </label>

@@ -1,36 +1,42 @@
 import ServicePageTemplate from "@/components/ServicePageTemplate";
 import StepsTimeline from "@/components/StepsTimeline";
-import { FOUNDER_PHOTOS } from "@/lib/site-config";
+import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
 
+// Roof coating photos: the founder-supplied coating placeholders are
+// still 1×1 stubs. Until real coating photos drop into the matching
+// attached_assets/coating_* slots we render real flat / TPO / commercial
+// photos so the page never looks empty. As soon as those filenames are
+// overwritten with real coating photos, those take over automatically
+// (Vite re-bundles them under the same import paths).
 const COATING_STEPS = [
   {
     title: "Free Inspection",
     desc: "We inspect the roof system, existing coating, seams, penetrations, drainage areas, and problem spots to determine if restoration is the right solution.",
-    image: FOUNDER_PHOTOS.coating[0],
+    image: FOUNDER_PHOTOS.flat[0] ?? PHOTOS.flatPrepRedLine,
     imageAlt: "Free inspection of an existing flat roof for coating",
   },
   {
     title: "Site Preparation",
     desc: "We prepare the roof and work area by removing debris, protecting surrounding areas, and getting the surface ready for restoration.",
-    image: FOUNDER_PHOTOS.coating[1],
+    image: FOUNDER_PHOTOS.flat[1] ?? PHOTOS.flatPrepRedLine,
     imageAlt: "Roof debris removal and site preparation",
   },
   {
     title: "Roof Preparation",
     desc: "We clean the roof, repair problem areas, seal seams, treat penetrations, and make sure the roof is ready for the coating system.",
-    image: FOUNDER_PHOTOS.coating[2],
+    image: FOUNDER_PHOTOS.flat[2] ?? PHOTOS.flatTpoCrew,
     imageAlt: "Roof cleaning, seam reinforcement, and surface prep",
   },
   {
     title: "Install Coating Layers",
     desc: "We apply the roof coating system in layers based on the roof condition and manufacturer recommendations for long-term protection.",
-    image: FOUNDER_PHOTOS.coating[3],
-    imageAlt: "Roof coating being applied in layers",
+    image: PHOTOS.flatTpoCrew,
+    imageAlt: "Roof coating being applied in layers by the CHS crew",
   },
   {
     title: "Final Walkthrough & Quality Control",
     desc: "After the coating is completed, we inspect the work, check details, and make sure the roof is properly restored.",
-    image: FOUNDER_PHOTOS.coating[4],
+    image: FOUNDER_PHOTOS.flat[3] ?? PHOTOS.flatTpoCrew,
     imageAlt: "Final walkthrough on a completed coated roof",
   },
 ];
@@ -41,8 +47,8 @@ export default function RoofCoating() {
       eyebrow="Service · Roof Coating"
       title={<>Roof <span className="text-primary">Coating</span> & Restoration</>}
       subtitle="Reflective, energy-efficient coating systems that extend roof life, stop leaks, and lower cooling bills — without the cost of a full replacement."
-      image={FOUNDER_PHOTOS.coatingHero}
-      imageAlt="Completed reflective roof coating job by CHS"
+      image={PHOTOS.flatTpoCrew}
+      imageAlt="Commercial flat-roof system being prepped for a reflective coating"
       crumbs={[{ label: "Services" }, { label: "Roof Coating & Restoration" }]}
       seo={{
         title: "Commercial Roof Coating & Restoration in SWFL | CHS Roofing",
