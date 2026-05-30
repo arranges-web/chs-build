@@ -20,3 +20,4 @@
 export * from "./leads";
 export * from "./customers";
 export * from "./analytics";
+export * from "./admins";

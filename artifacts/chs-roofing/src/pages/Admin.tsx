@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Lock } from "lucide-react";
-import { api } from "@/lib/api";
+import { ChevronDown, KeyRound, Lock } from "lucide-react";
+import { api, type AdminProfile } from "@/lib/api";
 import { SITE } from "@/lib/site-config";
 import Seo from "@/components/Seo";
 import AdminShell, {
@@ -17,6 +17,7 @@ import Dashboard from "@/components/admin/Dashboard";
 import Projects from "@/components/admin/Projects";
 import Analytics from "@/components/admin/Analytics";
 import JobDetail from "@/components/admin/JobDetail";
+import InviteTeammates from "@/components/admin/InviteTeammates";
 
 type AnyRow = Record<string, unknown>;
 
@@ -24,38 +25,72 @@ const ADMIN_KEY_STORAGE = "chs.admin.key.v1";
 const SECTION_STORAGE = "chs.admin.section.v1";
 
 export default function AdminPage() {
-  const [adminKey, setAdminKey] = useState("");
+  // ─── Auth state ────────────────────────────────────────────────
+  // We support TWO sign-in paths that coexist:
+  //   1. Email + password → sets an httpOnly cookie. Preferred.
+  //   2. ADMIN_KEY header → legacy bootstrap path so the very first
+  //      owner can sign in before any DB-backed admin exists. We still
+  //      attach it as the `x-admin-key` header on existing endpoints
+  //      that haven't been migrated to cookie auth yet.
+  const [me, setMe] = useState<AdminProfile | null>(null);
   const [authedKey, setAuthedKey] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  // Login form
+  const [mode, setMode] = useState<"password" | "key">("password");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [adminKey, setAdminKey] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // App state
   const [leads, setLeads] = useState<AnyRow[] | null>(null);
   const [estimates, setEstimates] = useState<AnyRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [section, setSection] = useState<AdminSection>("dashboard");
-  // When Projects view opens a customer, route to Clients with that id.
   const [pendingClientOpen, setPendingClientOpen] = useState<number | null>(null);
   void pendingClientOpen;
-  // When the user clicks into a single job from anywhere, drop into
-  // the focused JobDetail view instead of the normal section content.
-  const [openJob, setOpenJob] = useState<{ jobId: number; customerId: number } | null>(
-    null,
-  );
-  // Prefill payload passed from Leads → Clients when the user clicks
-  // "Convert to client" on a lead row.
+  const [openJob, setOpenJob] = useState<{ jobId: number; customerId: number } | null>(null);
   const [clientPrefill, setClientPrefill] = useState<CustomerPrefill | null>(null);
 
-  // Title + restore last section
+  // ─── Boot: restore + verify ────────────────────────────────────
   useEffect(() => {
     const previous = document.title;
     document.title = `Admin — ${SITE.brand}`;
-    try {
-      const saved = sessionStorage.getItem(ADMIN_KEY_STORAGE);
-      if (saved) setAuthedKey(saved);
-      const lastSection = localStorage.getItem(SECTION_STORAGE) as AdminSection | null;
-      if (lastSection) setSection(lastSection);
-    } catch {
-      // ignore
-    }
+
+    let cancelled = false;
+    (async () => {
+      let savedKey: string | null = null;
+      let lastSection: AdminSection | null = null;
+      try {
+        savedKey = sessionStorage.getItem(ADMIN_KEY_STORAGE);
+        lastSection = localStorage.getItem(SECTION_STORAGE) as AdminSection | null;
+      } catch {
+        // ignore
+      }
+      if (lastSection && !cancelled) setSection(lastSection);
+
+      // Try cookie first (with optional key fallback).
+      const res = await api.whoAmI(savedKey ?? undefined);
+      if (cancelled) return;
+      if ("data" in res) {
+        if (res.data.admin) setMe(res.data.admin);
+        if (res.data.via === "admin-key" && savedKey) setAuthedKey(savedKey);
+      } else if (savedKey) {
+        // Cookie call failed and key fallback also failed — drop it.
+        try {
+          sessionStorage.removeItem(ADMIN_KEY_STORAGE);
+        } catch {
+          // ignore
+        }
+      }
+      setChecking(false);
+    })();
+
     return () => {
+      cancelled = true;
       document.title = previous;
     };
   }, []);
@@ -68,6 +103,14 @@ export default function AdminPage() {
     }
   }, [section]);
 
+  const isAuthed = !!me || !!authedKey;
+  // For legacy endpoints still expecting x-admin-key. When signed in
+  // via cookie only, we send an empty string and the middleware accepts
+  // the cookie path. NOTE: existing endpoints have `adminAuth` middleware
+  // that accepts EITHER, so this works either way.
+  const effectiveKey = authedKey ?? "";
+
+  // ─── Data loading ─────────────────────────────────────────────
   const loadAll = async (key: string) => {
     setLoading(true);
     setError(null);
@@ -76,15 +119,9 @@ export default function AdminPage() {
       api.listEstimates(key),
     ]);
     if (!leadsRes || !estRes) {
-      setError("Could not load data. Check your admin key and try again.");
+      setError("Could not load data. Try signing out and back in.");
       setLeads(null);
       setEstimates(null);
-      setAuthedKey(null);
-      try {
-        sessionStorage.removeItem(ADMIN_KEY_STORAGE);
-      } catch {
-        // ignore
-      }
     } else {
       setLeads(leadsRes.rows);
       setEstimates(estRes.rows);
@@ -93,11 +130,32 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (authedKey) void loadAll(authedKey);
-  }, [authedKey]);
+    if (isAuthed) void loadAll(effectiveKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthed]);
+
+  // ─── Login handlers ───────────────────────────────────────────
+  const submitPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    if (!email.trim() || !password) {
+      setLoginError("Enter your email and password.");
+      return;
+    }
+    setSubmitting(true);
+    const res = await api.adminLogin(email.trim(), password);
+    setSubmitting(false);
+    if ("error" in res) {
+      setLoginError(res.error);
+      return;
+    }
+    setMe(res.data.admin);
+    setPassword("");
+  };
 
   const submitKey = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError(null);
     if (!adminKey.trim()) return;
     try {
       sessionStorage.setItem(ADMIN_KEY_STORAGE, adminKey.trim());
@@ -107,14 +165,18 @@ export default function AdminPage() {
     setAuthedKey(adminKey.trim());
   };
 
-  const signOut = () => {
+  const signOut = async () => {
     try {
       sessionStorage.removeItem(ADMIN_KEY_STORAGE);
     } catch {
       // ignore
     }
+    await api.adminLogout();
+    setMe(null);
     setAuthedKey(null);
     setAdminKey("");
+    setEmail("");
+    setPassword("");
     setLeads(null);
     setEstimates(null);
   };
@@ -124,8 +186,16 @@ export default function AdminPage() {
     setSection("clients");
   };
 
-  // ─── Login screen ──────────────────────────────────────────────
-  if (!authedKey) {
+  // ─── Login screen ─────────────────────────────────────────────
+  if (checking) {
+    return (
+      <main className="min-h-[80vh] bg-background flex items-center justify-center">
+        <div className="w-9 h-9 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </main>
+    );
+  }
+
+  if (!isAuthed) {
     return (
       <main className="min-h-[80vh] bg-background flex items-center justify-center px-4 py-16">
         <Seo title="Admin | CHS Roofing" description="Internal admin." noIndex path="/admin" />
@@ -143,27 +213,88 @@ export default function AdminPage() {
               </h1>
             </div>
           </div>
-          <form onSubmit={submitKey} className="space-y-3">
-            <label className="block text-xs font-semibold text-foreground">Admin key</label>
-            <input
-              type="password"
-              autoComplete="current-password"
-              value={adminKey}
-              onChange={(e) => setAdminKey(e.target.value)}
-              placeholder="Paste your admin key"
-              className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            />
-            {error && <p className="text-[11px] text-destructive">{error}</p>}
-            <button
-              type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white h-11 rounded-xl font-semibold text-sm tracking-tight shadow-md shadow-primary/30 transition-all"
-            >
-              Sign in
-            </button>
-          </form>
+
+          {mode === "password" ? (
+            <form onSubmit={submitPassword} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">Email</label>
+                <input
+                  type="email"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@cordovahomeservices.com"
+                  required
+                  className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">Password</label>
+                <input
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Your password"
+                  required
+                  className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+              {loginError && <p className="text-[11px] text-destructive">{loginError}</p>}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white h-11 rounded-xl font-semibold text-sm tracking-tight shadow-md shadow-primary/30 transition-all"
+              >
+                {submitting ? "Signing in…" : "Sign in"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginError(null);
+                  setMode("key");
+                }}
+                className="w-full inline-flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors mt-2"
+              >
+                <KeyRound className="w-3 h-3" />
+                Use admin key instead
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={submitKey} className="space-y-3">
+              <label className="block text-xs font-semibold text-foreground">Admin key</label>
+              <input
+                type="password"
+                autoComplete="current-password"
+                value={adminKey}
+                onChange={(e) => setAdminKey(e.target.value)}
+                placeholder="Paste your admin key"
+                className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              {loginError && <p className="text-[11px] text-destructive">{loginError}</p>}
+              <button
+                type="submit"
+                className="w-full inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white h-11 rounded-xl font-semibold text-sm tracking-tight shadow-md shadow-primary/30 transition-all"
+              >
+                Sign in with key
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginError(null);
+                  setMode("password");
+                }}
+                className="w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors mt-2"
+              >
+                Use email and password instead
+              </button>
+            </form>
+          )}
+
           <p className="mt-4 text-[11px] text-muted-foreground leading-relaxed">
-            The key is stored only in this browser tab and cleared when you close it. Set the
-            matching value as the <code>ADMIN_KEY</code> environment variable on the API server.
+            New here? Open the invite link your team sent you to create your account.
           </p>
         </div>
       </main>
@@ -178,7 +309,7 @@ export default function AdminPage() {
         section={section}
         onChangeSection={setSection}
         loading={loading}
-        onRefresh={() => authedKey && void loadAll(authedKey)}
+        onRefresh={() => isAuthed && void loadAll(effectiveKey)}
         onSignOut={signOut}
         counts={{ leads: leads?.length ?? 0, estimates: estimates?.length ?? 0 }}
       >
@@ -189,7 +320,7 @@ export default function AdminPage() {
         )}
         {openJob ? (
           <JobDetail
-            adminKey={authedKey}
+            adminKey={effectiveKey}
             jobId={openJob.jobId}
             customerId={openJob.customerId}
             onBack={() => setOpenJob(null)}
@@ -198,7 +329,7 @@ export default function AdminPage() {
           <>
             {section === "dashboard" && (
               <Dashboard
-                adminKey={authedKey}
+                adminKey={effectiveKey}
                 leads={leads}
                 estimates={estimates}
                 onNavigate={setSection}
@@ -207,7 +338,7 @@ export default function AdminPage() {
             )}
             {section === "clients" && (
               <Clients
-                adminKey={authedKey}
+                adminKey={effectiveKey}
                 initialPrefill={clientPrefill}
                 onConsumePrefill={() => setClientPrefill(null)}
                 onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })}
@@ -215,7 +346,7 @@ export default function AdminPage() {
             )}
             {section === "projects" && (
               <Projects
-                adminKey={authedKey}
+                adminKey={effectiveKey}
                 onOpenCustomer={(id) => {
                   setPendingClientOpen(id);
                   setSection("clients");
@@ -227,10 +358,11 @@ export default function AdminPage() {
               <Leads rows={leads} loading={loading} onConvert={onConvertLead} />
             )}
             {section === "estimates" && <Estimates rows={estimates} loading={loading} />}
-            {section === "analytics" && <Analytics adminKey={authedKey} />}
+            {section === "analytics" && <Analytics adminKey={effectiveKey} />}
             {section === "responses" && <ChatResponses />}
             {section === "signature" && <EmailSignature />}
             {section === "links" && <QuoteLinks />}
+            {section === "invites" && <InviteTeammates adminKey={effectiveKey} />}
           </>
         )}
       </AdminShell>

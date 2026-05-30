@@ -15,6 +15,7 @@ import {
   X,
   Link as LinkIcon,
   HelpCircle,
+  UserPlus,
 } from "lucide-react";
 import { SITE } from "@/lib/site-config";
 
@@ -27,7 +28,8 @@ export type AdminSection =
   | "analytics"
   | "responses"
   | "signature"
-  | "links";
+  | "links"
+  | "invites";
 
 export type CustomerPrefill = {
   name?: string;
@@ -58,6 +60,7 @@ const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
   responses: { title: "AI Chat Responses", subtitle: "Copy-paste answers for common questions." },
   signature: { title: "Email Signature", subtitle: "Generate a branded HTML signature for your team." },
   links: { title: "Quote Links", subtitle: "Build pre-filled /contact links to share with customers." },
+  invites: { title: "Invite Teammates", subtitle: "Send a signup link so your team can create their own admin login." },
 };
 
 const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overview" | "crm" | "insights" | "tools" }[] = [
@@ -70,6 +73,7 @@ const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overvi
   { id: "responses", label: "AI Responses", icon: MessageSquare, group: "tools" },
   { id: "signature", label: "Email Signature", icon: Mail, group: "tools" },
   { id: "links", label: "Quote Links", icon: LinkIcon, group: "tools" },
+  { id: "invites", label: "Invite Teammates", icon: UserPlus, group: "tools" },
 ];
 
 const GROUP_LABEL: Record<string, string> = {

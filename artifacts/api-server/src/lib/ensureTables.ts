@@ -26,7 +26,48 @@ export async function ensureTables(): Promise<void> {
     await db.execute(sql`CREATE INDEX IF NOT EXISTS "page_views_created_at_idx" ON "page_views" ("created_at");`);
     await db.execute(sql`CREATE INDEX IF NOT EXISTS "page_views_path_idx" ON "page_views" ("path");`);
     await db.execute(sql`CREATE INDEX IF NOT EXISTS "page_views_session_idx" ON "page_views" ("session_id");`);
-    logger.info("[ensureTables] page_views ready");
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "admins" (
+        "id" serial PRIMARY KEY,
+        "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+        "email" text NOT NULL UNIQUE,
+        "name" text NOT NULL,
+        "password_hash" text NOT NULL,
+        "role" text NOT NULL DEFAULT 'admin',
+        "last_login_at" timestamp with time zone
+      );
+    `);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS "admins_email_idx" ON "admins" ("email");`);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "admin_invites" (
+        "id" serial PRIMARY KEY,
+        "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+        "expires_at" timestamp with time zone NOT NULL,
+        "used_at" timestamp with time zone,
+        "token" text NOT NULL UNIQUE,
+        "email" text,
+        "name" text,
+        "role" text NOT NULL DEFAULT 'admin',
+        "created_by_label" text
+      );
+    `);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS "admin_invites_token_idx" ON "admin_invites" ("token");`);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "admin_sessions" (
+        "id" serial PRIMARY KEY,
+        "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+        "expires_at" timestamp with time zone NOT NULL,
+        "token" text NOT NULL UNIQUE,
+        "admin_id" integer NOT NULL,
+        "user_agent" text
+      );
+    `);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS "admin_sessions_token_idx" ON "admin_sessions" ("token");`);
+
+    logger.info("[ensureTables] page_views + admins ready");
   } catch (err) {
     logger.warn(
       { err: err instanceof Error ? err.message : err },
