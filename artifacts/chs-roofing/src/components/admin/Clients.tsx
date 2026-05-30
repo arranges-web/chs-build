@@ -8,10 +8,14 @@ import {
   Plus,
   Trash2,
   CheckCircle2,
+  Check as CheckIcon,
   Image as ImageIcon,
   MessageSquare,
   Save,
   RefreshCw,
+  Copy,
+  KeyRound,
+  Mail as MailIcon,
 } from "lucide-react";
 import {
   api,
@@ -202,41 +206,133 @@ function NewCustomerForm({
   const [email, setEmail] = useState(prefill?.email ?? "");
   const [phone, setPhone] = useState(prefill?.phone ?? "");
   const [address, setAddress] = useState(prefill?.address ?? "");
+  // First project — fully optional. If "Add first project" is toggled
+  // on, we create the customer AND a starter job in the same submit so
+  // there's only one workflow for the team.
+  const [addProject, setAddProject] = useState(false);
+  const [pTitle, setPTitle] = useState("");
+  const [pServiceType, setPServiceType] = useState("");
+  const [pStatus, setPStatus] = useState("scheduled");
+  const [pProgress, setPProgress] = useState("0");
+  const [pStartDate, setPStartDate] = useState("");
+  const [pEstCompletion, setPEstCompletion] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const canSubmit = name.trim().length > 1 && emailValid;
 
   return (
     <form
       className="bg-card border border-border/60 rounded-2xl p-5 mb-6 shadow-sm"
       onSubmit={async (e) => {
         e.preventDefault();
-        if (!name.trim()) return;
+        if (!canSubmit) return;
         setSaving(true);
         setError(null);
         const res = await api.createCustomer(
           {
             name: name.trim(),
-            email: email.trim() || undefined,
+            email: email.trim(),
             phone: phone.trim() || undefined,
             address: address.trim() || undefined,
           },
           adminKey,
         );
-        setSaving(false);
-        if ("data" in res) {
-          onCreated(res.data.row);
-        } else {
+        if (!("data" in res)) {
+          setSaving(false);
           setError(res.error);
+          return;
         }
+        const customer = res.data.row;
+        // Optionally create a starter job so the customer's portal
+        // has something to show on first login.
+        if (addProject && pTitle.trim()) {
+          const jobRes = await api.createJob(
+            {
+              customerId: customer.id,
+              title: pTitle.trim(),
+              serviceType: pServiceType || undefined,
+              status: pStatus,
+              progress: Number(pProgress) || 0,
+              startDate: pStartDate || undefined,
+              estimatedCompletion: pEstCompletion || undefined,
+            },
+            adminKey,
+          );
+          if (!("data" in jobRes)) {
+            // Customer was created — surface the job error but don't
+            // roll back. They can add the job from the detail view.
+            setError(
+              `Customer created, but the project couldn't be added: ${jobRes.error}`,
+            );
+          }
+        }
+        setSaving(false);
+        onCreated(customer);
       }}
     >
-      <h3 className="font-display font-bold text-foreground text-lg mb-3">New customer</h3>
+      <h3 className="font-display font-bold text-foreground text-lg mb-1">New customer</h3>
+      <p className="text-[12px] text-muted-foreground mb-4">
+        Email is required — that's how the customer signs into their portal at{" "}
+        <code className="text-foreground">/portal</code>.
+      </p>
       <div className="grid sm:grid-cols-2 gap-3">
         <Field label="Name" value={name} onChange={setName} required />
-        <Field label="Email" value={email} onChange={setEmail} type="email" />
+        <Field label="Email (login)" value={email} onChange={setEmail} type="email" required />
         <Field label="Phone" value={phone} onChange={setPhone} type="tel" />
         <Field label="Address" value={address} onChange={setAddress} />
       </div>
+
+      {/* First project toggle */}
+      <div className="mt-5 pt-4 border-t border-border/60">
+        <label className="flex items-center gap-2 text-sm font-semibold text-foreground cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={addProject}
+            onChange={(e) => setAddProject(e.target.checked)}
+            className="w-4 h-4 accent-primary"
+          />
+          Assign a first project now
+        </label>
+        <p className="text-[11px] text-muted-foreground mt-1">
+          Optional — gives the customer something to see in their portal on first login. You can
+          also add projects later from their detail page.
+        </p>
+
+        {addProject && (
+          <div className="mt-3 grid sm:grid-cols-2 gap-3 p-3 rounded-xl bg-muted/30 border border-border/60">
+            <Field
+              label="Project title"
+              value={pTitle}
+              onChange={setPTitle}
+              placeholder="e.g. Shingle re-roof — main house"
+              required
+            />
+            <Field
+              label="Service type"
+              value={pServiceType}
+              onChange={setPServiceType}
+              placeholder="installation, repair…"
+            />
+            <SelectField
+              label="Status"
+              value={pStatus}
+              onChange={setPStatus}
+              options={STATUS_OPTS.map((o) => ({ value: o.value, label: o.label }))}
+            />
+            <Field label="Progress (0–100)" value={pProgress} onChange={setPProgress} type="number" />
+            <Field label="Start date" value={pStartDate} onChange={setPStartDate} type="date" />
+            <Field
+              label="Est. completion"
+              value={pEstCompletion}
+              onChange={setPEstCompletion}
+              type="date"
+            />
+          </div>
+        )}
+      </div>
+
       {error && (
         <div className="mt-3 p-3 rounded-lg border border-destructive/40 bg-destructive/5 text-xs text-destructive whitespace-pre-line">
           {error}
@@ -245,11 +341,11 @@ function NewCustomerForm({
       <div className="mt-4 flex items-center gap-2">
         <button
           type="submit"
-          disabled={saving || !name.trim()}
+          disabled={saving || !canSubmit || (addProject && !pTitle.trim())}
           className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md shadow-primary/30"
         >
           <Save className="w-4 h-4" />
-          {saving ? "Saving…" : "Create customer"}
+          {saving ? "Saving…" : addProject ? "Create customer & project" : "Create customer"}
         </button>
         <button
           type="button"
@@ -260,8 +356,9 @@ function NewCustomerForm({
         </button>
       </div>
       <p className="mt-2 text-[11px] text-muted-foreground">
-        An account number is generated automatically (e.g. <code>CHS-A2K9P3</code>).
-        Share that number — or the email — so the customer can sign into the portal.
+        An account number (e.g. <code>CHS-A2K9P3</code>) is generated automatically as a backup
+        sign-in. Share <strong>either</strong> the email <strong>or</strong> the account number for
+        portal access.
       </p>
     </form>
   );
@@ -361,6 +458,11 @@ function CustomerDetail({
             <Row label="Phone" value={c.phone ?? "—"} />
             <Row label="Address" value={c.address ?? "—"} />
           </dl>
+        )}
+
+        {/* Portal access — how this customer logs in + send-invite action */}
+        {!editing && (
+          <PortalAccessCard customer={c} />
         )}
       </div>
 
@@ -704,6 +806,159 @@ function JobAdminCard({
 }
 
 // ─── Tiny form helpers ─────────────────────────────────────────
+function PortalAccessCard({ customer }: { customer: Customer }) {
+  const [copied, setCopied] = useState<"email" | "account" | null>(null);
+  const portalUrl = `https://chs-roofing.com/portal`;
+
+  const copy = async (key: "email" | "account", text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      window.setTimeout(() => setCopied((k) => (k === key ? null : k)), 1500);
+    } catch {
+      // ignore
+    }
+  };
+
+  const subject = "Your CHS Roofing portal access";
+  const body = customer.email
+    ? `Hi ${customer.name.split(" ")[0]},
+
+You can now see your roof project status, photos, and team updates in your CHS Roofing customer portal.
+
+How to sign in:
+  1. Go to ${portalUrl}
+  2. Enter this email: ${customer.email}
+  3. (Or use your account number as a backup: ${customer.accountNumber})
+
+We'll post updates and photos here as your project moves forward. If you ever need anything, just reply to this email or call us.
+
+— CHS Roofing`
+    : `Hi ${customer.name.split(" ")[0]},
+
+You can see your roof project status, photos, and team updates in your CHS Roofing customer portal.
+
+How to sign in:
+  1. Go to ${portalUrl}
+  2. Enter your account number: ${customer.accountNumber}
+
+— CHS Roofing`;
+
+  const mailto = customer.email
+    ? `mailto:${customer.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    : `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  return (
+    <div className="mt-5 pt-5 border-t border-border/60">
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <KeyRound className="w-4 h-4 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-primary">
+            Portal sign-in
+          </p>
+          <p className="text-sm text-foreground/85 mt-0.5 leading-relaxed">
+            This customer signs in at{" "}
+            <a
+              href="/portal"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-foreground hover:text-primary"
+            >
+              chs-roofing.com/portal
+            </a>{" "}
+            with the email <span className="font-semibold text-foreground">below</span> — or their account number as a backup.
+          </p>
+          <div className="mt-3 grid sm:grid-cols-2 gap-2">
+            {customer.email ? (
+              <CopyChip
+                label="Email login"
+                value={customer.email}
+                copied={copied === "email"}
+                onCopy={() => customer.email && copy("email", customer.email)}
+              />
+            ) : (
+              <div className="rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+                No email on file — add one above so the customer can sign in with email.
+              </div>
+            )}
+            <CopyChip
+              label="Account #"
+              value={customer.accountNumber}
+              mono
+              copied={copied === "account"}
+              onCopy={() => copy("account", customer.accountNumber)}
+            />
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <a
+              href={mailto}
+              className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-sm shadow-primary/30 transition-all"
+            >
+              <MailIcon className="w-3.5 h-3.5" />
+              Send portal invite email
+            </a>
+            {customer.phone && (
+              <a
+                href={`sms:${customer.phone}?&body=${encodeURIComponent(
+                  `Hi ${customer.name.split(" ")[0]} — track your CHS Roofing project at ${portalUrl}. Sign in with ${customer.email ?? customer.accountNumber}.`,
+                )}`}
+                className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary transition-colors"
+              >
+                Text invite
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CopyChip({
+  label,
+  value,
+  copied,
+  onCopy,
+  mono,
+}: {
+  label: string;
+  value: string;
+  copied: boolean;
+  onCopy: () => void;
+  mono?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onCopy}
+      title="Copy to clipboard"
+      className={`group flex items-center gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+        copied
+          ? "border-emerald-300 bg-emerald-50"
+          : "border-border/60 bg-background hover:border-primary/40"
+      }`}
+    >
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+          {label}
+        </p>
+        <p
+          className={`text-sm font-semibold text-foreground truncate ${mono ? "font-mono" : ""}`}
+        >
+          {value}
+        </p>
+      </div>
+      {copied ? (
+        <CheckIcon className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+      ) : (
+        <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0" />
+      )}
+    </button>
+  );
+}
+
 function Field({
   label,
   value,
