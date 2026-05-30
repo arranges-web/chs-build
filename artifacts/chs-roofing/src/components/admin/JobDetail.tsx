@@ -71,16 +71,16 @@ export default function JobDetail({ adminKey, jobId, customerId, onBack }: Props
     setLoading(true);
     setError(null);
     const res = await api.getCustomer(customerId, adminKey);
-    if (res) {
-      const j = res.jobs.find((it) => it.id === jobId);
+    if ("data" in res) {
+      const j = res.data.jobs.find((it) => it.id === jobId);
       if (j) {
-        setCustomer(res.customer);
+        setCustomer(res.data.customer);
         setJob(j);
       } else {
         setError("This job no longer exists or was deleted.");
       }
     } else {
-      setError("Couldn't load this job.");
+      setError(res.error);
     }
     setLoading(false);
   };

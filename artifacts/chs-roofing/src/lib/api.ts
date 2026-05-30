@@ -292,7 +292,7 @@ export const api = {
       headers: { "x-admin-key": key },
     }),
   getCustomer: (id: number, key: string) =>
-    getJson<{ customer: Customer; jobs: Job[] }>(`/admin/customers/${id}`, {
+    getJsonResult<{ customer: Customer; jobs: Job[] }>(`/admin/customers/${id}`, {
       headers: { "x-admin-key": key },
     }),
   createCustomer: (

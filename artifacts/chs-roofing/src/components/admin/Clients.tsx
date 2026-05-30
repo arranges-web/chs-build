@@ -76,7 +76,7 @@ export default function Clients({
   const loadDetail = async (id: number) => {
     setLoading(true);
     const res = await api.getCustomer(id, adminKey);
-    if (res) setDetail(res);
+    if ("data" in res) setDetail(res.data);
     setLoading(false);
   };
 

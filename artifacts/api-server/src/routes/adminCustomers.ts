@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, inArray } from "drizzle-orm";
 import {
   db,
   customersTable,
@@ -53,14 +53,14 @@ router.get("/admin/customers/:id", async (req, res) => {
       ? await db
           .select()
           .from(jobUpdatesTable)
-          .where(sql`${jobUpdatesTable.jobId} = ANY (${jobIds})`)
+          .where(inArray(jobUpdatesTable.jobId, jobIds))
           .orderBy(desc(jobUpdatesTable.createdAt))
       : [];
     const photos = jobIds.length
       ? await db
           .select()
           .from(jobPhotosTable)
-          .where(sql`${jobPhotosTable.jobId} = ANY (${jobIds})`)
+          .where(inArray(jobPhotosTable.jobId, jobIds))
           .orderBy(desc(jobPhotosTable.createdAt))
       : [];
 
