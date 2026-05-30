@@ -73,6 +73,13 @@ export default function Analytics({ adminKey }: { adminKey: string }) {
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : data ? (
         <>
+          {!data.pageviewsTable && (
+            <div className="p-4 rounded-xl border border-amber-300/60 bg-amber-50 text-amber-800 text-sm">
+              The <code>page_views</code> table isn't ready yet. The API will create it on the
+              next request (or restart). Refresh in a moment — your first visit after that will
+              start the count.
+            </div>
+          )}
           {/* Totals */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Total icon={Eye} label="Pageviews" value={fmt(data.totals.views)} />

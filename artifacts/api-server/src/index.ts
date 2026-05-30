@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { ensureTables } from "./lib/ensureTables";
 
 const rawPort = process.env["PORT"];
 
@@ -14,6 +15,9 @@ const port = Number(rawPort);
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
+
+// Self-heal new tables (page_views) on boot. Idempotent + non-blocking.
+void ensureTables();
 
 app.listen(port, (err) => {
   if (err) {

@@ -238,6 +238,8 @@ export type AdminJob = {
 
 export type AnalyticsResponse = {
   days: number;
+  /** True when the page_views table is live and ready. */
+  pageviewsTable: boolean;
   totals: {
     views: number;
     sessions: number;
