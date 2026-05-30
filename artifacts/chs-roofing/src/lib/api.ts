@@ -80,6 +80,21 @@ async function getJson<T extends object>(
   }
 }
 
+/** Like getJson but returns { data } or { error: string } so callers
+ * can show the real server-side error instead of a generic null. */
+async function getJsonResult<T extends object>(
+  path: string,
+  init?: RequestInit,
+): Promise<{ data: T } | { error: string }> {
+  try {
+    const res = await fetch(`${BASE}${path}`, init);
+    if (!res.ok) return { error: await readError(res) };
+    return { data: (await res.json()) as T };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
 async function patchJson<T extends object>(
   path: string,
   body: unknown,
@@ -257,11 +272,11 @@ export const api = {
       headers: { "x-admin-key": key },
     }),
   listAllJobs: (key: string) =>
-    getJson<{ rows: AdminJob[] }>("/admin/jobs", {
+    getJsonResult<{ rows: AdminJob[] }>("/admin/jobs", {
       headers: { "x-admin-key": key },
     }),
   getAnalytics: (key: string, days = 30) =>
-    getJson<AnalyticsResponse>(`/admin/analytics?days=${days}`, {
+    getJsonResult<AnalyticsResponse>(`/admin/analytics?days=${days}`, {
       headers: { "x-admin-key": key },
     }),
   listEstimates: (key: string) =>

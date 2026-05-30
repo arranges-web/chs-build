@@ -56,9 +56,9 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate }: Pr
         api.listAllJobs(adminKey),
       ]);
       if (cancelled) return;
-      if (a) setAnalytics(a);
+      if ("data" in a) setAnalytics(a.data);
       if (c) setCustomers(c.rows);
-      if (j) setJobs(j.rows);
+      if ("data" in j) setJobs(j.data.rows);
     })();
     return () => {
       cancelled = true;

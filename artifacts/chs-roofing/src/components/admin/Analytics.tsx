@@ -22,10 +22,10 @@ export default function Analytics({ adminKey }: { adminKey: string }) {
     setLoading(true);
     setError(null);
     const res = await api.getAnalytics(adminKey, range);
-    if (res) {
-      setData(res);
+    if ("data" in res) {
+      setData(res.data);
     } else {
-      setError("Couldn't load analytics. The DB tables may not be migrated yet — run pnpm --filter @workspace/db run push.");
+      setError(res.error);
     }
     setLoading(false);
   };

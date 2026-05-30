@@ -54,10 +54,10 @@ export default function Projects({ adminKey, onOpenCustomer }: Props) {
     setLoading(true);
     setError(null);
     const res = await api.listAllJobs(adminKey);
-    if (res) {
-      setRows(res.rows);
+    if ("data" in res) {
+      setRows(res.data.rows);
     } else {
-      setError("Could not load projects. Check the admin key and try again.");
+      setError(res.error);
     }
     setLoading(false);
   };
@@ -135,7 +135,7 @@ export default function Projects({ adminKey, onOpenCustomer }: Props) {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 rounded-xl border border-destructive/40 bg-destructive/5 text-destructive text-sm">
+        <div className="mb-4 p-4 rounded-xl border border-destructive/40 bg-destructive/5 text-destructive text-sm whitespace-pre-line">
           {error}
         </div>
       )}
