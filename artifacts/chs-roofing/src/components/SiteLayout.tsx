@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import Header from "./Header";
 import Footer from "./Footer";
 import StickyMobileBar from "./StickyMobileBar";
+import { usePageViewTracker } from "@/hooks/usePageViewTracker";
 
 // Defer the chat widget + social-proof toast — they aren't needed
 // for first paint and they pull in framer-motion + sessionStorage
@@ -34,6 +35,7 @@ function useAfterIdle(delayMs = 1200): boolean {
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const showDeferred = useAfterIdle();
+  usePageViewTracker();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });

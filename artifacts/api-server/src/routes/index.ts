@@ -4,6 +4,8 @@ import leadsRouter from "./leads";
 import estimatesRouter from "./estimates";
 import portalRouter from "./portal";
 import adminCustomersRouter from "./adminCustomers";
+import trackRouter from "./track";
+import adminAnalyticsRouter from "./adminAnalytics";
 
 const router: IRouter = Router();
 
@@ -12,5 +14,7 @@ router.use(leadsRouter);
 router.use(estimatesRouter);
 router.use(portalRouter);
 router.use(adminCustomersRouter);
+router.use(trackRouter);
+router.use(adminAnalyticsRouter);
 
 export default router;

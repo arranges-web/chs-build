@@ -13,6 +13,9 @@ import Estimates from "@/components/admin/Estimates";
 import ChatResponses from "@/components/admin/ChatResponses";
 import EmailSignature from "@/components/admin/EmailSignature";
 import QuoteLinks from "@/components/admin/QuoteLinks";
+import Dashboard from "@/components/admin/Dashboard";
+import Projects from "@/components/admin/Projects";
+import Analytics from "@/components/admin/Analytics";
 
 type AnyRow = Record<string, unknown>;
 
@@ -26,7 +29,10 @@ export default function AdminPage() {
   const [estimates, setEstimates] = useState<AnyRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [section, setSection] = useState<AdminSection>("clients");
+  const [section, setSection] = useState<AdminSection>("dashboard");
+  // When Projects view opens a customer, route to Clients with that id.
+  const [pendingClientOpen, setPendingClientOpen] = useState<number | null>(null);
+  void pendingClientOpen;
   // Prefill payload passed from Leads → Clients when the user clicks
   // "Convert to client" on a lead row.
   const [clientPrefill, setClientPrefill] = useState<CustomerPrefill | null>(null);
@@ -175,6 +181,14 @@ export default function AdminPage() {
             {error}
           </div>
         )}
+        {section === "dashboard" && (
+          <Dashboard
+            adminKey={authedKey}
+            leads={leads}
+            estimates={estimates}
+            onNavigate={setSection}
+          />
+        )}
         {section === "clients" && (
           <Clients
             adminKey={authedKey}
@@ -182,10 +196,20 @@ export default function AdminPage() {
             onConsumePrefill={() => setClientPrefill(null)}
           />
         )}
+        {section === "projects" && (
+          <Projects
+            adminKey={authedKey}
+            onOpenCustomer={(id) => {
+              setPendingClientOpen(id);
+              setSection("clients");
+            }}
+          />
+        )}
         {section === "leads" && (
           <Leads rows={leads} loading={loading} onConvert={onConvertLead} />
         )}
         {section === "estimates" && <Estimates rows={estimates} loading={loading} />}
+        {section === "analytics" && <Analytics adminKey={authedKey} />}
         {section === "responses" && <ChatResponses />}
         {section === "signature" && <EmailSignature />}
         {section === "links" && <QuoteLinks />}

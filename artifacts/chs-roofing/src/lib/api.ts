@@ -205,11 +205,47 @@ export type PortalLookupResponse = {
   jobs: Job[];
 };
 
+export type AdminJob = {
+  id: number;
+  customerId: number;
+  title: string;
+  serviceType: string | null;
+  status: string;
+  progress: number;
+  startDate: string | null;
+  estimatedCompletion: string | null;
+  createdAt: string;
+  customerName: string | null;
+  customerEmail: string | null;
+  customerPhone: string | null;
+  accountNumber: string | null;
+};
+
+export type AnalyticsResponse = {
+  days: number;
+  totals: {
+    views: number;
+    sessions: number;
+    leads: number;
+    estimates: number;
+    customers: number;
+    activeJobs: number;
+  };
+  pageviewsByDay: Array<{ day: string; views: number; sessions: number }>;
+  topPaths: Array<{ path: string; views: number }>;
+  topReferrers: Array<{ referrer: string; views: number }>;
+};
+
 export const api = {
   submitLead: (payload: LeadPayload) =>
     postJson<{ ok: true; id: number }>("/leads", payload),
   submitEstimate: (payload: EstimatePayload) =>
     postJson<{ ok: true; id: number }>("/estimates", payload),
+
+  // Public pageview tracker — fire-and-forget. The server swallows
+  // errors as 204 so we never raise either.
+  trackPageView: (payload: { path: string; referrer?: string; sessionId?: string }) =>
+    postJson<{ ok: true }>("/track", payload),
 
   // Public portal
   portalLookup: (identifier: string) =>
@@ -218,6 +254,14 @@ export const api = {
   // Admin (key required)
   listLeads: (key: string) =>
     getJson<{ rows: Record<string, unknown>[] }>("/admin/leads", {
+      headers: { "x-admin-key": key },
+    }),
+  listAllJobs: (key: string) =>
+    getJson<{ rows: AdminJob[] }>("/admin/jobs", {
+      headers: { "x-admin-key": key },
+    }),
+  getAnalytics: (key: string, days = 30) =>
+    getJson<AnalyticsResponse>(`/admin/analytics?days=${days}`, {
       headers: { "x-admin-key": key },
     }),
   listEstimates: (key: string) =>

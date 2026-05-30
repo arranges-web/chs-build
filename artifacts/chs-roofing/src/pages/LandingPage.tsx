@@ -21,6 +21,7 @@ import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Seo, { faqSchema } from "@/components/Seo";
+import { usePageViewTracker } from "@/hooks/usePageViewTracker";
 import { PHOTOS, SITE, TESTIMONIALS } from "@/lib/site-config";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
@@ -36,6 +37,7 @@ const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 
 export default function LandingPage() {
   const { t } = useTranslation();
+  usePageViewTracker();
 
   // Set focused page title for paid traffic landing — re-runs on language change.
   useEffect(() => {

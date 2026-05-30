@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import {
+  BarChart3,
+  Briefcase,
   Calculator,
   Inbox,
+  LayoutDashboard,
   LogOut,
   Mail,
   Menu,
@@ -16,9 +19,12 @@ import {
 import { SITE } from "@/lib/site-config";
 
 export type AdminSection =
+  | "dashboard"
   | "clients"
+  | "projects"
   | "leads"
   | "estimates"
+  | "analytics"
   | "responses"
   | "signature"
   | "links";
@@ -43,22 +49,35 @@ type Props = {
 };
 
 const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
+  dashboard: { title: "Dashboard", subtitle: "Snapshot of everything happening across the business." },
   clients: { title: "Clients", subtitle: "Customer CRM, jobs, updates, and photo log." },
+  projects: { title: "Projects", subtitle: "Every active job across every customer in one place." },
   leads: { title: "Leads", subtitle: "Every quote request from the website." },
   estimates: { title: "Estimates", subtitle: "Every roof estimate submitted online." },
+  analytics: { title: "Website Analytics", subtitle: "Traffic, top pages, and lead-source breakdown — built in, no Google Analytics." },
   responses: { title: "AI Chat Responses", subtitle: "Copy-paste answers for common questions." },
   signature: { title: "Email Signature", subtitle: "Generate a branded HTML signature for your team." },
   links: { title: "Quote Links", subtitle: "Build pre-filled /contact links to share with customers." },
 };
 
-const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "crm" | "tools" }[] = [
+const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overview" | "crm" | "insights" | "tools" }[] = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
   { id: "clients", label: "Clients", icon: Users, group: "crm" },
+  { id: "projects", label: "Projects", icon: Briefcase, group: "crm" },
   { id: "leads", label: "Leads", icon: Inbox, group: "crm" },
   { id: "estimates", label: "Estimates", icon: Calculator, group: "crm" },
+  { id: "analytics", label: "Analytics", icon: BarChart3, group: "insights" },
   { id: "responses", label: "AI Responses", icon: MessageSquare, group: "tools" },
   { id: "signature", label: "Email Signature", icon: Mail, group: "tools" },
   { id: "links", label: "Quote Links", icon: LinkIcon, group: "tools" },
 ];
+
+const GROUP_LABEL: Record<string, string> = {
+  overview: "Overview",
+  crm: "CRM",
+  insights: "Insights",
+  tools: "Tools",
+};
 
 export default function AdminShell({
   section,
@@ -114,10 +133,10 @@ export default function AdminShell({
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 space-y-6">
-          {(["crm", "tools"] as const).map((g) => (
+          {(["overview", "crm", "insights", "tools"] as const).map((g) => (
             <div key={g} className="px-3">
               <p className="px-3 text-[10px] uppercase tracking-[0.22em] font-semibold text-white/40 mb-2">
-                {g === "crm" ? "CRM" : "Tools"}
+                {GROUP_LABEL[g]}
               </p>
               <ul className="space-y-1">
                 {NAV.filter((n) => n.group === g).map((n) => {
