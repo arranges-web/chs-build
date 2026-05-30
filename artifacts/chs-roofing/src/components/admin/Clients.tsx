@@ -39,10 +39,12 @@ export default function Clients({
   adminKey,
   initialPrefill,
   onConsumePrefill,
+  onOpenJob,
 }: {
   adminKey: string;
   initialPrefill?: CustomerPrefill | null;
   onConsumePrefill?: () => void;
+  onOpenJob?: (jobId: number, customerId: number) => void;
 }) {
   const [list, setList] = useState<Customer[] | null>(null);
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -100,6 +102,7 @@ export default function Clients({
           void loadList();
         }}
         onChanged={() => activeId && void loadDetail(activeId)}
+        onOpenJob={onOpenJob}
       />
     );
   }
@@ -369,11 +372,13 @@ function CustomerDetail({
   detail,
   onBack,
   onChanged,
+  onOpenJob,
 }: {
   adminKey: string;
   detail: Detail;
   onBack: () => void;
   onChanged: () => void;
+  onOpenJob?: (jobId: number, customerId: number) => void;
 }) {
   const c = detail.customer;
   const [editing, setEditing] = useState(false);
@@ -499,7 +504,13 @@ function CustomerDetail({
       ) : (
         <div className="space-y-6">
           {detail.jobs.map((j) => (
-            <JobAdminCard key={j.id} adminKey={adminKey} job={j} onChanged={onChanged} />
+            <JobAdminCard
+              key={j.id}
+              adminKey={adminKey}
+              job={j}
+              onChanged={onChanged}
+              onOpenJob={onOpenJob ? () => onOpenJob(j.id, detail.customer.id) : undefined}
+            />
           ))}
         </div>
       )}
@@ -592,10 +603,12 @@ function JobAdminCard({
   adminKey,
   job,
   onChanged,
+  onOpenJob,
 }: {
   adminKey: string;
   job: Job;
   onChanged: () => void;
+  onOpenJob?: () => void;
 }) {
   const [status, setStatus] = useState(job.status);
   const [progress, setProgress] = useState(String(job.progress));
@@ -632,18 +645,30 @@ function JobAdminCard({
             </p>
           )}
         </div>
-        <button
-          type="button"
-          onClick={async () => {
-            if (!confirm("Delete this job? This will also delete its updates and photos.")) return;
-            await api.deleteJob(job.id, adminKey);
-            onChanged();
-          }}
-          className="text-xs font-semibold text-destructive hover:underline inline-flex items-center gap-1"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          Delete job
-        </button>
+        <div className="flex items-center gap-2">
+          {onOpenJob && (
+            <button
+              type="button"
+              onClick={onOpenJob}
+              className="inline-flex items-center gap-1 bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm shadow-primary/30 hover:bg-primary/90"
+            >
+              Open project
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={async () => {
+              if (!confirm("Delete this job? This will also delete its updates and photos.")) return;
+              await api.deleteJob(job.id, adminKey);
+              onChanged();
+            }}
+            className="text-xs font-semibold text-destructive hover:underline inline-flex items-center gap-1"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Delete job
+          </button>
+        </div>
       </header>
 
       <div className="p-5 grid sm:grid-cols-3 gap-3 items-end border-b border-border/60">

@@ -16,6 +16,7 @@ import QuoteLinks from "@/components/admin/QuoteLinks";
 import Dashboard from "@/components/admin/Dashboard";
 import Projects from "@/components/admin/Projects";
 import Analytics from "@/components/admin/Analytics";
+import JobDetail from "@/components/admin/JobDetail";
 
 type AnyRow = Record<string, unknown>;
 
@@ -33,6 +34,11 @@ export default function AdminPage() {
   // When Projects view opens a customer, route to Clients with that id.
   const [pendingClientOpen, setPendingClientOpen] = useState<number | null>(null);
   void pendingClientOpen;
+  // When the user clicks into a single job from anywhere, drop into
+  // the focused JobDetail view instead of the normal section content.
+  const [openJob, setOpenJob] = useState<{ jobId: number; customerId: number } | null>(
+    null,
+  );
   // Prefill payload passed from Leads → Clients when the user clicks
   // "Convert to client" on a lead row.
   const [clientPrefill, setClientPrefill] = useState<CustomerPrefill | null>(null);
@@ -181,38 +187,52 @@ export default function AdminPage() {
             {error}
           </div>
         )}
-        {section === "dashboard" && (
-          <Dashboard
+        {openJob ? (
+          <JobDetail
             adminKey={authedKey}
-            leads={leads}
-            estimates={estimates}
-            onNavigate={setSection}
+            jobId={openJob.jobId}
+            customerId={openJob.customerId}
+            onBack={() => setOpenJob(null)}
           />
+        ) : (
+          <>
+            {section === "dashboard" && (
+              <Dashboard
+                adminKey={authedKey}
+                leads={leads}
+                estimates={estimates}
+                onNavigate={setSection}
+                onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })}
+              />
+            )}
+            {section === "clients" && (
+              <Clients
+                adminKey={authedKey}
+                initialPrefill={clientPrefill}
+                onConsumePrefill={() => setClientPrefill(null)}
+                onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })}
+              />
+            )}
+            {section === "projects" && (
+              <Projects
+                adminKey={authedKey}
+                onOpenCustomer={(id) => {
+                  setPendingClientOpen(id);
+                  setSection("clients");
+                }}
+                onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })}
+              />
+            )}
+            {section === "leads" && (
+              <Leads rows={leads} loading={loading} onConvert={onConvertLead} />
+            )}
+            {section === "estimates" && <Estimates rows={estimates} loading={loading} />}
+            {section === "analytics" && <Analytics adminKey={authedKey} />}
+            {section === "responses" && <ChatResponses />}
+            {section === "signature" && <EmailSignature />}
+            {section === "links" && <QuoteLinks />}
+          </>
         )}
-        {section === "clients" && (
-          <Clients
-            adminKey={authedKey}
-            initialPrefill={clientPrefill}
-            onConsumePrefill={() => setClientPrefill(null)}
-          />
-        )}
-        {section === "projects" && (
-          <Projects
-            adminKey={authedKey}
-            onOpenCustomer={(id) => {
-              setPendingClientOpen(id);
-              setSection("clients");
-            }}
-          />
-        )}
-        {section === "leads" && (
-          <Leads rows={leads} loading={loading} onConvert={onConvertLead} />
-        )}
-        {section === "estimates" && <Estimates rows={estimates} loading={loading} />}
-        {section === "analytics" && <Analytics adminKey={authedKey} />}
-        {section === "responses" && <ChatResponses />}
-        {section === "signature" && <EmailSignature />}
-        {section === "links" && <QuoteLinks />}
       </AdminShell>
     </>
   );

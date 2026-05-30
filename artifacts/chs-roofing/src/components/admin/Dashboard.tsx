@@ -25,6 +25,7 @@ type Props = {
   leads: AnyRow[] | null;
   estimates: AnyRow[] | null;
   onNavigate: (s: AdminSection) => void;
+  onOpenJob?: (jobId: number, customerId: number) => void;
 };
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
@@ -42,7 +43,7 @@ const fmtDate = (s?: string | null) => {
 
 const fmtNumber = (n: number) => n.toLocaleString("en-US");
 
-export default function Dashboard({ adminKey, leads, estimates, onNavigate }: Props) {
+export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOpenJob }: Props) {
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [jobs, setJobs] = useState<AdminJob[] | null>(null);
@@ -161,8 +162,12 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate }: Pr
               {activeJobs.slice(0, 5).map((j) => {
                 const meta = STATUS_META[j.status] ?? STATUS_META.scheduled;
                 return (
-                  <li key={j.id} className="flex items-start gap-3">
-                    <div className="flex-1 min-w-0">
+                  <li key={j.id}>
+                    <button
+                      type="button"
+                      onClick={() => onOpenJob?.(j.id, j.customerId)}
+                      className="w-full text-left rounded-lg hover:bg-muted/40 -mx-2 px-2 py-1.5 transition-colors"
+                    >
                       <div className="flex items-baseline gap-2 flex-wrap">
                         <p className="font-semibold text-foreground text-sm truncate">{j.title}</p>
                         <span className={`text-[10px] uppercase tracking-[0.16em] font-semibold px-2 py-0.5 rounded-full ${meta.cls}`}>
@@ -174,7 +179,7 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate }: Pr
                         {j.estimatedCompletion ? ` · ETA ${fmtDate(j.estimatedCompletion)}` : ""}
                       </p>
                       <ProgressBar progress={j.progress} className="mt-2" />
-                    </div>
+                    </button>
                   </li>
                 );
               })}

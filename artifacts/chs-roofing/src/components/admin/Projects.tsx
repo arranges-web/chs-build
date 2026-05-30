@@ -41,9 +41,10 @@ const fmtDate = (s?: string | null) => {
 type Props = {
   adminKey: string;
   onOpenCustomer?: (customerId: number) => void;
+  onOpenJob?: (jobId: number, customerId: number) => void;
 };
 
-export default function Projects({ adminKey, onOpenCustomer }: Props) {
+export default function Projects({ adminKey, onOpenCustomer, onOpenJob }: Props) {
   const [rows, setRows] = useState<AdminJob[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -224,17 +225,26 @@ export default function Projects({ adminKey, onOpenCustomer }: Props) {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between">
+                <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between gap-2">
                   <span className="text-[11px] text-muted-foreground">
                     Created {fmtDate(j.createdAt)}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => onOpenCustomer?.(j.customerId)}
-                    className="text-xs font-semibold text-primary hover:underline"
-                  >
-                    Open customer →
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onOpenCustomer?.(j.customerId)}
+                      className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+                    >
+                      Open customer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenJob?.(j.id, j.customerId)}
+                      className="inline-flex items-center gap-1 bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm shadow-primary/30 hover:bg-primary/90"
+                    >
+                      Open project
+                    </button>
+                  </div>
                 </div>
               </article>
             );
