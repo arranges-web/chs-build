@@ -20,6 +20,7 @@ import {
   type JobUpdate,
   type JobPhoto,
 } from "@/lib/api";
+import type { CustomerPrefill } from "./AdminShell";
 
 type Detail = { customer: Customer; jobs: Job[] };
 
@@ -30,12 +31,34 @@ const STATUS_OPTS = [
   { value: "on_hold", label: "On hold", icon: Pause },
 ];
 
-export default function Clients({ adminKey }: { adminKey: string }) {
+export default function Clients({
+  adminKey,
+  initialPrefill,
+  onConsumePrefill,
+}: {
+  adminKey: string;
+  initialPrefill?: CustomerPrefill | null;
+  onConsumePrefill?: () => void;
+}) {
   const [list, setList] = useState<Customer[] | null>(null);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [prefill, setPrefill] = useState<CustomerPrefill | null>(null);
+
+  // When a Convert-to-client action lands a prefill payload, pop the
+  // new-customer form open with the lead's name/email/phone/address
+  // already filled in.
+  useEffect(() => {
+    if (initialPrefill) {
+      setPrefill(initialPrefill);
+      setCreating(true);
+      setActiveId(null);
+      onConsumePrefill?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPrefill]);
 
   const loadList = async () => {
     setLoading(true);
@@ -107,9 +130,14 @@ export default function Clients({ adminKey }: { adminKey: string }) {
       {creating && (
         <NewCustomerForm
           adminKey={adminKey}
-          onCancel={() => setCreating(false)}
+          prefill={prefill}
+          onCancel={() => {
+            setCreating(false);
+            setPrefill(null);
+          }}
           onCreated={(c) => {
             setCreating(false);
+            setPrefill(null);
             void loadList().then(() => setActiveId(c.id));
           }}
         />
@@ -161,17 +189,19 @@ export default function Clients({ adminKey }: { adminKey: string }) {
 
 function NewCustomerForm({
   adminKey,
+  prefill,
   onCancel,
   onCreated,
 }: {
   adminKey: string;
+  prefill?: CustomerPrefill | null;
   onCancel: () => void;
   onCreated: (c: Customer) => void;
 }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [name, setName] = useState(prefill?.name ?? "");
+  const [email, setEmail] = useState(prefill?.email ?? "");
+  const [phone, setPhone] = useState(prefill?.phone ?? "");
+  const [address, setAddress] = useState(prefill?.address ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
