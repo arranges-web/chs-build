@@ -138,6 +138,33 @@ router.patch("/admin/customers/:id", async (req, res) => {
 
 // ─── Jobs ───────────────────────────────────────────────────────
 
+router.get("/admin/jobs", async (_req, res) => {
+  try {
+    const rows = await db
+      .select({
+        id: jobsTable.id,
+        customerId: jobsTable.customerId,
+        title: jobsTable.title,
+        serviceType: jobsTable.serviceType,
+        status: jobsTable.status,
+        progress: jobsTable.progress,
+        startDate: jobsTable.startDate,
+        estimatedCompletion: jobsTable.estimatedCompletion,
+        createdAt: jobsTable.createdAt,
+        customerName: customersTable.name,
+        customerEmail: customersTable.email,
+        customerPhone: customersTable.phone,
+        accountNumber: customersTable.accountNumber,
+      })
+      .from(jobsTable)
+      .leftJoin(customersTable, eq(jobsTable.customerId, customersTable.id))
+      .orderBy(desc(jobsTable.createdAt));
+    res.json({ rows });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
 router.post("/admin/jobs", async (req, res) => {
   try {
     const parsed = insertJobSchema.safeParse(req.body);

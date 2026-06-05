@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ChevronRight,
@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Copy,
   KeyRound,
+  Link as LinkIcon,
   Mail as MailIcon,
 } from "lucide-react";
 import {
@@ -832,10 +833,11 @@ function JobAdminCard({
 
 // ─── Tiny form helpers ─────────────────────────────────────────
 function PortalAccessCard({ customer }: { customer: Customer }) {
-  const [copied, setCopied] = useState<"email" | "account" | null>(null);
-  const portalUrl = `https://chs-roofing.com/portal`;
+  const [copied, setCopied] = useState<"email" | "account" | "link" | null>(null);
+  const portalUrl = `${window.location.origin}/portal`;
+  const shareableLink = `${window.location.origin}/portal?id=${encodeURIComponent(customer.accountNumber)}`;
 
-  const copy = async (key: "email" | "account", text: string) => {
+  const copy = async (key: "email" | "account" | "link", text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(key);
@@ -916,6 +918,15 @@ How to sign in:
               onCopy={() => copy("account", customer.accountNumber)}
             />
           </div>
+          <div className="mt-2">
+            <CopyChip
+              label="Shareable link"
+              value={shareableLink}
+              copied={copied === "link"}
+              onCopy={() => copy("link", shareableLink)}
+              icon={<LinkIcon className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />}
+            />
+          </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <a
               href={mailto}
@@ -947,24 +958,27 @@ function CopyChip({
   copied,
   onCopy,
   mono,
+  icon,
 }: {
   label: string;
   value: string;
   copied: boolean;
   onCopy: () => void;
   mono?: boolean;
+  icon?: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onCopy}
       title="Copy to clipboard"
-      className={`group flex items-center gap-2 rounded-lg border px-3 py-2 text-left transition-colors ${
+      className={`group flex items-center gap-2 rounded-lg border px-3 py-2 text-left transition-colors w-full ${
         copied
           ? "border-emerald-300 bg-emerald-50"
           : "border-border/60 bg-background hover:border-primary/40"
       }`}
     >
+      {icon && !copied && icon}
       <div className="min-w-0 flex-1">
         <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
           {label}

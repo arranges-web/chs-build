@@ -72,10 +72,15 @@ export default function PortalPage() {
     };
   }, []);
 
-  // Auto-restore last identifier so a returning customer doesn't have
-  // to re-enter their email every visit.
+  // Auto-lookup on mount: prefer ?id= / ?email= URL params, fall back to
+  // the last identifier saved in localStorage. This lets admins share a
+  // deep-link like /portal?id=CHS-A2K9P3 that lands customers straight
+  // into their dashboard without any manual typing.
   useEffect(() => {
     let cancelled = false;
+
+    const params = new URLSearchParams(window.location.search);
+    const urlId = (params.get("id") ?? params.get("email") ?? "").trim();
     const saved = (() => {
       try {
         return localStorage.getItem(STORAGE_KEY);
@@ -83,13 +88,21 @@ export default function PortalPage() {
         return null;
       }
     })();
-    if (!saved) return;
-    setIdentifier(saved);
+
+    const lookup = urlId || saved;
+    if (!lookup) return;
+
+    setIdentifier(lookup);
     setLoading(true);
-    void api.portalLookup(saved).then((res) => {
+    void api.portalLookup(lookup).then((res) => {
       if (cancelled) return;
       if (res) {
         setData(res);
+        try {
+          localStorage.setItem(STORAGE_KEY, lookup);
+        } catch {
+          // ignore
+        }
       }
       setLoading(false);
     });
