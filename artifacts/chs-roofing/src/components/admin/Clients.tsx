@@ -102,10 +102,35 @@ export default function Clients({
   }, []);
 
   useEffect(() => {
-    if (activeId) void loadDetail(activeId);
-    else setDetail(null);
+    if (activeId) {
+      // Clear stale detail immediately so we never flash the wrong
+      // customer's data while the new fetch is in flight.
+      setDetail(null);
+      void loadDetail(activeId);
+    } else {
+      setDetail(null);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeId]);
+
+  // ─── Loading state (customer clicked, detail in flight) ────────
+  if (activeId && !detail) {
+    return (
+      <div>
+        <button
+          type="button"
+          onClick={() => setActiveId(null)}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          All customers
+        </button>
+        <div className="flex items-center justify-center py-24">
+          <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   // ─── Detail view ───────────────────────────────────────────────
   if (activeId && detail) {
