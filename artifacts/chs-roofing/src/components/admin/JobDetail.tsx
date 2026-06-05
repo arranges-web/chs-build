@@ -424,6 +424,7 @@ function PhotosPanel({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const photos = job.photos;
 
   const onPickFiles = async (filesList: FileList | null) => {
@@ -451,6 +452,7 @@ function PhotosPanel({
     setUploading(false);
     setCaption("");
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
     onChanged();
     if (failed > 0 && failed < files.length) {
       setError(`${failed} of ${files.length} photos failed to upload.`);
@@ -516,6 +518,7 @@ function PhotosPanel({
             <Camera className="w-3.5 h-3.5" />
             Take photo
             <input
+              ref={cameraInputRef}
               type="file"
               accept="image/*"
               capture="environment"

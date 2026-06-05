@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Camera,
   ChevronRight,
   Clock,
   Hammer,
   Pause,
   Plus,
   Trash2,
+  Upload,
   CheckCircle2,
   Check as CheckIcon,
   Image as ImageIcon,
@@ -25,6 +27,7 @@ import {
   type JobUpdate,
   type JobPhoto,
 } from "@/lib/api";
+import { compressImage } from "@/lib/imageUpload";
 import type { CustomerPrefill } from "./AdminShell";
 
 type Detail = { customer: Customer; jobs: Job[] };
@@ -658,8 +661,44 @@ function JobAdminCard({
   const [updateBody, setUpdateBody] = useState("");
   const [updateAuthor, setUpdateAuthor] = useState("CHS Team");
 
-  const [photoUrl, setPhotoUrl] = useState("");
   const [photoCaption, setPhotoCaption] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const onPickFiles = async (filesList: FileList | null) => {
+    if (!filesList || filesList.length === 0) return;
+    setUploadError(null);
+    setUploading(true);
+    const files = Array.from(filesList);
+    let failed = 0;
+    for (const f of files) {
+      try {
+        const dataUrl = await compressImage(f);
+        const res = await api.addJobPhoto(
+          { jobId: job.id, url: dataUrl, caption: photoCaption || undefined },
+          adminKey,
+        );
+        if ("error" in res) {
+          failed++;
+          setUploadError(res.error);
+        }
+      } catch (err) {
+        failed++;
+        setUploadError(err instanceof Error ? err.message : "Upload failed");
+      }
+    }
+    setUploading(false);
+    setPhotoCaption("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    onChanged();
+    if (failed > 0 && failed < files.length) {
+      setUploadError(`${failed} of ${files.length} photos failed to upload.`);
+    }
+  };
 
   const saveMeta = async () => {
     setSavingMeta(true);
@@ -807,40 +846,89 @@ function JobAdminCard({
           <ImageIcon className="w-4 h-4 text-primary" />
           Photos
         </h5>
-        <form
-          className="grid sm:grid-cols-[1fr_1fr_auto] gap-2 mb-3"
-          onSubmit={async (e) => {
-            e.preventDefault();
-            if (!photoUrl.trim()) return;
-            await api.addJobPhoto(
-              { jobId: job.id, url: photoUrl.trim(), caption: photoCaption || undefined },
-              adminKey,
-            );
-            setPhotoUrl("");
-            setPhotoCaption("");
-            onChanged();
-          }}
-        >
-          <input
-            value={photoUrl}
-            onChange={(e) => setPhotoUrl(e.target.value)}
-            placeholder="Image URL (Drive share link, etc.)"
-            className="h-10 px-3 rounded-lg border border-border/60 bg-background text-sm"
-          />
+
+        {/* Upload from device */}
+        <div className="mb-3 p-3 rounded-xl border border-dashed border-border/60 bg-muted/30">
+          <label className="block text-[11px] font-semibold text-foreground mb-1">
+            Caption (optional)
+          </label>
           <input
             value={photoCaption}
             onChange={(e) => setPhotoCaption(e.target.value)}
-            placeholder="Caption (optional)"
-            className="h-10 px-3 rounded-lg border border-border/60 bg-background text-sm"
+            placeholder="e.g. dry-in complete, north side"
+            className="w-full h-9 px-3 rounded-lg border border-border/60 bg-background text-sm mb-2"
           />
-          <button
-            type="submit"
-            className="h-10 px-3 rounded-lg bg-primary text-white text-sm font-semibold inline-flex items-center justify-center gap-1.5"
+          <div className="flex items-center gap-2 flex-wrap">
+            <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-sm shadow-primary/30 cursor-pointer transition-colors">
+              <Upload className="w-3.5 h-3.5" />
+              {uploading ? "Uploading…" : "Choose photo(s)"}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={uploading}
+                onChange={(e) => void onPickFiles(e.target.files)}
+                className="hidden"
+              />
+            </label>
+            <label className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary cursor-pointer transition-colors">
+              <Camera className="w-3.5 h-3.5" />
+              Take photo
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                disabled={uploading}
+                onChange={(e) => void onPickFiles(e.target.files)}
+                className="hidden"
+              />
+            </label>
+            <p className="text-[11px] text-muted-foreground w-full mt-0.5">
+              Auto-compressed to ~1200px before upload.
+            </p>
+          </div>
+        </div>
+
+        {/* URL paste fallback */}
+        <details className="mb-3">
+          <summary className="text-[12px] font-semibold text-foreground/80 cursor-pointer hover:text-foreground">
+            Or paste an image URL
+          </summary>
+          <form
+            className="grid sm:grid-cols-[1fr_auto] gap-2 mt-2"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!photoUrl.trim()) return;
+              await api.addJobPhoto(
+                { jobId: job.id, url: photoUrl.trim(), caption: photoCaption || undefined },
+                adminKey,
+              );
+              setPhotoUrl("");
+              setPhotoCaption("");
+              onChanged();
+            }}
           >
-            <Plus className="w-4 h-4" />
-            Add
-          </button>
-        </form>
+            <input
+              value={photoUrl}
+              onChange={(e) => setPhotoUrl(e.target.value)}
+              placeholder="https://example.com/photo.jpg"
+              className="h-9 px-3 rounded-lg border border-border/60 bg-background text-sm"
+            />
+            <button
+              type="submit"
+              disabled={!photoUrl.trim()}
+              className="h-9 px-3 rounded-lg bg-card border border-border/60 hover:border-primary/40 text-foreground text-sm font-semibold disabled:opacity-60"
+            >
+              Add URL
+            </button>
+          </form>
+        </details>
+
+        {uploadError && (
+          <p className="mb-3 text-[11px] text-destructive whitespace-pre-line">{uploadError}</p>
+        )}
         {photos.length === 0 ? (
           <p className="text-xs text-muted-foreground">No photos yet.</p>
         ) : (
