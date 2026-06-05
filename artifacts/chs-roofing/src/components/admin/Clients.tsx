@@ -40,11 +40,15 @@ export default function Clients({
   adminKey,
   initialPrefill,
   onConsumePrefill,
+  initialActiveId,
+  onConsumeActiveId,
   onOpenJob,
 }: {
   adminKey: string;
   initialPrefill?: CustomerPrefill | null;
   onConsumePrefill?: () => void;
+  initialActiveId?: number | null;
+  onConsumeActiveId?: () => void;
   onOpenJob?: (jobId: number, customerId: number) => void;
 }) {
   const [list, setList] = useState<Customer[] | null>(null);
@@ -66,6 +70,17 @@ export default function Clients({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPrefill]);
+
+  // When navigating here from another tab (e.g. Projects → Open customer),
+  // open the requested customer immediately and clear the pending ID.
+  useEffect(() => {
+    if (initialActiveId) {
+      setActiveId(initialActiveId);
+      setCreating(false);
+      onConsumeActiveId?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialActiveId]);
 
   const loadList = async () => {
     setLoading(true);

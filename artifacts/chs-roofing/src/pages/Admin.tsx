@@ -51,7 +51,6 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [section, setSection] = useState<AdminSection>("dashboard");
   const [pendingClientOpen, setPendingClientOpen] = useState<number | null>(null);
-  void pendingClientOpen;
   const [openJob, setOpenJob] = useState<{ jobId: number; customerId: number } | null>(null);
   const [clientPrefill, setClientPrefill] = useState<CustomerPrefill | null>(null);
 
@@ -341,6 +340,8 @@ export default function AdminPage() {
                 adminKey={effectiveKey}
                 initialPrefill={clientPrefill}
                 onConsumePrefill={() => setClientPrefill(null)}
+                initialActiveId={pendingClientOpen}
+                onConsumeActiveId={() => setPendingClientOpen(null)}
                 onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })}
               />
             )}

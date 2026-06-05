@@ -495,22 +495,37 @@ function PhotosPanel({
           className="w-full h-9 px-3 rounded-lg border border-border/60 bg-background text-sm mb-2"
         />
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Pick from library or files — no capture attribute so the OS
+              shows the full sheet (camera, photo library, files). */}
           <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-sm shadow-primary/30 cursor-pointer transition-colors">
             <Upload className="w-3.5 h-3.5" />
-            {uploading ? "Uploading…" : "Upload photo(s)"}
+            {uploading ? "Uploading…" : "Choose photo(s)"}
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture="environment"
               multiple
               disabled={uploading}
               onChange={(e) => void onPickFiles(e.target.files)}
               className="hidden"
             />
           </label>
-          <p className="text-[11px] text-muted-foreground">
-            Photos are auto-compressed (up to ~1200px wide) before upload.
+          {/* Dedicated "Take photo" button — uses capture so it opens the
+              camera directly without the picker sheet on mobile. */}
+          <label className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary cursor-pointer transition-colors">
+            <Camera className="w-3.5 h-3.5" />
+            Take photo
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              disabled={uploading}
+              onChange={(e) => void onPickFiles(e.target.files)}
+              className="hidden"
+            />
+          </label>
+          <p className="text-[11px] text-muted-foreground w-full mt-0.5">
+            Auto-compressed to ~1200px before upload.
           </p>
         </div>
       </div>
