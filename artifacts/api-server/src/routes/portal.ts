@@ -53,12 +53,19 @@ router.post("/portal/lookup", async (req, res) => {
           .orderBy(desc(jobUpdatesTable.createdAt))
       : [];
 
+    // We only return external photo URLs (http/https). Legacy rows
+    // stored full base64 data URLs in the `url` column, which choked
+    // the portal page after a few uploads. The /admin "Clear all
+    // photos" button lets the team wipe those out for good; we exclude
+    // them from the response in the meantime so the portal stays fast.
     const photos = jobIds.length
-      ? await db
-          .select()
-          .from(jobPhotosTable)
-          .where(inArray(jobPhotosTable.jobId, jobIds))
-          .orderBy(desc(jobPhotosTable.createdAt))
+      ? (
+          await db
+            .select()
+            .from(jobPhotosTable)
+            .where(inArray(jobPhotosTable.jobId, jobIds))
+            .orderBy(desc(jobPhotosTable.createdAt))
+        ).filter((p) => typeof p.url === "string" && /^https?:\/\//i.test(p.url))
       : [];
 
     res.json({

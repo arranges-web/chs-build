@@ -4,9 +4,11 @@ import {
   Camera,
   CheckCircle2,
   Clock,
+  ExternalLink,
   Hammer,
   HardHat,
   Home as HomeIcon,
+  Images,
   KeyRound,
   LogOut,
   Mail,
@@ -72,15 +74,25 @@ export default function PortalPage() {
     };
   }, []);
 
-  // Auto-lookup on mount: prefer ?id= / ?email= URL params, fall back to
-  // the last identifier saved in localStorage. This lets admins share a
-  // deep-link like /portal?id=CHS-A2K9P3 that lands customers straight
-  // into their dashboard without any manual typing.
+  // Auto-restore last identifier OR honour a shared link like
+  // `/portal?account=CHS-XXXX` / `/portal?email=…` / `/portal?id=…`.
+  // Shared-link params take precedence so a forwarded link always
+  // shows the right project even if the browser remembered a
+  // different one. `id` is supported for backward-compat with the
+  // earlier deep-link format.
   useEffect(() => {
     let cancelled = false;
-
-    const params = new URLSearchParams(window.location.search);
-    const urlId = (params.get("id") ?? params.get("email") ?? "").trim();
+    const fromQuery = (() => {
+      if (typeof window === "undefined") return null;
+      const params = new URLSearchParams(window.location.search);
+      const q =
+        params.get("account") ??
+        params.get("acct") ??
+        params.get("id") ??
+        params.get("email") ??
+        null;
+      return q ? q.trim() : null;
+    })();
     const saved = (() => {
       try {
         return localStorage.getItem(STORAGE_KEY);
@@ -88,18 +100,17 @@ export default function PortalPage() {
         return null;
       }
     })();
-
-    const lookup = urlId || saved;
-    if (!lookup) return;
-
-    setIdentifier(lookup);
+    const value = fromQuery ?? saved;
+    if (!value) return;
+    setIdentifier(value);
     setLoading(true);
-    void api.portalLookup(lookup).then((res) => {
+    void api.portalLookup(value).then((res) => {
       if (cancelled) return;
       if (res) {
         setData(res);
+        // Persist so they don't have to repaste next time.
         try {
-          localStorage.setItem(STORAGE_KEY, lookup);
+          localStorage.setItem(STORAGE_KEY, value);
         } catch {
           // ignore
         }
@@ -368,12 +379,51 @@ function JobCard({ job }: { job: Job }) {
         </div>
       </div>
 
-      {/* Photos */}
+      {/* Photo album — primary photo experience. Linked to an external
+          gallery (Google Photos / Drive / Dropbox) that the team
+          maintains. We try to embed; some providers block iframes, so
+          we always show a clear "Open in new tab" button too. */}
+      {job.photoAlbumUrl && (
+        <div className="p-6 md:p-7 border-b border-border/60">
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
+            <h3 className="font-display font-bold text-base text-foreground tracking-tight flex items-center gap-2">
+              <Images className="w-4 h-4 text-primary" />
+              Photo album
+            </h3>
+            <a
+              href={job.photoAlbumUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary hover:text-primary/80"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              Open the full album
+            </a>
+          </div>
+          <div className="rounded-2xl overflow-hidden border border-border/60 bg-muted/30 aspect-video relative">
+            <iframe
+              src={job.photoAlbumUrl}
+              title="Project photo album"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 w-full h-full"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+            />
+          </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            If the preview above doesn't load, tap "Open the full album" — some
+            sharing providers block embedded views for security.
+          </p>
+        </div>
+      )}
+
+      {/* Fallback: any per-photo entries that are external URLs. We
+          stripped legacy base64 uploads server-side. */}
       {photos.length > 0 && (
         <div className="p-6 md:p-7 border-b border-border/60">
           <h3 className="font-display font-bold text-base text-foreground tracking-tight mb-3 flex items-center gap-2">
             <Camera className="w-4 h-4 text-primary" />
-            Photos
+            More photos
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             {photos.map((p) => (

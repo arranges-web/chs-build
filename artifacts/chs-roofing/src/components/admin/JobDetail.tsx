@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
-  Camera,
   CheckCircle2,
   Clock,
+  ExternalLink,
   Hammer,
+  Images,
   Mail,
   MessageSquare,
   Pause,
@@ -13,10 +14,8 @@ import {
   RefreshCw,
   Save,
   Trash2,
-  Upload,
 } from "lucide-react";
-import { api, type Customer, type Job, type JobPhoto, type JobUpdate } from "@/lib/api";
-import { compressImage, dataUrlBytes, formatBytes } from "@/lib/imageUpload";
+import { api, type Customer, type Job, type JobUpdate } from "@/lib/api";
 
 const STATUS_OPTS = [
   { value: "scheduled", label: "Scheduled", icon: Clock },
@@ -177,7 +176,7 @@ export default function JobDetail({ adminKey, jobId, customerId, onBack }: Props
                 job={job}
                 onChanged={load}
               />
-              <PhotosPanel adminKey={adminKey} job={job} onChanged={load} />
+              <PhotoAlbumPanel adminKey={adminKey} job={job} onChanged={load} />
             </div>
           </div>
         </>
@@ -410,7 +409,16 @@ function UpdatesPanel({
   );
 }
 
-function PhotosPanel({
+/**
+ * Replaces the old "upload each photo" UX with a single shareable
+ * gallery URL. The team puts the photos wherever they normally do
+ * (Google Photos shared album, Drive folder, Dropbox), pastes the
+ * link, and the portal embeds + links it for the customer.
+ *
+ * Keeps a "Clear old uploaded photos" action so we can wipe the
+ * leftover base64 rows that were dragging the portal down.
+ */
+function PhotoAlbumPanel({
   adminKey,
   job,
   onChanged,
@@ -419,204 +427,144 @@ function PhotosPanel({
   job: Job;
   onChanged: () => void;
 }) {
-  const [url, setUrl] = useState("");
-  const [caption, setCaption] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [url, setUrl] = useState(job.photoAlbumUrl ?? "");
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-  const photos = job.photos;
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [clearing, setClearing] = useState(false);
 
-  const onPickFiles = async (filesList: FileList | null) => {
-    if (!filesList || filesList.length === 0) return;
-    setError(null);
-    setUploading(true);
-    const files = Array.from(filesList);
-    let failed = 0;
-    for (const f of files) {
-      try {
-        const dataUrl = await compressImage(f);
-        const res = await api.addJobPhoto(
-          { jobId: job.id, url: dataUrl, caption: caption || undefined },
-          adminKey,
-        );
-        if ("error" in res) {
-          failed++;
-          setError(res.error);
-        }
-      } catch (err) {
-        failed++;
-        setError(err instanceof Error ? err.message : "Upload failed");
-      }
-    }
-    setUploading(false);
-    setCaption("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    if (cameraInputRef.current) cameraInputRef.current.value = "";
-    onChanged();
-    if (failed > 0 && failed < files.length) {
-      setError(`${failed} of ${files.length} photos failed to upload.`);
-    }
-  };
+  // Keep the input in sync if the job reloads (e.g. another admin
+  // updates it on a different device).
+  useEffect(() => {
+    setUrl(job.photoAlbumUrl ?? "");
+  }, [job.photoAlbumUrl]);
 
-  const addByUrl = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url.trim()) return;
-    setUploading(true);
+  const dirty = (url.trim() || null) !== (job.photoAlbumUrl ?? null);
+  const legacyCount = job.photos.length;
+
+  const save = async () => {
+    setSaving(true);
     setError(null);
-    const res = await api.addJobPhoto(
-      { jobId: job.id, url: url.trim(), caption: caption || undefined },
+    const trimmed = url.trim();
+    const res = await api.updateJob(
+      job.id,
+      // Pass empty → server normalizes to null.
+      { photoAlbumUrl: trimmed || null } as Partial<Job>,
       adminKey,
     );
-    setUploading(false);
+    setSaving(false);
     if ("error" in res) {
       setError(res.error);
       return;
     }
-    setUrl("");
-    setCaption("");
+    setSavedAt(Date.now());
+    onChanged();
+  };
+
+  const clear = async () => {
+    if (
+      !confirm(
+        "Remove every uploaded photo for this job? This frees up storage and speeds up the customer portal. The photo album link is not affected.",
+      )
+    ) {
+      return;
+    }
+    setClearing(true);
+    setError(null);
+    // `all=true` because at this point we've already migrated to
+    // the album-URL workflow — nothing in job_photos is worth keeping.
+    const ok = await api.clearJobPhotos(job.id, adminKey, true);
+    setClearing(false);
+    if (!ok) {
+      setError("Couldn't clear photos. Try again or refresh.");
+      return;
+    }
     onChanged();
   };
 
   return (
     <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
-      <h3 className="font-display font-bold text-foreground text-base mb-3 inline-flex items-center gap-2">
-        <Camera className="w-4 h-4 text-primary" />
-        Photos
+      <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
+        <Images className="w-4 h-4 text-primary" />
+        Photo album
       </h3>
+      <p className="text-[11px] text-muted-foreground mb-4 leading-relaxed">
+        Paste a shareable link to your photos — Google Photos shared
+        album, Google Drive folder, Dropbox, anywhere public.
+        The customer sees it embedded right inside their portal.
+      </p>
 
-      {/* Upload from device */}
-      <div className="mb-3 p-3 rounded-xl border border-dashed border-border/60 bg-muted/30">
-        <label className="block text-[11px] font-semibold text-foreground mb-1">
-          Caption (optional)
+      <div className="space-y-2">
+        <label className="block text-[11px] font-semibold text-foreground">
+          Album URL
         </label>
         <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder="e.g. dry-in complete, north side"
-          className="w-full h-9 px-3 rounded-lg border border-border/60 bg-background text-sm mb-2"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://photos.app.goo.gl/…  ·  https://drive.google.com/drive/folders/…"
+          className="w-full h-10 px-3 rounded-lg border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Pick from library or files — no capture attribute so the OS
-              shows the full sheet (camera, photo library, files). */}
-          <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-sm shadow-primary/30 cursor-pointer transition-colors">
-            <Upload className="w-3.5 h-3.5" />
-            {uploading ? "Uploading…" : "Choose photo(s)"}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              disabled={uploading}
-              onChange={(e) => void onPickFiles(e.target.files)}
-              className="hidden"
-            />
-          </label>
-          {/* Dedicated "Take photo" button — uses capture so it opens the
-              camera directly without the picker sheet on mobile. */}
-          <label className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary cursor-pointer transition-colors">
-            <Camera className="w-3.5 h-3.5" />
-            Take photo
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              disabled={uploading}
-              onChange={(e) => void onPickFiles(e.target.files)}
-              className="hidden"
-            />
-          </label>
-          <p className="text-[11px] text-muted-foreground w-full mt-0.5">
-            Auto-compressed to ~1200px before upload.
-          </p>
-        </div>
+
+        {url && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[11px] text-primary hover:underline"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Open the album in a new tab
+          </a>
+        )}
+
+        {error && (
+          <p className="text-[11px] text-destructive whitespace-pre-line">{error}</p>
+        )}
+
+        <button
+          type="button"
+          onClick={save}
+          disabled={!dirty || saving}
+          className="w-full inline-flex items-center justify-center gap-1.5 bg-primary disabled:opacity-60 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-primary/30 transition-all"
+        >
+          <Save className="w-4 h-4" />
+          {saving
+            ? "Saving…"
+            : dirty
+              ? "Save album link"
+              : savedAt
+                ? "Saved"
+                : job.photoAlbumUrl
+                  ? "Up to date"
+                  : "Add album link"}
+        </button>
       </div>
 
-      {/* Or paste a URL */}
-      <details className="mb-3">
-        <summary className="text-[12px] font-semibold text-foreground/80 cursor-pointer hover:text-foreground">
-          Or paste an image URL
-        </summary>
-        <form onSubmit={addByUrl} className="grid sm:grid-cols-[1fr_auto] gap-2 mt-2">
-          <input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://example.com/photo.jpg"
-            className="h-9 px-3 rounded-lg border border-border/60 bg-background text-sm"
-          />
-          <button
-            type="submit"
-            disabled={uploading || !url.trim()}
-            className="h-9 px-3 rounded-lg bg-card border border-border/60 hover:border-primary/40 text-foreground text-sm font-semibold disabled:opacity-60"
-          >
-            Add URL
-          </button>
-        </form>
-      </details>
-
-      {error && (
-        <p className="mb-3 text-[11px] text-destructive whitespace-pre-line">{error}</p>
-      )}
-
-      {photos.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No photos yet.</p>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-          {photos.map((p: JobPhoto) => (
-            <PhotoTile
-              key={p.id}
-              photo={p}
-              onDelete={async () => {
-                if (!confirm("Delete this photo?")) return;
-                await api.deleteJobPhoto(p.id, adminKey);
-                onChanged();
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <div className="mt-4 pt-4 border-t border-border/60">
+        <p className="text-[11px] font-semibold text-foreground/70 uppercase tracking-[0.16em] mb-2">
+          Storage cleanup
+        </p>
+        {legacyCount > 0 ? (
+          <p className="text-[12px] text-muted-foreground mb-2">
+            {legacyCount} legacy uploaded photo{legacyCount === 1 ? "" : "s"} on
+            this job. Old uploads are no longer used by the portal — wiping
+            them speeds things up.
+          </p>
+        ) : (
+          <p className="text-[12px] text-muted-foreground mb-2">
+            No legacy uploads on this job.
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={clear}
+          disabled={clearing}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold bg-destructive/10 text-destructive hover:bg-destructive/15 disabled:opacity-60 transition-colors"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          {clearing ? "Clearing…" : "Clear all uploaded photos"}
+        </button>
+      </div>
     </section>
-  );
-}
-
-function PhotoTile({
-  photo,
-  onDelete,
-}: {
-  photo: JobPhoto;
-  onDelete: () => void;
-}) {
-  const sizeHint = useMemo(() => {
-    if (photo.url.startsWith("data:")) return formatBytes(dataUrlBytes(photo.url));
-    return null;
-  }, [photo.url]);
-  return (
-    <div className="aspect-square rounded-lg overflow-hidden border border-border/60 bg-muted/30 relative group">
-      <img
-        src={photo.url}
-        alt={photo.caption ?? ""}
-        className="w-full h-full object-cover"
-        loading="lazy"
-      />
-      {photo.caption && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-[10px] text-white">
-          {photo.caption}
-        </div>
-      )}
-      {sizeHint && (
-        <span className="absolute top-1 left-1 text-[9px] uppercase tracking-wider font-semibold bg-black/40 text-white px-1.5 py-0.5 rounded">
-          {sizeHint}
-        </span>
-      )}
-      <button
-        type="button"
-        onClick={onDelete}
-        className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-        aria-label="Delete photo"
-      >
-        <Trash2 className="w-3 h-3" />
-      </button>
-    </div>
   );
 }

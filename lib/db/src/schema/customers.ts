@@ -42,6 +42,12 @@ export const jobsTable = pgTable("jobs", {
   progress: integer("progress").notNull().default(0), // 0–100
   startDate: text("start_date"),
   estimatedCompletion: text("estimated_completion"),
+  // External photo album URL (Google Photos shared album, Dropbox
+  // folder, Drive folder, etc.). When set, the portal embeds/links to
+  // it instead of relying on per-row uploads in job_photos. This
+  // sidesteps the cost of stuffing base64 data URLs into Postgres and
+  // lets the team manage their own gallery.
+  photoAlbumUrl: text("photo_album_url"),
 });
 
 export const insertJobSchema = createInsertSchema(jobsTable).omit({

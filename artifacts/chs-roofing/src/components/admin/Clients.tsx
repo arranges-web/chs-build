@@ -25,7 +25,6 @@ import {
   type Customer,
   type Job,
   type JobUpdate,
-  type JobPhoto,
 } from "@/lib/api";
 import { compressImage } from "@/lib/imageUpload";
 import type { CustomerPrefill } from "./AdminShell";
@@ -661,44 +660,10 @@ function JobAdminCard({
   const [updateBody, setUpdateBody] = useState("");
   const [updateAuthor, setUpdateAuthor] = useState("CHS Team");
 
-  const [photoCaption, setPhotoCaption] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  // Photos moved to a per-job external album URL. The legacy
+  // per-photo upload form on this card was retired — open the job
+  // detail to manage the album link.
 
-  const onPickFiles = async (filesList: FileList | null) => {
-    if (!filesList || filesList.length === 0) return;
-    setUploadError(null);
-    setUploading(true);
-    const files = Array.from(filesList);
-    let failed = 0;
-    for (const f of files) {
-      try {
-        const dataUrl = await compressImage(f);
-        const res = await api.addJobPhoto(
-          { jobId: job.id, url: dataUrl, caption: photoCaption || undefined },
-          adminKey,
-        );
-        if ("error" in res) {
-          failed++;
-          setUploadError(res.error);
-        }
-      } catch (err) {
-        failed++;
-        setUploadError(err instanceof Error ? err.message : "Upload failed");
-      }
-    }
-    setUploading(false);
-    setPhotoCaption("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
-    if (cameraInputRef.current) cameraInputRef.current.value = "";
-    onChanged();
-    if (failed > 0 && failed < files.length) {
-      setUploadError(`${failed} of ${files.length} photos failed to upload.`);
-    }
-  };
 
   const saveMeta = async () => {
     setSavingMeta(true);
@@ -712,7 +677,6 @@ function JobAdminCard({
   };
 
   const updates = useMemo(() => job.updates, [job.updates]);
-  const photos = useMemo(() => job.photos, [job.photos]);
 
   return (
     <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden">
@@ -842,117 +806,29 @@ function JobAdminCard({
       </div>
 
       <div className="p-5">
-        <h5 className="font-display font-bold text-sm text-foreground tracking-tight mb-3 flex items-center gap-2">
+        <h5 className="font-display font-bold text-sm text-foreground tracking-tight mb-2 flex items-center gap-2">
           <ImageIcon className="w-4 h-4 text-primary" />
-          Photos
+          Photo album
         </h5>
-
-        {/* Upload from device */}
-        <div className="mb-3 p-3 rounded-xl border border-dashed border-border/60 bg-muted/30">
-          <label className="block text-[11px] font-semibold text-foreground mb-1">
-            Caption (optional)
-          </label>
-          <input
-            value={photoCaption}
-            onChange={(e) => setPhotoCaption(e.target.value)}
-            placeholder="e.g. dry-in complete, north side"
-            className="w-full h-9 px-3 rounded-lg border border-border/60 bg-background text-sm mb-2"
-          />
-          <div className="flex items-center gap-2 flex-wrap">
-            <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-sm shadow-primary/30 cursor-pointer transition-colors">
-              <Upload className="w-3.5 h-3.5" />
-              {uploading ? "Uploading…" : "Choose photo(s)"}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                disabled={uploading}
-                onChange={(e) => void onPickFiles(e.target.files)}
-                className="hidden"
-              />
-            </label>
-            <label className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary cursor-pointer transition-colors">
-              <Camera className="w-3.5 h-3.5" />
-              Take photo
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                disabled={uploading}
-                onChange={(e) => void onPickFiles(e.target.files)}
-                className="hidden"
-              />
-            </label>
-            <p className="text-[11px] text-muted-foreground w-full mt-0.5">
-              Auto-compressed to ~1200px before upload.
-            </p>
-          </div>
-        </div>
-
-        {/* URL paste fallback */}
-        <details className="mb-3">
-          <summary className="text-[12px] font-semibold text-foreground/80 cursor-pointer hover:text-foreground">
-            Or paste an image URL
-          </summary>
-          <form
-            className="grid sm:grid-cols-[1fr_auto] gap-2 mt-2"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (!photoUrl.trim()) return;
-              await api.addJobPhoto(
-                { jobId: job.id, url: photoUrl.trim(), caption: photoCaption || undefined },
-                adminKey,
-              );
-              setPhotoUrl("");
-              setPhotoCaption("");
-              onChanged();
-            }}
+        <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
+          Photos are now a single shareable link — Google Photos, Drive,
+          Dropbox, etc. Open the job to paste it and preview it the way
+          the customer will see it.
+        </p>
+        {job.photoAlbumUrl ? (
+          <a
+            href={job.photoAlbumUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary hover:underline"
           >
-            <input
-              value={photoUrl}
-              onChange={(e) => setPhotoUrl(e.target.value)}
-              placeholder="https://example.com/photo.jpg"
-              className="h-9 px-3 rounded-lg border border-border/60 bg-background text-sm"
-            />
-            <button
-              type="submit"
-              disabled={!photoUrl.trim()}
-              className="h-9 px-3 rounded-lg bg-card border border-border/60 hover:border-primary/40 text-foreground text-sm font-semibold disabled:opacity-60"
-            >
-              Add URL
-            </button>
-          </form>
-        </details>
-
-        {uploadError && (
-          <p className="mb-3 text-[11px] text-destructive whitespace-pre-line">{uploadError}</p>
-        )}
-        {photos.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No photos yet.</p>
+            <ImageIcon className="w-3.5 h-3.5" />
+            Open album
+          </a>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-            {photos.map((p: JobPhoto) => (
-              <div
-                key={p.id}
-                className="aspect-square rounded-lg overflow-hidden border border-border/60 bg-muted/30 relative group"
-              >
-                <img src={p.url} alt={p.caption ?? ""} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await api.deleteJobPhoto(p.id, adminKey);
-                    onChanged();
-                  }}
-                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Delete photo"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
+          <p className="text-xs text-muted-foreground">
+            No album linked yet. Click into this job to add one.
+          </p>
         )}
       </div>
     </article>
@@ -962,8 +838,13 @@ function JobAdminCard({
 // ─── Tiny form helpers ─────────────────────────────────────────
 function PortalAccessCard({ customer }: { customer: Customer }) {
   const [copied, setCopied] = useState<"email" | "account" | "link" | null>(null);
-  const portalUrl = `${window.location.origin}/portal`;
-  const shareableLink = `${window.location.origin}/portal?id=${encodeURIComponent(customer.accountNumber)}`;
+  // Prefilled portal URL — opening this link signs the customer in
+  // automatically without them having to type their email or account
+  // number. This is what makes "share the portal link" actually easy.
+  // Use window.location.origin so it works on any custom domain
+  // (chs-roofing.com, the Replit preview URL, a future staging host).
+  const portalUrl = `${window.location.origin}/portal?account=${encodeURIComponent(customer.accountNumber)}`;
+  const portalLoginPage = `${window.location.origin}/portal`;
 
   const copy = async (key: "email" | "account" | "link", text: string) => {
     try {
@@ -975,27 +856,28 @@ function PortalAccessCard({ customer }: { customer: Customer }) {
     }
   };
 
-  const subject = "Your CHS Roofing portal access";
+  const subject = "Your CHS Roofing project portal";
   const body = customer.email
     ? `Hi ${customer.name.split(" ")[0]},
 
-You can now see your roof project status, photos, and team updates in your CHS Roofing customer portal.
+Here's your private CHS Roofing project portal — bookmark it to see status updates, photos, and progress whenever you want:
 
-How to sign in:
-  1. Go to ${portalUrl}
-  2. Enter this email: ${customer.email}
-  3. (Or use your account number as a backup: ${customer.accountNumber})
+${portalUrl}
 
-We'll post updates and photos here as your project moves forward. If you ever need anything, just reply to this email or call us.
+This link signs you in automatically. If you ever need to log in fresh, go to ${portalLoginPage} and enter:
+  • Email: ${customer.email}
+  • Or account #: ${customer.accountNumber}
+
+If you ever need anything, just reply to this email or call us.
 
 — CHS Roofing`
     : `Hi ${customer.name.split(" ")[0]},
 
-You can see your roof project status, photos, and team updates in your CHS Roofing customer portal.
+Here's your private CHS Roofing project portal — bookmark it to see status updates, photos, and progress whenever you want:
 
-How to sign in:
-  1. Go to ${portalUrl}
-  2. Enter your account number: ${customer.accountNumber}
+${portalUrl}
+
+This link signs you in automatically with your account number (${customer.accountNumber}).
 
 — CHS Roofing`;
 
@@ -1025,6 +907,20 @@ How to sign in:
             </a>{" "}
             with the email <span className="font-semibold text-foreground">below</span> — or their account number as a backup.
           </p>
+          {/* The one-click share link is the headline — copy it once,
+              SMS / email it anywhere. */}
+          <div className="mt-3">
+            <CopyChip
+              label="One-click portal link"
+              value={portalUrl}
+              mono
+              copied={copied === "link"}
+              onCopy={() => copy("link", portalUrl)}
+            />
+            <p className="mt-1 text-[10px] text-muted-foreground leading-snug">
+              Sends them straight in — no typing required.
+            </p>
+          </div>
           <div className="mt-3 grid sm:grid-cols-2 gap-2">
             {customer.email ? (
               <CopyChip
@@ -1049,9 +945,9 @@ How to sign in:
           <div className="mt-2">
             <CopyChip
               label="Shareable link"
-              value={shareableLink}
+              value={portalUrl}
               copied={copied === "link"}
-              onCopy={() => copy("link", shareableLink)}
+              onCopy={() => copy("link", portalUrl)}
               icon={<LinkIcon className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />}
             />
           </div>
@@ -1061,16 +957,16 @@ How to sign in:
               className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-sm shadow-primary/30 transition-all"
             >
               <MailIcon className="w-3.5 h-3.5" />
-              Send portal invite email
+              Send portal link by email
             </a>
             {customer.phone && (
               <a
                 href={`sms:${customer.phone}?&body=${encodeURIComponent(
-                  `Hi ${customer.name.split(" ")[0]} — track your CHS Roofing project at ${portalUrl}. Sign in with ${customer.email ?? customer.accountNumber}.`,
+                  `Hi ${customer.name.split(" ")[0]} — here's your CHS Roofing project portal. Tap to see status updates and photos: ${portalUrl}`,
                 )}`}
                 className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary transition-colors"
               >
-                Text invite
+                Text portal link
               </a>
             )}
           </div>

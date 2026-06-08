@@ -67,7 +67,12 @@ export async function ensureTables(): Promise<void> {
     `);
     await db.execute(sql`CREATE INDEX IF NOT EXISTS "admin_sessions_token_idx" ON "admin_sessions" ("token");`);
 
-    logger.info("[ensureTables] page_views + admins ready");
+    // Newer schemas — single column additions go here. ADD COLUMN IF
+    // NOT EXISTS is Postgres-native and idempotent so it's safe to run
+    // on every boot.
+    await db.execute(sql`ALTER TABLE "jobs" ADD COLUMN IF NOT EXISTS "photo_album_url" text;`);
+
+    logger.info("[ensureTables] page_views + admins + jobs.photo_album_url ready");
   } catch (err) {
     logger.warn(
       { err: err instanceof Error ? err.message : err },

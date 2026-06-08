@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, inArray } from "drizzle-orm";
+import { eq, desc, inArray, sql } from "drizzle-orm";
 import {
   db,
   customersTable,
@@ -56,12 +56,17 @@ router.get("/admin/customers/:id", async (req, res) => {
           .where(inArray(jobUpdatesTable.jobId, jobIds))
           .orderBy(desc(jobUpdatesTable.createdAt))
       : [];
+    // Strip legacy base64 data URLs from the admin response too — the
+    // raw bytes would blow up the JSON payload and stall the admin UI.
+    // The "Clear all photos" button removes the actual rows.
     const photos = jobIds.length
-      ? await db
-          .select()
-          .from(jobPhotosTable)
-          .where(inArray(jobPhotosTable.jobId, jobIds))
-          .orderBy(desc(jobPhotosTable.createdAt))
+      ? (
+          await db
+            .select()
+            .from(jobPhotosTable)
+            .where(inArray(jobPhotosTable.jobId, jobIds))
+            .orderBy(desc(jobPhotosTable.createdAt))
+        ).filter((p) => typeof p.url === "string" && /^https?:\/\//i.test(p.url))
       : [];
 
     res.json({
@@ -196,8 +201,13 @@ router.patch("/admin/jobs/:id", async (req, res) => {
       "progress",
       "startDate",
       "estimatedCompletion",
+      "photoAlbumUrl",
     ] as const) {
       if (k in req.body) update[k] = req.body[k] ?? null;
+    }
+    if (typeof update.photoAlbumUrl === "string") {
+      const trimmed = (update.photoAlbumUrl as string).trim();
+      update.photoAlbumUrl = trimmed.length === 0 ? null : trimmed;
     }
     if ("progress" in update) {
       const n = Number(update.progress);
@@ -273,6 +283,35 @@ router.post("/admin/job-photos", async (req, res) => {
     }
     const [row] = await db.insert(jobPhotosTable).values(parsed.data).returning();
     res.status(201).json({ row });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
+/**
+ * Bulk wipe every photo row for one job. Used by the admin "Clear all
+ * uploaded photos" button so we can purge the legacy base64 blobs that
+ * were dragging down the portal. By default we only purge data: URLs —
+ * pass `?all=1` to nuke external URLs too.
+ */
+router.delete("/admin/jobs/:jobId/photos", async (req, res) => {
+  try {
+    const jobId = Number(req.params.jobId);
+    if (!Number.isFinite(jobId)) {
+      res.status(400).json({ error: "Invalid job id" });
+      return;
+    }
+    const purgeAll = req.query.all === "1" || req.query.all === "true";
+    if (purgeAll) {
+      await db.delete(jobPhotosTable).where(eq(jobPhotosTable.jobId, jobId));
+    } else {
+      // Only legacy base64 rows. Postgres LIKE comparison on the text
+      // column — safer than client-side filtering for huge rows.
+      await db
+        .delete(jobPhotosTable)
+        .where(sql`${jobPhotosTable.jobId} = ${jobId} AND ${jobPhotosTable.url} LIKE 'data:%'`);
+    }
+    res.json({ ok: true });
   } catch (err) {
     handleError(res, err);
   }

@@ -32,6 +32,7 @@ router.get("/admin/jobs", async (_req, res) => {
         progress: jobsTable.progress,
         startDate: jobsTable.startDate,
         estimatedCompletion: jobsTable.estimatedCompletion,
+        photoAlbumUrl: jobsTable.photoAlbumUrl,
         customerName: customersTable.name,
         customerEmail: customersTable.email,
         customerPhone: customersTable.phone,

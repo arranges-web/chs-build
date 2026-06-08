@@ -219,6 +219,9 @@ export type Job = {
   progress: number;
   startDate: string | null;
   estimatedCompletion: string | null;
+  /** External photo gallery URL — Google Photos shared album, Drive
+   *  folder, Dropbox, etc. Set per-job by the admin. */
+  photoAlbumUrl: string | null;
   createdAt: string;
   updates: JobUpdate[];
   photos: JobPhoto[];
@@ -238,6 +241,7 @@ export type AdminJob = {
   progress: number;
   startDate: string | null;
   estimatedCompletion: string | null;
+  photoAlbumUrl: string | null;
   createdAt: string;
   customerName: string | null;
   customerEmail: string | null;
@@ -415,4 +419,10 @@ export const api = {
   ) => postJsonResult<{ row: JobPhoto }>("/admin/job-photos", payload, { "x-admin-key": key }),
   deleteJobPhoto: (id: number, key: string) =>
     deleteJson(`/admin/job-photos/${id}`, { headers: { "x-admin-key": key } }),
+  /** Wipe every photo on a job. `all=false` (default) only purges
+   *  legacy base64 data: URLs; `all=true` also removes external links. */
+  clearJobPhotos: (jobId: number, key: string, all = false) =>
+    deleteJson(`/admin/jobs/${jobId}/photos${all ? "?all=1" : ""}`, {
+      headers: { "x-admin-key": key },
+    }),
 };
