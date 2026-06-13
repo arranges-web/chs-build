@@ -1,43 +1,48 @@
 import ServicePageTemplate from "@/components/ServicePageTemplate";
 import StepsTimeline from "@/components/StepsTimeline";
-import { FOUNDER_PHOTOS, PHOTOS } from "@/lib/site-config";
+import { PHOTOS } from "@/lib/site-config";
+import gutterStep1 from "@assets/ChatGPT_Image_May_29,_2026,_01_47_00_PM_1781361827731.png";
+import gutterStep2 from "@assets/ChatGPT_Image_May_29,_2026,_01_47_04_PM_1781361827731.png";
+import gutterStep3 from "@assets/ChatGPT_Image_May_29,_2026,_01_47_08_PM_1781361827731.png";
+import gutterStep4 from "@assets/ChatGPT_Image_May_29,_2026,_01_47_13_PM_1781361827731.png";
+import gutterStep5 from "@assets/ChatGPT_Image_May_29,_2026,_01_56_58_PM_1781361827732.png";
 
 const GUTTER_STEPS = [
   {
     title: "Free Inspection",
     desc: "We inspect the existing gutters, fascia, soffit, drainage areas, and problem spots to recommend the best solution for the property.",
-    image: FOUNDER_PHOTOS.gutter[0],
-    imageAlt: "Inspector evaluating existing gutters and fascia",
+    image: gutterStep1,
+    imageAlt: "Inspector evaluating existing gutters and fascia on a residential home",
   },
   {
     title: "Site Preparation",
     desc: "Before work begins, we prepare the work area, protect the property, and make sure everything is ready for a clean installation.",
-    image: FOUNDER_PHOTOS.gutter[1],
-    imageAlt: "Site preparation for gutter installation",
+    image: gutterStep2,
+    imageAlt: "Rainwater flowing through gutters — the drainage problem we solve",
   },
   {
     title: "Remove Old Gutters, Fascia & Soffit",
     desc: "When needed, we remove damaged gutters, rotten fascia, or old soffit so the new system can be installed correctly.",
-    image: FOUNDER_PHOTOS.gutter[2],
-    imageAlt: "Removing old gutters and damaged fascia",
+    image: gutterStep3,
+    imageAlt: "Clean downspout and gutter run on a grey-sided home",
   },
   {
     title: "Cut Gutters & Bend Fascia Metal On Site",
     desc: "We fabricate seamless aluminum gutters on site and bend fascia metal as needed for a clean, custom fit.",
-    image: FOUNDER_PHOTOS.gutter[3],
-    imageAlt: "On-site fabrication of seamless aluminum gutters",
+    image: gutterStep4,
+    imageAlt: "Freshly installed white seamless gutters and downspout on a craftsman home",
   },
   {
     title: "Install New Aluminum Gutters, Soffit & Fascia",
     desc: "We install the new gutter, soffit, and fascia system properly and to Florida Building Code requirements.",
-    image: FOUNDER_PHOTOS.gutter[4],
-    imageAlt: "New seamless aluminum gutters being installed",
+    image: gutterStep5,
+    imageAlt: "New seamless white gutters installed on a craftsman home",
   },
   {
     title: "Final Walkthrough",
     desc: "Once completed, we walk the project, check the details, and make sure the customer is satisfied with the finished work.",
-    image: FOUNDER_PHOTOS.gutter[5],
-    imageAlt: "Final walkthrough on a completed gutter installation",
+    image: gutterStep5,
+    imageAlt: "Completed gutter installation — final walkthrough",
   },
 ];
 
