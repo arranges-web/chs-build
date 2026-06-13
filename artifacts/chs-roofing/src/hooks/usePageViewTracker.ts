@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
+import { gaPageView } from "@/lib/gtag";
 
 const SESSION_KEY = "chs.session.id";
 const ADMIN_BLOCKED = new Set(["/admin", "/portal"]);
@@ -58,5 +59,11 @@ export function usePageViewTracker(): void {
       return undefined;
     })();
     void api.trackPageView({ path, referrer, sessionId: getSessionId() });
+    // Mirror to GA4. We use a manual page_view (the gtag config sets
+    // send_page_view: false) so wouter's client-side routes get counted
+    // alongside the initial hard-load pageview. Title isn't always
+    // up-to-date at this exact tick — defer one microtask so the per-
+    // page <Seo> component has had a chance to update document.title.
+    queueMicrotask(() => gaPageView(path));
   }, [location]);
 }

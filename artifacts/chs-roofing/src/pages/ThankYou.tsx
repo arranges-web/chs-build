@@ -18,6 +18,7 @@ import { usePageViewTracker } from "@/hooks/usePageViewTracker";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleLogo";
 import { SITE } from "@/lib/site-config";
+import { gaLeadConversion } from "@/lib/gtag";
 
 /**
  * /thank-you — landing page customers see after submitting any
@@ -51,6 +52,16 @@ export default function ThankYou() {
       document.title = previous;
     };
   }, [firstName]);
+
+  // Fire the conversion event exactly once when this page mounts.
+  // Sends both a GA4 `generate_lead` (so it can be marked as a key
+  // event in GA4) and a Google Ads `conversion` (for bidding).
+  useEffect(() => {
+    gaLeadConversion({ source: from || "form" });
+    // Empty deps — this page is the post-submit destination, so a
+    // single fire-on-mount is exactly what we want.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   void t;
   const isAds = from === "free-quote";

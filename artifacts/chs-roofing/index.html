@@ -13,13 +13,19 @@
     <meta name="geo.placename" content="Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Sanibel" />
     <link rel="canonical" href="https://chs-roofing.com/" />
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17007714087"></script>
+    <!-- Google tag (gtag.js) — single loader, two destinations:
+         AW-… → Google Ads (conversion tracking)
+         G-…  → Google Analytics 4 (audience, traffic, events)
+         GA4 pageviews are sent manually from usePageViewTracker so the
+         SPA's wouter route changes get counted (the default auto-page_view
+         only fires once at hard load). -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JZHD1SE7W4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'AW-17007714087');
+      gtag('config', 'G-JZHD1SE7W4', { send_page_view: false });
     </script>
 
     <!-- Open Graph (Facebook / LinkedIn / Slack previews) -->
