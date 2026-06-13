@@ -37,6 +37,7 @@ import {
   Droplets,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "wouter";
 import { api } from "@/lib/api";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -59,10 +60,10 @@ export default function ContactForm() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const reducedMotion = useReducedMotion();
+  const [, navigate] = useLocation();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [photoName, setPhotoName] = useState<string | null>(null);
 
   const formSchema = useMemo(
@@ -172,8 +173,10 @@ export default function ContactForm() {
       plan,
       source: "contact-form",
     });
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    // Fire a quick toast for accessibility / second confirmation, then
+    // route to the dedicated thank-you page. The standalone /thank-you
+    // URL gives ad platforms a clean conversion target and frees the
+    // form component from having to render a post-submit state.
     toast({
       title: t("contactForm.success.toastTitle"),
       description: t("contactForm.success.toastDesc"),
@@ -181,35 +184,12 @@ export default function ContactForm() {
     form.reset();
     setPhotoName(null);
     setStep(1);
+    const params = new URLSearchParams();
+    params.set("from", "contact");
+    if (data.name) params.set("name", data.name);
+    navigate(`/thank-you?${params.toString()}`);
+    setIsSubmitting(false);
   };
-
-  if (isSuccess) {
-    return (
-      <div className="bg-card border border-border/60 p-10 rounded-3xl text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
-        <motion.div
-          initial={reducedMotion ? false : { scale: 0.6, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={
-            reducedMotion
-              ? { duration: 0 }
-              : { type: "spring", stiffness: 240, damping: 18 }
-          }
-          className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center"
-        >
-          <CheckCircle2 className="w-8 h-8 text-primary" />
-        </motion.div>
-        <div>
-          <h3 className="text-2xl font-bold text-foreground tracking-tight">{t("contactForm.success.title")}</h3>
-          <p className="text-muted-foreground mt-2 leading-relaxed">
-            {t("contactForm.success.body")}
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => setIsSuccess(false)} className="mt-4">
-          {t("contactForm.buttons.submitAnother")}
-        </Button>
-      </div>
-    );
-  }
 
   const progressPct = (step / STEPS.length) * 100;
   const currentTitle = t(STEPS[step - 1].titleKey);

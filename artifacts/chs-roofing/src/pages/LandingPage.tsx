@@ -16,7 +16,7 @@ import {
 import { Link } from "wouter";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import ContactForm from "@/components/ContactForm";
+import FreeQuoteForm from "@/components/FreeQuoteForm";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -188,7 +188,7 @@ export default function LandingPage() {
               <div id="quote-form" className="relative scroll-mt-24">
                 <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full" />
                 <div className="relative">
-                  <ContactForm />
+                  <FreeQuoteForm />
                 </div>
               </div>
             </div>
