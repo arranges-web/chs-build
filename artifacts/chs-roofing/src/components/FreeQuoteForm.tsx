@@ -45,7 +45,29 @@ const SERVICE_OPTIONS = [
   { value: "gutters", label: "Gutters" },
 ] as const;
 
-export default function FreeQuoteForm() {
+type Props = {
+  /**
+   * When set, the service picker is hidden and the form locks
+   * serviceType to this value. Use it on dedicated ad landing pages
+   * (e.g. /roof-coating-quote) where the page itself already
+   * communicates which service the visitor is requesting — fewer
+   * choices = higher conversion.
+   */
+  lockService?: string;
+  /** Optional override for the form's headline. */
+  title?: React.ReactNode;
+  /** Optional override for the subline under the headline. */
+  subtitle?: React.ReactNode;
+  /** Label tagged onto the lead's `source` field for attribution. */
+  sourceTag?: string;
+};
+
+export default function FreeQuoteForm({
+  lockService,
+  title,
+  subtitle,
+  sourceTag = "free-quote",
+}: Props = {}) {
   const [, navigate] = useLocation();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -82,13 +104,18 @@ export default function FreeQuoteForm() {
       name: "",
       phone: "",
       zip: "",
-      serviceType: "",
+      serviceType: lockService ?? "",
       email: "",
     },
   });
 
-  // Pre-select a service from /free-quote?service=installation
+  // Pre-select a service from /free-quote?service=installation, or
+  // lock to whatever the parent passed.
   useEffect(() => {
+    if (lockService) {
+      form.setValue("serviceType", lockService);
+      return;
+    }
     if (typeof window === "undefined") return;
     const p = new URLSearchParams(window.location.search);
     const s = p.get("service");
@@ -97,7 +124,7 @@ export default function FreeQuoteForm() {
       form.setValue("serviceType", valid);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [lockService]);
 
   const onSubmit = async (data: Values) => {
     setSubmitting(true);
@@ -112,7 +139,7 @@ export default function FreeQuoteForm() {
       email: data.email || null,
       zip: data.zip,
       serviceType: data.serviceType,
-      source: ref ? `free-quote:${ref}` : "free-quote",
+      source: ref ? `${sourceTag}:${ref}` : sourceTag,
     });
     setSubmitting(false);
     if (!res) {
@@ -122,7 +149,7 @@ export default function FreeQuoteForm() {
       return;
     }
     const params = new URLSearchParams();
-    params.set("from", "free-quote");
+    params.set("from", sourceTag);
     if (data.name) params.set("name", data.name);
     navigate(`/thank-you?${params.toString()}`);
   };
@@ -137,10 +164,12 @@ export default function FreeQuoteForm() {
           Free, no-pressure quote
         </p>
         <h3 className="font-display font-bold text-2xl tracking-tight text-foreground leading-tight">
-          Get your quote in <span className="text-primary">60 seconds</span>.
+          {title ?? (
+            <>Get your quote in <span className="text-primary">60 seconds</span>.</>
+          )}
         </h3>
         <p className="text-sm text-muted-foreground mt-1.5">
-          We'll call or text you within 24 hours.
+          {subtitle ?? "We'll call or text you within 24 hours."}
         </p>
       </div>
 
@@ -206,38 +235,40 @@ export default function FreeQuoteForm() {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="serviceType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-semibold text-sm">What do you need?</FormLabel>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {SERVICE_OPTIONS.map((o) => {
-                    const selected = field.value === o.value;
-                    return (
-                      <button
-                        type="button"
-                        key={o.value}
-                        onClick={() => field.onChange(o.value)}
-                        className={`text-left rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                          selected
-                            ? "border-primary bg-primary/5 ring-2 ring-primary/30 text-foreground"
-                            : "border-border/60 bg-background hover:border-primary/40 text-foreground/80"
-                        }`}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          {selected && <CheckCircle2 className="w-3.5 h-3.5 text-primary" />}
-                          {o.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {!lockService && (
+            <FormField
+              control={form.control}
+              name="serviceType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold text-sm">What do you need?</FormLabel>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {SERVICE_OPTIONS.map((o) => {
+                      const selected = field.value === o.value;
+                      return (
+                        <button
+                          type="button"
+                          key={o.value}
+                          onClick={() => field.onChange(o.value)}
+                          className={`text-left rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                            selected
+                              ? "border-primary bg-primary/5 ring-2 ring-primary/30 text-foreground"
+                              : "border-border/60 bg-background hover:border-primary/40 text-foreground/80"
+                          }`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            {selected && <CheckCircle2 className="w-3.5 h-3.5 text-primary" />}
+                            {o.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="email"

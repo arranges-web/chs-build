@@ -36,6 +36,7 @@ const Admin = lazy(() => import("@/pages/Admin"));
 const AdminRegister = lazy(() => import("@/pages/AdminRegister"));
 const Portal = lazy(() => import("@/pages/Portal"));
 const ThankYou = lazy(() => import("@/pages/ThankYou"));
+const RoofCoatingQuote = lazy(() => import("@/pages/RoofCoatingQuote"));
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ function Router() {
       {/* Dedicated paid-traffic landing page renders OUTSIDE the main site
           chrome — minimal nav, no chat widget, no social-proof toast. */}
       <Route path="/free-quote">{lazyEl(LandingPage)}</Route>
+      <Route path="/roof-coating-quote">{lazyEl(RoofCoatingQuote)}</Route>
       <Route path="/admin/join">{lazyEl(AdminRegister)}</Route>
       <Route path="/admin">{lazyEl(Admin)}</Route>
       <Route path="/portal">{lazyEl(Portal)}</Route>
