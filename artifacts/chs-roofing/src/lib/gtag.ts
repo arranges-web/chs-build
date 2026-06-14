@@ -41,10 +41,19 @@ function fire(...args: unknown[]): void {
   }
 }
 
-/** Fire a GA4 page_view for a SPA route change. */
+/**
+ * Fire a page_view for a SPA route change. NO `send_to` filter — we
+ * want it to land on BOTH configured tags (GA4 + Google Ads). This
+ * matters for two reasons:
+ *  • GA4 sees the virtual pageview (we set send_page_view:false so
+ *    auto-fire is off; this is now the source of truth).
+ *  • Google Ads URL-based conversions need a page_view event on
+ *    every wouter navigation, otherwise Ads only "sees" the very
+ *    first hard load and never registers the user reaching
+ *    /thank-you via client-side routing.
+ */
 export function gaPageView(path: string, title?: string): void {
   fire("event", "page_view", {
-    send_to: GA4_ID,
     page_path: path,
     page_location:
       typeof window !== "undefined" ? window.location.href : undefined,
@@ -53,10 +62,14 @@ export function gaPageView(path: string, title?: string): void {
 }
 
 /**
- * Fire a generate_lead conversion. Sent to BOTH GA4 (so it shows up
- * as a key event) and Google Ads (so paid-traffic conversions get
- * attributed). Idempotent per route — wrap in a `useEffect` so it
- * fires once when /thank-you mounts.
+ * Fire a GA4 generate_lead key event. We deliberately do NOT also
+ * fire a Google Ads `conversion` event here — the Ads account is
+ * configured with a URL-based conversion that triggers when a visitor
+ * reaches /thank-you, and the page_view above is what makes Ads see
+ * that URL on SPA navigation. Firing both would double-count.
+ *
+ * Use this for GA4 reporting only (mark it as a key event in GA4 to
+ * separate lead-submission sessions from regular traffic).
  */
 export function gaLeadConversion(opts: { source?: string; value?: number } = {}): void {
   const { source = "form", value = 1 } = opts;
@@ -65,10 +78,5 @@ export function gaLeadConversion(opts: { source?: string; value?: number } = {})
     currency: "USD",
     value,
     source,
-  });
-  fire("event", "conversion", {
-    send_to: ADS_ID,
-    value,
-    currency: "USD",
   });
 }
