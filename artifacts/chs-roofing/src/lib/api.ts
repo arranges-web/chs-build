@@ -210,6 +210,15 @@ export type JobPhoto = {
   createdAt: string;
 };
 
+export type JobAlbum = {
+  id: number;
+  jobId: number;
+  label: string;
+  url: string;
+  sortOrder: number;
+  createdAt: string;
+};
+
 export type Job = {
   id: number;
   customerId: number;
@@ -225,6 +234,7 @@ export type Job = {
   createdAt: string;
   updates: JobUpdate[];
   photos: JobPhoto[];
+  albums: JobAlbum[];
 };
 
 export type PortalLookupResponse = {
@@ -425,4 +435,18 @@ export const api = {
     deleteJson(`/admin/jobs/${jobId}/photos${all ? "?all=1" : ""}`, {
       headers: { "x-admin-key": key },
     }),
+
+  // Multiple labeled album links per job — "Part 1 done", "Final
+  // walkthrough", etc. Each gets embedded in the customer portal.
+  addJobAlbum: (
+    payload: { jobId: number; label: string; url: string; sortOrder?: number },
+    key: string,
+  ) => postJsonResult<{ row: JobAlbum }>("/admin/job-albums", payload, { "x-admin-key": key }),
+  updateJobAlbum: (
+    id: number,
+    payload: Partial<Pick<JobAlbum, "label" | "url" | "sortOrder">>,
+    key: string,
+  ) => patchJsonResult<{ row: JobAlbum }>(`/admin/job-albums/${id}`, payload, { "x-admin-key": key }),
+  deleteJobAlbum: (id: number, key: string) =>
+    deleteJson(`/admin/job-albums/${id}`, { headers: { "x-admin-key": key } }),
 };

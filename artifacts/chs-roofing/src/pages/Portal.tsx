@@ -379,39 +379,27 @@ function JobCard({ job }: { job: Job }) {
         </div>
       </div>
 
-      {/* Photo album — primary photo experience. Linked to an external
-          gallery (Google Photos / Drive / Dropbox) that the team
-          maintains. We try to embed; some providers block iframes, so
-          we always show a clear "Open in new tab" button too. */}
-      {job.photoAlbumUrl && (
-        <div className="p-6 md:p-7 border-b border-border/60">
-          <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-            <h3 className="font-display font-bold text-base text-foreground tracking-tight flex items-center gap-2">
-              <Images className="w-4 h-4 text-primary" />
-              Photo album
-            </h3>
-            <a
-              href={job.photoAlbumUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary hover:text-primary/80"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Open the full album
-            </a>
-          </div>
-          <div className="rounded-2xl overflow-hidden border border-border/60 bg-muted/30 aspect-video relative">
-            <iframe
-              src={job.photoAlbumUrl}
-              title="Project photo album"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0 w-full h-full"
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-            />
-          </div>
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            If the preview above doesn't load, tap "Open the full album" — some
+      {/* Photo albums — each labeled gallery (Google Photos / Drive /
+          Dropbox) embedded with a guaranteed-to-work "Open in new tab"
+          fallback. Falls back to the legacy single-album field on jobs
+          that haven't migrated yet. */}
+      {(job.albums.length > 0 || job.photoAlbumUrl) && (
+        <div className="p-6 md:p-7 border-b border-border/60 space-y-6">
+          <h3 className="font-display font-bold text-base text-foreground tracking-tight flex items-center gap-2">
+            <Images className="w-4 h-4 text-primary" />
+            Photo albums
+          </h3>
+
+          {job.albums.length > 0
+            ? job.albums.map((album) => (
+                <AlbumEmbed key={album.id} label={album.label} url={album.url} />
+              ))
+            : job.photoAlbumUrl && (
+                <AlbumEmbed label="Photo album" url={job.photoAlbumUrl} />
+              )}
+
+          <p className="text-[11px] text-muted-foreground">
+            If a preview doesn't load, tap "Open the full album" — some
             sharing providers block embedded views for security.
           </p>
         </div>
@@ -491,5 +479,34 @@ function JobCard({ job }: { job: Job }) {
         </a>
       </div>
     </article>
+  );
+}
+
+function AlbumEmbed({ label, url }: { label: string; url: string }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+        <p className="font-semibold text-sm text-foreground">{label}</p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary hover:text-primary/80"
+        >
+          <ExternalLink className="w-3.5 h-3.5" />
+          Open the full album
+        </a>
+      </div>
+      <div className="rounded-2xl overflow-hidden border border-border/60 bg-muted/30 aspect-video relative">
+        <iframe
+          src={url}
+          title={`Photo album — ${label}`}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          className="absolute inset-0 w-full h-full"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        />
+      </div>
+    </div>
   );
 }

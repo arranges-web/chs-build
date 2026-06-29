@@ -101,3 +101,29 @@ export const insertJobPhotoSchema = createInsertSchema(jobPhotosTable).omit({
 
 export type InsertJobPhoto = z.infer<typeof insertJobPhotoSchema>;
 export type JobPhoto = typeof jobPhotosTable.$inferSelect;
+
+/**
+ * Per-job photo album links — many per job, each with a custom
+ * label like "Part 1 done", "Final walkthrough", "Tear-off photos".
+ * The portal embeds each album and the admin can reorder / rename
+ * them at any time. This replaces the single `photoAlbumUrl`
+ * column on `jobs` (which we keep around for backwards-compat).
+ */
+export const jobAlbumsTable = pgTable("job_albums", {
+  id: serial("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  jobId: integer("job_id")
+    .notNull()
+    .references(() => jobsTable.id, { onDelete: "cascade" }),
+  label: text("label").notNull(),
+  url: text("url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const insertJobAlbumSchema = createInsertSchema(jobAlbumsTable).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertJobAlbum = z.infer<typeof insertJobAlbumSchema>;
+export type JobAlbum = typeof jobAlbumsTable.$inferSelect;

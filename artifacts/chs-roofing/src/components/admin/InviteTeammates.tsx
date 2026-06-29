@@ -2,7 +2,12 @@ import { useMemo, useState } from "react";
 import { Check, Copy, Mail, MessageSquare, Send, UserPlus } from "lucide-react";
 import { api } from "@/lib/api";
 
-const SITE_URL = "https://chs-roofing.com";
+// Use the current origin so invite links work on any host —
+// chs-roofing.com in production, the Replit preview URL while testing,
+// staging hosts, localhost during dev. Hardcoding the URL was breaking
+// invite links when the dashboard was opened from any non-canonical
+// host because the recipient landed on a domain that wasn't deployed.
+const SITE_URL = typeof window !== "undefined" ? window.location.origin : "https://chs-roofing.com";
 
 type Props = {
   adminKey: string;

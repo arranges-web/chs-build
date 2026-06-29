@@ -15,7 +15,7 @@ import {
   Save,
   Trash2,
 } from "lucide-react";
-import { api, type Customer, type Job, type JobUpdate } from "@/lib/api";
+import { api, type Customer, type Job, type JobAlbum, type JobUpdate } from "@/lib/api";
 
 const STATUS_OPTS = [
   { value: "scheduled", label: "Scheduled", icon: Clock },
@@ -410,13 +410,9 @@ function UpdatesPanel({
 }
 
 /**
- * Replaces the old "upload each photo" UX with a single shareable
- * gallery URL. The team puts the photos wherever they normally do
- * (Google Photos shared album, Drive folder, Dropbox), pastes the
- * link, and the portal embeds + links it for the customer.
- *
- * Keeps a "Clear old uploaded photos" action so we can wipe the
- * leftover base64 rows that were dragging the portal down.
+ * Photo albums for the job — many per job, each with a custom label
+ * like "Part 1 done" or "Final walkthrough". Customers see every
+ * album embedded in their portal in the order they're listed.
  */
 function PhotoAlbumPanel({
   adminKey,
@@ -427,52 +423,89 @@ function PhotoAlbumPanel({
   job: Job;
   onChanged: () => void;
 }) {
-  const [url, setUrl] = useState(job.photoAlbumUrl ?? "");
-  const [saving, setSaving] = useState(false);
+  const [label, setLabel] = useState("");
+  const [url, setUrl] = useState("");
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [savedAt, setSavedAt] = useState<number | null>(null);
   const [clearing, setClearing] = useState(false);
 
-  // Keep the input in sync if the job reloads (e.g. another admin
-  // updates it on a different device).
-  useEffect(() => {
-    setUrl(job.photoAlbumUrl ?? "");
-  }, [job.photoAlbumUrl]);
-
-  const dirty = (url.trim() || null) !== (job.photoAlbumUrl ?? null);
+  const albums = job.albums;
   const legacyCount = job.photos.length;
 
-  const save = async () => {
-    setSaving(true);
+  // If the job still has the old single photoAlbumUrl set, surface a
+  // one-click migration button so we don't quietly drop existing data.
+  const legacyAlbumUrl = job.photoAlbumUrl?.trim() || null;
+
+  const addAlbum = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
-    const trimmed = url.trim();
-    const res = await api.updateJob(
-      job.id,
-      // Pass empty → server normalizes to null.
-      { photoAlbumUrl: trimmed || null } as Partial<Job>,
+    if (!label.trim() || !url.trim()) {
+      setError("Both a label and a URL are required.");
+      return;
+    }
+    setBusy(true);
+    const res = await api.addJobAlbum(
+      {
+        jobId: job.id,
+        label: label.trim(),
+        url: url.trim(),
+        sortOrder: albums.length,
+      },
       adminKey,
     );
-    setSaving(false);
+    setBusy(false);
     if ("error" in res) {
       setError(res.error);
       return;
     }
-    setSavedAt(Date.now());
+    setLabel("");
+    setUrl("");
     onChanged();
   };
 
-  const clear = async () => {
+  const removeAlbum = async (a: JobAlbum) => {
+    if (!confirm(`Remove "${a.label}" from this job?`)) return;
+    await api.deleteJobAlbum(a.id, adminKey);
+    onChanged();
+  };
+
+  const migrateLegacy = async () => {
+    if (!legacyAlbumUrl) return;
+    setBusy(true);
+    setError(null);
+    const res = await api.addJobAlbum(
+      {
+        jobId: job.id,
+        label: "Photo album",
+        url: legacyAlbumUrl,
+        sortOrder: albums.length,
+      },
+      adminKey,
+    );
+    if (!("error" in res)) {
+      // Clear the legacy column once migrated so we never double-show.
+      await api.updateJob(
+        job.id,
+        { photoAlbumUrl: null } as Partial<Job>,
+        adminKey,
+      );
+    } else {
+      setError(res.error);
+    }
+    setBusy(false);
+    onChanged();
+  };
+
+  const clearPhotos = async () => {
     if (
       !confirm(
-        "Remove every uploaded photo for this job? This frees up storage and speeds up the customer portal. The photo album link is not affected.",
+        "Remove every legacy uploaded photo for this job? This frees up storage and speeds up the customer portal. Album links are not affected.",
       )
     ) {
       return;
     }
     setClearing(true);
     setError(null);
-    // `all=true` because at this point we've already migrated to
-    // the album-URL workflow — nothing in job_photos is worth keeping.
     const ok = await api.clearJobPhotos(job.id, adminKey, true);
     setClearing(false);
     if (!ok) {
@@ -486,85 +519,111 @@ function PhotoAlbumPanel({
     <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
       <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
         <Images className="w-4 h-4 text-primary" />
-        Photo album
+        Photo albums
       </h3>
       <p className="text-[11px] text-muted-foreground mb-4 leading-relaxed">
-        Paste a shareable link to your photos — Google Photos shared
-        album, Google Drive folder, Dropbox, anywhere public.
-        The customer sees it embedded right inside their portal.
+        Add as many album links as you want — Google Photos, Drive,
+        Dropbox, anywhere public. Give each one a custom label like
+        "Part 1 done" so the customer can tell them apart in their portal.
       </p>
 
-      <div className="space-y-2">
-        <label className="block text-[11px] font-semibold text-foreground">
-          Album URL
-        </label>
+      {legacyAlbumUrl && (
+        <div className="mb-4 p-3 rounded-xl border border-amber-300/60 bg-amber-50 text-[12px] text-amber-900">
+          <p className="font-semibold">Existing single album link found.</p>
+          <p className="mt-1 leading-relaxed break-all">{legacyAlbumUrl}</p>
+          <button
+            type="button"
+            onClick={migrateLegacy}
+            disabled={busy}
+            className="mt-2 inline-flex items-center gap-1.5 bg-primary text-white text-[11px] font-semibold px-3 py-1.5 rounded-full hover:bg-primary/90 disabled:opacity-60"
+          >
+            Move it into the new list
+          </button>
+        </div>
+      )}
+
+      {albums.length === 0 ? (
+        <p className="text-sm text-muted-foreground mb-4">No albums yet.</p>
+      ) : (
+        <ol className="space-y-2 mb-4">
+          {albums.map((a) => (
+            <li
+              key={a.id}
+              className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-background"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sm text-foreground truncate">{a.label}</p>
+                <a
+                  href={a.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline truncate"
+                >
+                  <ExternalLink className="w-3 h-3 shrink-0" />
+                  <span className="truncate">{a.url}</span>
+                </a>
+              </div>
+              <button
+                type="button"
+                onClick={() => void removeAlbum(a)}
+                className="text-muted-foreground hover:text-destructive shrink-0"
+                aria-label={`Remove ${a.label}`}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      <form onSubmit={addAlbum} className="space-y-2">
+        <input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          placeholder="Label (e.g. Part 1 done)"
+          maxLength={80}
+          className="w-full h-10 px-3 rounded-lg border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://photos.app.goo.gl/…  ·  https://drive.google.com/drive/folders/…"
+          placeholder="https://photos.app.goo.gl/… or https://drive.google.com/…"
           className="w-full h-10 px-3 rounded-lg border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
-
-        {url && (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-[11px] text-primary hover:underline"
-          >
-            <ExternalLink className="w-3 h-3" />
-            Open the album in a new tab
-          </a>
-        )}
-
         {error && (
           <p className="text-[11px] text-destructive whitespace-pre-line">{error}</p>
         )}
-
         <button
-          type="button"
-          onClick={save}
-          disabled={!dirty || saving}
+          type="submit"
+          disabled={busy}
           className="w-full inline-flex items-center justify-center gap-1.5 bg-primary disabled:opacity-60 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-primary/30 transition-all"
         >
-          <Save className="w-4 h-4" />
-          {saving
-            ? "Saving…"
-            : dirty
-              ? "Save album link"
-              : savedAt
-                ? "Saved"
-                : job.photoAlbumUrl
-                  ? "Up to date"
-                  : "Add album link"}
+          <Plus className="w-4 h-4" />
+          {busy ? "Adding…" : "Add album link"}
         </button>
-      </div>
+      </form>
 
-      <div className="mt-4 pt-4 border-t border-border/60">
-        <p className="text-[11px] font-semibold text-foreground/70 uppercase tracking-[0.16em] mb-2">
-          Storage cleanup
-        </p>
-        {legacyCount > 0 ? (
-          <p className="text-[12px] text-muted-foreground mb-2">
-            {legacyCount} legacy uploaded photo{legacyCount === 1 ? "" : "s"} on
-            this job. Old uploads are no longer used by the portal — wiping
-            them speeds things up.
+      {legacyCount > 0 && (
+        <div className="mt-4 pt-4 border-t border-border/60">
+          <p className="text-[11px] font-semibold text-foreground/70 uppercase tracking-[0.16em] mb-2">
+            Storage cleanup
           </p>
-        ) : (
           <p className="text-[12px] text-muted-foreground mb-2">
-            No legacy uploads on this job.
+            {legacyCount} legacy uploaded photo{legacyCount === 1 ? "" : "s"} still on
+            this job — these are from the old per-photo upload system and aren't
+            shown anymore. Wiping them speeds up the portal.
           </p>
-        )}
-        <button
-          type="button"
-          onClick={clear}
-          disabled={clearing}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold bg-destructive/10 text-destructive hover:bg-destructive/15 disabled:opacity-60 transition-colors"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          {clearing ? "Clearing…" : "Clear all uploaded photos"}
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={clearPhotos}
+            disabled={clearing}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold bg-destructive/10 text-destructive hover:bg-destructive/15 disabled:opacity-60 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            {clearing ? "Clearing…" : "Clear legacy uploads"}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

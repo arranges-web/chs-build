@@ -1,11 +1,12 @@
 import { Router, type IRouter } from "express";
-import { eq, sql, desc, inArray } from "drizzle-orm";
+import { eq, sql, desc, asc, inArray } from "drizzle-orm";
 import {
   db,
   customersTable,
   jobsTable,
   jobUpdatesTable,
   jobPhotosTable,
+  jobAlbumsTable,
 } from "@workspace/db";
 import { isEmail, normalizeAccount } from "../lib/accountNumber";
 import { handleError } from "../lib/handleError";
@@ -67,6 +68,13 @@ router.post("/portal/lookup", async (req, res) => {
             .orderBy(desc(jobPhotosTable.createdAt))
         ).filter((p) => typeof p.url === "string" && /^https?:\/\//i.test(p.url))
       : [];
+    const albums = jobIds.length
+      ? await db
+          .select()
+          .from(jobAlbumsTable)
+          .where(inArray(jobAlbumsTable.jobId, jobIds))
+          .orderBy(asc(jobAlbumsTable.sortOrder), asc(jobAlbumsTable.createdAt))
+      : [];
 
     res.json({
       customer: {
@@ -81,6 +89,7 @@ router.post("/portal/lookup", async (req, res) => {
         ...j,
         updates: updates.filter((u) => u.jobId === j.id),
         photos: photos.filter((p) => p.jobId === j.id),
+        albums: albums.filter((a) => a.jobId === j.id),
       })),
     });
   } catch (err) {

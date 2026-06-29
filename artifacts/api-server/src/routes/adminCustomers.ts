@@ -6,11 +6,14 @@ import {
   jobsTable,
   jobUpdatesTable,
   jobPhotosTable,
+  jobAlbumsTable,
   insertCustomerSchema,
   insertJobSchema,
   insertJobUpdateSchema,
   insertJobPhotoSchema,
+  insertJobAlbumSchema,
 } from "@workspace/db";
+import { asc } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
 import { generateAccountNumber } from "../lib/accountNumber";
 import { handleError } from "../lib/handleError";
@@ -68,6 +71,13 @@ router.get("/admin/customers/:id", async (req, res) => {
             .orderBy(desc(jobPhotosTable.createdAt))
         ).filter((p) => typeof p.url === "string" && /^https?:\/\//i.test(p.url))
       : [];
+    const albums = jobIds.length
+      ? await db
+          .select()
+          .from(jobAlbumsTable)
+          .where(inArray(jobAlbumsTable.jobId, jobIds))
+          .orderBy(asc(jobAlbumsTable.sortOrder), asc(jobAlbumsTable.createdAt))
+      : [];
 
     res.json({
       customer,
@@ -75,6 +85,7 @@ router.get("/admin/customers/:id", async (req, res) => {
         ...j,
         updates: updates.filter((u) => u.jobId === j.id),
         photos: photos.filter((p) => p.jobId === j.id),
+        albums: albums.filter((a) => a.jobId === j.id),
       })),
     });
   } catch (err) {
@@ -311,6 +322,93 @@ router.delete("/admin/jobs/:jobId/photos", async (req, res) => {
         .delete(jobPhotosTable)
         .where(sql`${jobPhotosTable.jobId} = ${jobId} AND ${jobPhotosTable.url} LIKE 'data:%'`);
     }
+    res.json({ ok: true });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
+// ─── Job albums (multiple labeled photo-gallery URLs per job) ──
+
+router.post("/admin/job-albums", async (req, res) => {
+  try {
+    const payload = {
+      jobId: Number(req.body?.jobId),
+      label: String(req.body?.label ?? "").trim(),
+      url: String(req.body?.url ?? "").trim(),
+      sortOrder: Number(req.body?.sortOrder ?? 0),
+    };
+    if (!payload.label) {
+      res.status(400).json({ error: "Album needs a label (e.g. \"Part 1 done\")." });
+      return;
+    }
+    if (!payload.url || !/^https?:\/\//i.test(payload.url)) {
+      res.status(400).json({ error: "Album URL must start with http:// or https://." });
+      return;
+    }
+    const parsed = insertJobAlbumSchema.safeParse(payload);
+    if (!parsed.success) {
+      res.status(400).json({ error: "Invalid album payload.", issues: parsed.error.issues });
+      return;
+    }
+    const [row] = await db.insert(jobAlbumsTable).values(parsed.data).returning();
+    res.status(201).json({ row });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
+router.patch("/admin/job-albums/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    const update: Record<string, unknown> = {};
+    if ("label" in req.body) {
+      const label = String(req.body.label ?? "").trim();
+      if (!label) {
+        res.status(400).json({ error: "Label can't be empty." });
+        return;
+      }
+      update.label = label;
+    }
+    if ("url" in req.body) {
+      const url = String(req.body.url ?? "").trim();
+      if (!/^https?:\/\//i.test(url)) {
+        res.status(400).json({ error: "URL must start with http:// or https://." });
+        return;
+      }
+      update.url = url;
+    }
+    if ("sortOrder" in req.body) {
+      const n = Number(req.body.sortOrder);
+      update.sortOrder = Number.isFinite(n) ? Math.round(n) : 0;
+    }
+    const [row] = await db
+      .update(jobAlbumsTable)
+      .set(update)
+      .where(eq(jobAlbumsTable.id, id))
+      .returning();
+    if (!row) {
+      res.status(404).json({ error: "Album not found." });
+      return;
+    }
+    res.json({ row });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
+router.delete("/admin/job-albums/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    await db.delete(jobAlbumsTable).where(eq(jobAlbumsTable.id, id));
     res.json({ ok: true });
   } catch (err) {
     handleError(res, err);

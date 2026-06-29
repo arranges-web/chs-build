@@ -22,7 +22,7 @@ import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import Seo, { faqSchema } from "@/components/Seo";
 import { usePageViewTracker } from "@/hooks/usePageViewTracker";
-import { PHOTOS, SITE, TESTIMONIALS } from "@/lib/site-config";
+import { FOUNDER_PHOTOS, PHOTOS, SITE, TESTIMONIALS } from "@/lib/site-config";
 
 const FadeIn = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
   <motion.div
@@ -265,6 +265,49 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
                   </div>
                 </FadeIn>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* REAL JOB PHOTOS — proof we actually do the work. Pulled
+            from FOUNDER_PHOTOS so every shot is a real CHS roof. */}
+        <section className="py-14 md:py-16 bg-muted/40">
+          <div className="container mx-auto max-w-6xl px-4">
+            <div className="text-center max-w-2xl mx-auto mb-8">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary mb-2">
+                Real Southwest Florida projects
+              </p>
+              <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-foreground leading-tight">
+                Roofs we've installed and repaired across SWFL.
+              </h2>
+              <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
+                Every photo is a real CHS Roofing job. No stock photos, no
+                stolen marketing shots — just our crew, our work.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {[
+                { src: PHOTOS.silverMetalPorch, alt: "Silver metal roof with covered porch in Southwest Florida" },
+                { src: FOUNDER_PHOTOS.repair[0], alt: "Roof repair completed by CHS Roofing" },
+                { src: PHOTOS.beachfrontMetal, alt: "Beachfront metal roof installed by CHS Roofing" },
+                { src: PHOTOS.tanShingleAerial, alt: "Aerial shot of finished tan shingle roof" },
+                { src: FOUNDER_PHOTOS.tileTreasureCay, alt: "Treasure Cay tile roof" },
+                { src: PHOTOS.darkMetalAerial, alt: "Dark metal roof — aerial photo" },
+                { src: FOUNDER_PHOTOS.repair[3], alt: "Shingle replacement repair" },
+                { src: PHOTOS.flatTpoCrew, alt: "CHS Roofing crew working on a commercial TPO flat roof" },
+              ].map((p, i) => (
+                <div
+                  key={i}
+                  className="aspect-square rounded-2xl overflow-hidden border border-border/60 bg-card shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <img
+                    src={p.src}
+                    alt={p.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ))}
             </div>
           </div>

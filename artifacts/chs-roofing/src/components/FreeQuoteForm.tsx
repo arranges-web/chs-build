@@ -75,22 +75,23 @@ export default function FreeQuoteForm({
   const schema = useMemo(
     () =>
       z.object({
-        name: z.string().min(2, "Please add your name."),
+        // Phone first because it's the highest-intent field and the
+        // one we actually act on. Name follows. ZIP is optional —
+        // we ask for it but never block the submit on it because it
+        // tanks mobile conversion on cold ad traffic.
         phone: z
           .string()
           .min(10, "Add a phone number we can call.")
           .regex(/^[0-9 ()+\-]+$/, "Use digits only."),
+        name: z.string().min(2, "Please add your name."),
         zip: z
           .string()
-          .min(5, "5-digit ZIP, please.")
-          .max(10, "That ZIP looks too long.")
-          .regex(/^\d{5}(-\d{4})?$/, "5-digit ZIP, please."),
-        serviceType: z.string().min(1, "Pick what you need."),
-        email: z
-          .string()
-          .email("That email doesn't look right.")
           .optional()
-          .or(z.literal("")),
+          .refine(
+            (v) => !v || /^\d{5}(-\d{4})?$/.test(v),
+            "5-digit ZIP, please.",
+          ),
+        serviceType: z.string().min(1, "Pick what you need."),
       }),
     [],
   );
@@ -101,11 +102,10 @@ export default function FreeQuoteForm({
     resolver: zodResolver(schema),
     mode: "onTouched",
     defaultValues: {
-      name: "",
       phone: "",
+      name: "",
       zip: "",
       serviceType: lockService ?? "",
-      email: "",
     },
   });
 
@@ -136,8 +136,8 @@ export default function FreeQuoteForm({
     const res = await api.submitLead({
       name: data.name,
       phone: data.phone,
-      email: data.email || null,
-      zip: data.zip,
+      email: null,
+      zip: data.zip || null,
       serviceType: data.serviceType,
       source: ref ? `${sourceTag}:${ref}` : sourceTag,
     });
@@ -173,68 +173,82 @@ export default function FreeQuoteForm({
         </p>
       </div>
 
+      {/* High-intent fallback above the form: anyone in a hurry can
+          just call. Cold ad traffic that bounces off a form will
+          often convert on a phone CTA — never hide it. */}
+      <a
+        href={`tel:${SITE.phoneTel}`}
+        className="mb-4 w-full inline-flex items-center justify-center gap-2 bg-foreground/[0.04] hover:bg-foreground/[0.07] text-foreground h-11 rounded-xl font-semibold text-sm tracking-tight border border-border/60 transition-all"
+      >
+        <Phone className="w-4 h-4 text-primary" />
+        Or tap to call {SITE.phoneDisplay}
+      </a>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3.5">
           <FormField
             control={form.control}
-            name="name"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-semibold text-sm">Full name</FormLabel>
+                <FormLabel className="font-semibold text-sm">Phone number</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    autoComplete="name"
-                    placeholder="First and last"
-                    className="h-12 bg-background"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="(239) 555-1234"
+                    className="h-12 bg-background text-base"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="grid sm:grid-cols-2 gap-3">
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-semibold text-sm">Phone</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      placeholder="(239) 555-1234"
-                      className="h-12 bg-background"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="zip"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-semibold text-sm">ZIP code</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      inputMode="numeric"
-                      autoComplete="postal-code"
-                      maxLength={10}
-                      placeholder="33904"
-                      className="h-12 bg-background"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-semibold text-sm">Your name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    autoComplete="name"
+                    placeholder="First and last"
+                    className="h-12 bg-background text-base"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="zip"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
+                  ZIP code
+                  <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-normal">
+                    Optional
+                  </span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    maxLength={10}
+                    placeholder="33904"
+                    className="h-12 bg-background text-base"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           {!lockService && (
             <FormField
               control={form.control}
@@ -269,31 +283,6 @@ export default function FreeQuoteForm({
               )}
             />
           )}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="font-semibold text-sm flex items-center gap-1.5">
-                  Email
-                  <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground font-normal">
-                    Optional
-                  </span>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    className="h-12 bg-background"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {submitError && (
             <p className="text-[12px] text-destructive">{submitError}</p>
           )}

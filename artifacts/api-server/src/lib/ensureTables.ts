@@ -72,7 +72,19 @@ export async function ensureTables(): Promise<void> {
     // on every boot.
     await db.execute(sql`ALTER TABLE "jobs" ADD COLUMN IF NOT EXISTS "photo_album_url" text;`);
 
-    logger.info("[ensureTables] page_views + admins + jobs.photo_album_url ready");
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS "job_albums" (
+        "id" serial PRIMARY KEY,
+        "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+        "job_id" integer NOT NULL REFERENCES "jobs"("id") ON DELETE CASCADE,
+        "label" text NOT NULL,
+        "url" text NOT NULL,
+        "sort_order" integer NOT NULL DEFAULT 0
+      );
+    `);
+    await db.execute(sql`CREATE INDEX IF NOT EXISTS "job_albums_job_idx" ON "job_albums" ("job_id");`);
+
+    logger.info("[ensureTables] page_views + admins + jobs.photo_album_url + job_albums ready");
   } catch (err) {
     logger.warn(
       { err: err instanceof Error ? err.message : err },
