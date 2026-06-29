@@ -288,14 +288,14 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
               {[
-                { src: PHOTOS.silverMetalPorch, alt: "Silver metal roof with covered porch in Southwest Florida" },
-                { src: FOUNDER_PHOTOS.repair[0], alt: "Roof repair completed by CHS Roofing" },
-                { src: PHOTOS.beachfrontMetal, alt: "Beachfront metal roof installed by CHS Roofing" },
-                { src: PHOTOS.tanShingleAerial, alt: "Aerial shot of finished tan shingle roof" },
-                { src: FOUNDER_PHOTOS.tileTreasureCay, alt: "Treasure Cay tile roof" },
-                { src: PHOTOS.darkMetalAerial, alt: "Dark metal roof — aerial photo" },
-                { src: FOUNDER_PHOTOS.repair[3], alt: "Shingle replacement repair" },
-                { src: PHOTOS.flatTpoCrew, alt: "CHS Roofing crew working on a commercial TPO flat roof" },
+                { src: PHOTOS.darkMetalEstate,       alt: "Dark standing-seam metal roof on an estate home surrounded by mature trees" },
+                { src: PHOTOS.greyMetalHip,           alt: "Clean grey metal hip roof on a Southwest Florida home" },
+                { src: PHOTOS.terracottaWaterfront,   alt: "Terracotta tile roof on a Naples waterfront residence" },
+                { src: PHOTOS.whiteStandingSeam,      alt: "White standing-seam metal roof on a waterfront home" },
+                { src: PHOTOS.multiToneTile,          alt: "Multi-tone concrete tile roof — aerial view" },
+                { src: PHOTOS.silverMetalPoolCage,    alt: "Silver metal roof with screened pool cage on a canal home" },
+                { src: PHOTOS.darkMetalAerial,        alt: "Aerial view of a dark metal roof installation" },
+                { src: PHOTOS.tanShingleAerial2,      alt: "Aerial view of a tan asphalt shingle roof" },
               ].map((p, i) => (
                 <div
                   key={i}
@@ -305,7 +305,8 @@ export default function LandingPage() {
                     src={p.src}
                     alt={p.alt}
                     loading="lazy"
-                    className="w-full h-full object-cover"
+                    decoding="async"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                   />
                 </div>
               ))}
