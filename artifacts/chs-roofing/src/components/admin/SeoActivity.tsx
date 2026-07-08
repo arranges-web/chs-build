@@ -11,6 +11,12 @@ import {
 } from "lucide-react";
 import { SEO_CHANGES, seoChangesInLastNDays, type SeoChangeCategory } from "@/lib/seo-log";
 
+const RANGES = [
+  { id: 30, label: "Last 30 days" },
+  { id: 60, label: "Last 60 days" },
+  { id: 9999, label: "All time" },
+];
+
 const CATEGORY_STYLES: Record<SeoChangeCategory, { icon: typeof FileText; color: string }> = {
   "New Page": { icon: FileText, color: "bg-primary/10 text-primary" },
   "Structured Data": { icon: ListTree, color: "bg-blue-500/10 text-blue-600" },
@@ -29,7 +35,8 @@ function fmtDate(iso: string) {
 }
 
 export default function SeoActivity() {
-  const changes = useMemo(() => seoChangesInLastNDays(30), []);
+  const [days, setDays] = useState(30);
+  const changes = useMemo(() => seoChangesInLastNDays(days), [days]);
   const [sitemapCount, setSitemapCount] = useState<number | null>(null);
 
   // Count real, live sitemap entries rather than hardcoding a number —
@@ -75,9 +82,27 @@ export default function SeoActivity() {
           SEO
         </div>
         <div className="relative z-10">
-          <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary bg-white/10 px-3 py-1 rounded-full mb-4">
-            <TrendingUp className="w-3.5 h-3.5" /> SEO Activity — Last 30 Days
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-primary bg-white/10 px-3 py-1 rounded-full">
+              <TrendingUp className="w-3.5 h-3.5" /> SEO Activity
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {RANGES.map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setDays(r.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                    days === r.id
+                      ? "bg-primary text-white"
+                      : "bg-white/10 border border-white/15 text-white/80 hover:border-white/30"
+                  }`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight leading-tight mb-2">
             Genuine, verifiable work — every change ships to the live site.
           </h2>

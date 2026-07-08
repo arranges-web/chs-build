@@ -101,7 +101,22 @@ export const SEO_CHANGES: SeoChange[] = [
       "Replaced outdated step-by-step images on the gutters service page with new captioned photos, improving on-page content freshness for that service.",
     pages: ["/services/gutters"],
   },
+  {
+    date: "2026-05-23",
+    category: "Meta & Titles",
+    title: "Site-wide SEO pass: per-page meta, JSON-LD, sitemap & robots",
+    description:
+      "Foundational SEO work — unique title/meta description per page, richer JSON-LD schema, robots.txt, and the original sitemap.xml. This is the base every later page (including the July city pages) builds on.",
+  },
 ];
+
+/**
+ * NOTE ON HONESTY: dates above are the real ship dates from git history.
+ * Do not backdate/relabel old entries to make a slower month look busier —
+ * this log is only useful if it can survive someone checking it against
+ * the actual commit history. If a real 30-day window is thin, widen the
+ * view (see `days` param below) instead of moving dates around.
+ */
 
 export function seoChangesInLastNDays(days: number, from: Date = new Date()): SeoChange[] {
   const cutoff = new Date(from);
