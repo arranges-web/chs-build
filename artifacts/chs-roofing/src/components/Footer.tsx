@@ -146,6 +146,21 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Service Areas — internal links to city landing pages for local SEO crawl depth */}
+      <div className="container mx-auto max-w-7xl px-4 pb-10 relative">
+        <div className="pt-6 border-t border-white/10">
+          <h4 className="font-display text-xs font-semibold mb-4 text-white tracking-[0.2em] uppercase">
+            {t("footer.serviceAreas", { defaultValue: "Service Areas" })}
+          </h4>
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-secondary-foreground/80">
+            <Link href="/" className="hover:text-primary transition-colors">Cape Coral, FL</Link>
+            <Link href="/roofing-fort-myers" className="hover:text-primary transition-colors">Fort Myers, FL</Link>
+            <Link href="/roofing-naples" className="hover:text-primary transition-colors">Naples, FL</Link>
+            <Link href="/roofing-bonita-springs" className="hover:text-primary transition-colors">Bonita Springs, FL</Link>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto max-w-7xl px-4 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-secondary-foreground/60 relative">
         <p>{t("footer.rights", { year: new Date().getFullYear(), name: SITE.legalName, brand: SITE.brand, license: SITE.license })}</p>
         <div className="flex gap-6">

@@ -10,6 +10,7 @@ import {
   Menu,
   MessageSquare,
   RefreshCw,
+  Search,
   Sparkles,
   Users,
   X,
@@ -26,6 +27,7 @@ export type AdminSection =
   | "leads"
   | "estimates"
   | "analytics"
+  | "seo"
   | "responses"
   | "signature"
   | "links"
@@ -57,6 +59,7 @@ const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
   leads: { title: "Leads", subtitle: "Every quote request from the website." },
   estimates: { title: "Estimates", subtitle: "Every roof estimate submitted online." },
   analytics: { title: "Website Analytics", subtitle: "Traffic, top pages, and lead-source breakdown — built in, no Google Analytics." },
+  seo: { title: "SEO Activity", subtitle: "Every real search-optimization change shipped to the site, logged with dates." },
   responses: { title: "AI Chat Responses", subtitle: "Copy-paste answers for common questions." },
   signature: { title: "Email Signature", subtitle: "Generate a branded HTML signature for your team." },
   links: { title: "Quote Links", subtitle: "Build pre-filled /contact links to share with customers." },
@@ -70,6 +73,7 @@ const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overvi
   { id: "leads", label: "Leads", icon: Inbox, group: "crm" },
   { id: "estimates", label: "Estimates", icon: Calculator, group: "crm" },
   { id: "analytics", label: "Analytics", icon: BarChart3, group: "insights" },
+  { id: "seo", label: "SEO Activity", icon: Search, group: "insights" },
   { id: "responses", label: "AI Responses", icon: MessageSquare, group: "tools" },
   { id: "signature", label: "Email Signature", icon: Mail, group: "tools" },
   { id: "links", label: "Quote Links", icon: LinkIcon, group: "tools" },

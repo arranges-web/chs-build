@@ -16,6 +16,7 @@ import QuoteLinks from "@/components/admin/QuoteLinks";
 import Dashboard from "@/components/admin/Dashboard";
 import Projects from "@/components/admin/Projects";
 import Analytics from "@/components/admin/Analytics";
+import SeoActivity from "@/components/admin/SeoActivity";
 import JobDetail from "@/components/admin/JobDetail";
 import InviteTeammates from "@/components/admin/InviteTeammates";
 
@@ -360,6 +361,7 @@ export default function AdminPage() {
             )}
             {section === "estimates" && <Estimates rows={estimates} loading={loading} />}
             {section === "analytics" && <Analytics adminKey={effectiveKey} />}
+            {section === "seo" && <SeoActivity />}
             {section === "responses" && <ChatResponses />}
             {section === "signature" && <EmailSignature />}
             {section === "links" && <QuoteLinks />}
