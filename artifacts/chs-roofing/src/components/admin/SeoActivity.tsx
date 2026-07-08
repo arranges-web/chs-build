@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  CalendarDays,
   CheckCircle2,
   FileText,
+  Instagram,
+  Facebook,
   Link2,
   ListTree,
   MapPin,
@@ -9,6 +12,7 @@ import {
   Sparkles,
   TrendingUp,
 } from "lucide-react";
+import { SOCIAL_POSTS } from "@/lib/social-calendar";
 import { SEO_CHANGES, seoChangesInLastNDays, type SeoChangeCategory } from "@/lib/seo-log";
 
 const RANGES = [
@@ -23,6 +27,7 @@ const CATEGORY_STYLES: Record<SeoChangeCategory, { icon: typeof FileText; color:
   "Meta & Titles": { icon: Search, color: "bg-purple-500/10 text-purple-600" },
   Sitemap: { icon: MapPin, color: "bg-emerald-500/10 text-emerald-600" },
   "Internal Linking": { icon: Link2, color: "bg-amber-500/10 text-amber-600" },
+  Backlinks: { icon: TrendingUp, color: "bg-teal-500/10 text-teal-600" },
   Content: { icon: Sparkles, color: "bg-rose-500/10 text-rose-600" },
 };
 
@@ -58,6 +63,9 @@ export default function SeoActivity() {
 
   const newPages = changes.filter((c) => c.category === "New Page").length;
   const schemaChanges = changes.filter((c) => c.category === "Structured Data").length;
+  const backlinksAdded = changes
+    .filter((c) => c.category === "Backlinks")
+    .reduce((sum, c) => sum + (c.count ?? 1), 0);
 
   const grouped = useMemo(() => {
     const byDate = new Map<string, typeof changes>();
@@ -111,7 +119,7 @@ export default function SeoActivity() {
             new location pages, structured data, sitemap updates, and internal linking. No
             placeholder or hypothetical entries.
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6">
             <StatCard icon={FileText} label="New pages published" value={String(newPages)} />
             <StatCard icon={ListTree} label="Schema blocks added" value={String(schemaChanges)} />
             <StatCard
@@ -119,6 +127,12 @@ export default function SeoActivity() {
               label="Pages in sitemap"
               value={sitemapCount !== null ? String(sitemapCount) : "…"}
               hint="live count"
+            />
+            <StatCard
+              icon={TrendingUp}
+              label="Backlinks added"
+              value={String(backlinksAdded)}
+              hint="manually reported"
             />
             <StatCard icon={CheckCircle2} label="Total changes logged" value={String(changes.length)} />
           </div>
@@ -184,6 +198,52 @@ export default function SeoActivity() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Social media calendar */}
+      <div className="bg-card border border-border/60 rounded-2xl p-5 md:p-7">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <h3 className="font-display font-bold tracking-tight text-lg text-foreground flex items-center gap-2">
+            <CalendarDays className="w-5 h-5 text-primary" /> Social Media Calendar
+          </h3>
+          <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-muted text-muted-foreground shrink-0">
+            Scheduled manually
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground mb-6">
+          One post every {"3"} days for the next 30 days. There's no connected social API on this
+          site, so these are queued and published by hand — treat this as a posting plan, not an
+          automated log.
+        </p>
+
+        <div className="space-y-2.5">
+          {SOCIAL_POSTS.map((p, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 bg-background border border-border/60 rounded-xl p-4"
+            >
+              <span className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-secondary/10 text-secondary">
+                {p.platform === "Facebook" ? (
+                  <Facebook className="w-4 h-4" />
+                ) : p.platform === "Instagram" ? (
+                  <Instagram className="w-4 h-4" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <span className="text-xs font-bold text-foreground">{fmtDate(p.date)}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-secondary/10 text-secondary">
+                    {p.platform}
+                  </span>
+                </div>
+                <h4 className="font-semibold text-foreground text-sm mb-0.5">{p.topic}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">{p.notes}</p>
               </div>
             </div>
           ))}

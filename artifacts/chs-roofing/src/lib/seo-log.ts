@@ -11,6 +11,7 @@ export type SeoChangeCategory =
   | "Meta & Titles"
   | "Sitemap"
   | "Internal Linking"
+  | "Backlinks"
   | "Content";
 
 export type SeoChange = {
@@ -20,6 +21,8 @@ export type SeoChange = {
   title: string;
   description: string;
   pages?: string[];
+  /** Optional count for quantifiable work (e.g. number of backlinks). */
+  count?: number;
 };
 
 export const SEO_CHANGES: SeoChange[] = [
@@ -107,6 +110,14 @@ export const SEO_CHANGES: SeoChange[] = [
     title: "Site-wide SEO pass: per-page meta, JSON-LD, sitemap & robots",
     description:
       "Foundational SEO work — unique title/meta description per page, richer JSON-LD schema, robots.txt, and the original sitemap.xml. This is the base every later page (including the July city pages) builds on.",
+  },
+  {
+    date: "2026-07-08",
+    category: "Backlinks",
+    title: "Manually submitted 23 backlinks/citations",
+    description:
+      "Team manually submitted the business to directories, citation sites, and partner listings pointing back to chs-roofing.com. Submitted outside of code (not verified by the codebase) — worth spot-checking that each listing is live and NAP details (name/address/phone) are consistent.",
+    count: 23,
   },
 ];
 
