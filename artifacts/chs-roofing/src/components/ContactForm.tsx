@@ -39,6 +39,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { api } from "@/lib/api";
+import { trackLead } from "@/lib/meta-pixel";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -181,6 +182,7 @@ export default function ContactForm() {
       title: t("contactForm.success.toastTitle"),
       description: t("contactForm.success.toastDesc"),
     });
+    trackLead();
     form.reset();
     setPhotoName(null);
     setStep(1);

@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { trackLead } from "@/lib/meta-pixel";
 import { SITE } from "@/lib/site-config";
 
 /**
@@ -148,6 +149,7 @@ export default function FreeQuoteForm({
       );
       return;
     }
+    trackLead();
     const params = new URLSearchParams();
     params.set("from", sourceTag);
     if (data.name) params.set("name", data.name);
