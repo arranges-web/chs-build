@@ -103,8 +103,13 @@ export default function BrochurePage() {
                   fileName="CHS-Roofing-Company-Guide.pdf"
                   className="inline-flex items-center gap-2.5 bg-primary hover:bg-primary/90 text-white px-7 py-3.5 rounded-full font-semibold text-base shadow-lg shadow-primary/30 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] group"
                 >
-                  {({ loading }) =>
-                    loading ? (
+                  {({ loading, error }) =>
+                    error ? (
+                      <>
+                        <Phone className="w-5 h-5" />
+                        Call (239) 737-1758
+                      </>
+                    ) : loading ? (
                       <>
                         <div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                         Preparing PDF…

@@ -1,0 +1,1 @@
+- [react-pdf browser gotchas](react-pdf-browser-gotchas.md) — Buffer polyfill required; WOFF2 crashes pdfkit (use TTF or built-in Helvetica); WebP images unsupported.

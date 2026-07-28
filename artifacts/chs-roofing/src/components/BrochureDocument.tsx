@@ -1,6 +1,5 @@
 import {
   Document,
-  Font,
   Image,
   Page,
   StyleSheet,
@@ -29,46 +28,10 @@ import teamDanielSrc from "@assets/image_1776908406154.png";
 import teamRobertoSrc from "@assets/image_1776908417253.png";
 import teamAmadoSrc from "@assets/team_amado.png";
 
-// ─── Fonts ───────────────────────────────────────────────────────────────────
-Font.register({
-  family: "Oswald",
-  fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/oswald/v53/TK3_WkUHHAIjg75cFRf3bXL8LICs1_FvsUZiZQ.woff2",
-      fontWeight: 700,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/oswald/v53/TK3_WkUHHAIjg75cFRf3bXL8LICs13FvsUZiZQ.woff2",
-      fontWeight: 400,
-    },
-  ],
-});
-
-Font.register({
-  family: "Inter",
-  fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2",
-      fontWeight: 400,
-      fontStyle: "normal",
-    },
-    {
-      src: "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2",
-      fontWeight: 400,
-      fontStyle: "italic",
-    },
-    {
-      src: "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiA.woff2",
-      fontWeight: 600,
-      fontStyle: "normal",
-    },
-    {
-      src: "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff2",
-      fontWeight: 700,
-      fontStyle: "normal",
-    },
-  ],
-});
+// ─── Fonts ────────────────────────────────────────────────────────────────────
+// Use built-in PDF fonts — no external fetch, no format compatibility issues.
+// "Helvetica-Bold" → headings (replaces Oswald)
+// "Helvetica"      → body copy (replaces Inter)
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 const RED = "#C5172A";
@@ -85,8 +48,8 @@ const TEXT = "#1C2340";
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   // Page
-  page: { backgroundColor: WHITE, fontFamily: "Inter", color: TEXT },
-  pageDark: { backgroundColor: NAVY, fontFamily: "Inter", color: WHITE },
+  page: { backgroundColor: WHITE, fontFamily: "Helvetica", color: TEXT },
+  pageDark: { backgroundColor: NAVY, fontFamily: "Helvetica", color: WHITE },
 
   // Common layout
   content: { flex: 1, paddingHorizontal: 40, paddingVertical: 32 },
@@ -116,8 +79,8 @@ const s = StyleSheet.create({
     borderBottomColor: "#2A3F5F",
   },
   pageHeaderLogo: { width: 32, height: 32, objectFit: "contain" },
-  pageHeaderBrand: { fontFamily: "Oswald", fontWeight: 700, fontSize: 12, letterSpacing: 1.5, color: GRAY_500 },
-  pageHeaderBrandDark: { fontFamily: "Oswald", fontWeight: 700, fontSize: 12, letterSpacing: 1.5, color: "#8899B4" },
+  pageHeaderBrand: { fontFamily: "Helvetica-Bold", fontWeight: 700, fontSize: 12, letterSpacing: 1.5, color: GRAY_500 },
+  pageHeaderBrandDark: { fontFamily: "Helvetica-Bold", fontWeight: 700, fontSize: 12, letterSpacing: 1.5, color: "#8899B4" },
 
   pageFooter: {
     paddingHorizontal: 40,
@@ -146,7 +109,7 @@ const s = StyleSheet.create({
 
   // Section headings
   eyebrow: {
-    fontFamily: "Oswald",
+    fontFamily: "Helvetica-Bold",
     fontWeight: 400,
     fontSize: 9,
     letterSpacing: 2.5,
@@ -155,7 +118,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   eyebrowDark: {
-    fontFamily: "Oswald",
+    fontFamily: "Helvetica-Bold",
     fontWeight: 400,
     fontSize: 9,
     letterSpacing: 2.5,
@@ -164,7 +127,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   sectionTitle: {
-    fontFamily: "Oswald",
+    fontFamily: "Helvetica-Bold",
     fontWeight: 700,
     fontSize: 28,
     color: TEXT,
@@ -173,7 +136,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   sectionTitleDark: {
-    fontFamily: "Oswald",
+    fontFamily: "Helvetica-Bold",
     fontWeight: 700,
     fontSize: 28,
     color: WHITE,
@@ -241,7 +204,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   badgeText: {
-    fontFamily: "Oswald",
+    fontFamily: "Helvetica-Bold",
     fontWeight: 700,
     fontSize: 8,
     letterSpacing: 1,
@@ -256,7 +219,7 @@ const s = StyleSheet.create({
     alignSelf: "flex-start",
   },
   badgeGrayText: {
-    fontFamily: "Oswald",
+    fontFamily: "Helvetica-Bold",
     fontWeight: 700,
     fontSize: 8,
     letterSpacing: 1,
@@ -313,7 +276,7 @@ function CoverPage() {
         <View>
           <Text
             style={{
-              fontFamily: "Oswald",
+              fontFamily: "Helvetica-Bold",
               fontWeight: 700,
               fontSize: 22,
               color: WHITE,
@@ -362,7 +325,7 @@ function CoverPage() {
         <View>
           <Text
             style={{
-              fontFamily: "Oswald",
+              fontFamily: "Helvetica-Bold",
               fontWeight: 400,
               fontSize: 10,
               letterSpacing: 3,
@@ -374,7 +337,7 @@ function CoverPage() {
           </Text>
           <Text
             style={{
-              fontFamily: "Oswald",
+              fontFamily: "Helvetica-Bold",
               fontWeight: 700,
               fontSize: 38,
               color: WHITE,
@@ -427,7 +390,7 @@ function CoverPage() {
               </Text>
               <Text
                 style={{
-                  fontFamily: "Oswald",
+                  fontFamily: "Helvetica-Bold",
                   fontWeight: 700,
                   fontSize: 10,
                   color: WHITE,
@@ -504,7 +467,7 @@ function AboutPage() {
                 >
                   <Text
                     style={{
-                      fontFamily: "Oswald",
+                      fontFamily: "Helvetica-Bold",
                       fontWeight: 700,
                       fontSize: 14,
                       color: TEXT,
@@ -542,7 +505,7 @@ function AboutPage() {
             >
               <Text
                 style={{
-                  fontFamily: "Oswald",
+                  fontFamily: "Helvetica-Bold",
                   fontWeight: 700,
                   fontSize: 13,
                   color: WHITE,
@@ -635,7 +598,7 @@ function ServicesPage() {
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{
-                      fontFamily: "Inter",
+                      fontFamily: "Helvetica",
                       fontWeight: 700,
                       fontSize: 10,
                       color: TEXT,
@@ -667,7 +630,7 @@ function ServicesPage() {
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{
-                      fontFamily: "Inter",
+                      fontFamily: "Helvetica",
                       fontWeight: 700,
                       fontSize: 10,
                       color: TEXT,
@@ -691,7 +654,7 @@ function ServicesPage() {
             >
               <Text
                 style={{
-                  fontFamily: "Oswald",
+                  fontFamily: "Helvetica-Bold",
                   fontWeight: 700,
                   fontSize: 13,
                   color: WHITE,
@@ -787,7 +750,7 @@ function MaterialsPage() {
                 >
                   <Text
                     style={{
-                      fontFamily: "Inter",
+                      fontFamily: "Helvetica",
                       fontWeight: 700,
                       fontSize: 11,
                       color: TEXT,
@@ -962,7 +925,7 @@ function TeamPage() {
                 <View style={{ padding: 10 }}>
                   <Text
                     style={{
-                      fontFamily: "Oswald",
+                      fontFamily: "Helvetica-Bold",
                       fontWeight: 700,
                       fontSize: 13,
                       color: TEXT,
@@ -1069,7 +1032,7 @@ function PortalPage() {
             >
               <Text
                 style={{
-                  fontFamily: "Inter",
+                  fontFamily: "Helvetica",
                   fontWeight: 700,
                   fontSize: 11,
                   color: WHITE,
@@ -1099,7 +1062,7 @@ function PortalPage() {
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                fontFamily: "Oswald",
+                fontFamily: "Helvetica-Bold",
                 fontWeight: 700,
                 fontSize: 16,
                 color: WHITE,
@@ -1219,7 +1182,7 @@ function ContactPage({ qrCodeDataUrl }: { qrCodeDataUrl: string | null }) {
                   </Text>
                   <Text
                     style={{
-                      fontFamily: "Inter",
+                      fontFamily: "Helvetica",
                       fontWeight: 700,
                       fontSize: 11,
                       color: TEXT,
@@ -1266,7 +1229,7 @@ function ContactPage({ qrCodeDataUrl }: { qrCodeDataUrl: string | null }) {
             >
               <Text
                 style={{
-                  fontFamily: "Oswald",
+                  fontFamily: "Helvetica-Bold",
                   fontWeight: 700,
                   fontSize: 11,
                   color: TEXT,
@@ -1329,7 +1292,7 @@ function ContactPage({ qrCodeDataUrl }: { qrCodeDataUrl: string | null }) {
               }}
             >
               <View style={{ width: 36, height: 3, backgroundColor: RED, marginBottom: 10 }} />
-              <Text style={{ fontSize: 9.5, color: "#A8B8CF", lineHeight: 1.6, fontStyle: "italic" }}>
+              <Text style={{ fontSize: 9.5, color: "#A8B8CF", lineHeight: 1.6 }}>
                 "Professional, fast, and left everything clean. Highly recommend!"
               </Text>
               <Text
@@ -1355,7 +1318,7 @@ function ContactPage({ qrCodeDataUrl }: { qrCodeDataUrl: string | null }) {
             >
               <Text
                 style={{
-                  fontFamily: "Oswald",
+                  fontFamily: "Helvetica-Bold",
                   fontWeight: 700,
                   fontSize: 16,
                   color: WHITE,
