@@ -41,6 +41,7 @@ const StormDamageQuote = lazy(() => import("@/pages/StormDamageQuote"));
 const RoofingFortMyers = lazy(() => import("@/pages/locations/FortMyers"));
 const RoofingNaples = lazy(() => import("@/pages/locations/Naples"));
 const RoofingBonitaSprings = lazy(() => import("@/pages/locations/BonitaSprings"));
+const Brochure = lazy(() => import("@/pages/Brochure"));
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,7 @@ function MainSiteRoutes() {
         <Route path="/roofing-fort-myers">{lazyEl(RoofingFortMyers)}</Route>
         <Route path="/roofing-naples">{lazyEl(RoofingNaples)}</Route>
         <Route path="/roofing-bonita-springs">{lazyEl(RoofingBonitaSprings)}</Route>
+        <Route path="/brochure">{lazyEl(Brochure)}</Route>
         <Route>{lazyEl(NotFound)}</Route>
       </Switch>
     </SiteLayout>

@@ -112,6 +112,7 @@ export default function Footer() {
             <li><Link href="/portal" className="hover:text-primary transition-colors">{t("header.topBar.customerPortal")}</Link></li>
             <li><Link href="/about" className="hover:text-primary transition-colors">{t("footer.aboutUs")}</Link></li>
             <li><Link href="/contact" className="hover:text-primary transition-colors">{t("footer.contact")}</Link></li>
+            <li><Link href="/brochure" className="hover:text-primary transition-colors">Company Guide (PDF)</Link></li>
           </ul>
         </div>
 
