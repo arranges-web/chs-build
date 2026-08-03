@@ -496,7 +496,7 @@ export const api = {
     }>("/admin/auth/invites", payload, { "x-admin-key": key }),
 
   listLeads: (key: string) =>
-    getJson<{ rows: Record<string, unknown>[] }>("/admin/leads", {
+    getJsonResult<{ rows: Record<string, unknown>[] }>("/admin/leads", {
       headers: { "x-admin-key": key },
     }),
   listAllJobs: (key: string) =>
@@ -508,7 +508,7 @@ export const api = {
       headers: { "x-admin-key": key },
     }),
   listEstimates: (key: string) =>
-    getJson<{ rows: Record<string, unknown>[] }>("/admin/estimates", {
+    getJsonResult<{ rows: Record<string, unknown>[] }>("/admin/estimates", {
       headers: { "x-admin-key": key },
     }),
 

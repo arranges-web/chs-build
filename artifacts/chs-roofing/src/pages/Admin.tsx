@@ -111,6 +111,10 @@ export default function AdminPage() {
   const effectiveKey = authedKey ?? "";
 
   // ─── Data loading ─────────────────────────────────────────────
+  // Load leads + estimates in parallel. Failures on one shouldn't
+  // block the other — a missing column on `leads` should not hide
+  // your `estimates` list. Real server-side errors are surfaced
+  // verbatim so we're not stuck with a generic "try again" toast.
   const loadAll = async (key: string) => {
     setLoading(true);
     setError(null);
@@ -118,14 +122,18 @@ export default function AdminPage() {
       api.listLeads(key),
       api.listEstimates(key),
     ]);
-    if (!leadsRes || !estRes) {
-      setError("Could not load data. Try signing out and back in.");
+    const errors: string[] = [];
+    if ("data" in leadsRes) setLeads(leadsRes.data.rows);
+    else {
       setLeads(null);
-      setEstimates(null);
-    } else {
-      setLeads(leadsRes.rows);
-      setEstimates(estRes.rows);
+      errors.push(`Leads: ${leadsRes.error}`);
     }
+    if ("data" in estRes) setEstimates(estRes.data.rows);
+    else {
+      setEstimates(null);
+      errors.push(`Estimates: ${estRes.error}`);
+    }
+    if (errors.length) setError(errors.join(" · "));
     setLoading(false);
   };
 
