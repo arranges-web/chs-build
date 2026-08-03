@@ -9,6 +9,7 @@ import {
   Mail,
   Menu,
   MessageSquare,
+  MessageSquareText,
   RefreshCw,
   Search,
   Sparkles,
@@ -19,6 +20,22 @@ import {
   UserPlus,
 } from "lucide-react";
 import { SITE } from "@/lib/site-config";
+import Outreach from "./Outreach";
+import PortalInbox from "./PortalInbox";
+
+/**
+ * Mirror of Admin.tsx's `effectiveKey` logic: the legacy admin key is
+ * kept in sessionStorage when key-auth was used; cookie-authed sessions
+ * send an empty string and the server's adminAuth middleware accepts
+ * the session cookie instead.
+ */
+export function getStoredAdminKey(): string {
+  try {
+    return sessionStorage.getItem("chs.admin.key.v1") ?? "";
+  } catch {
+    return "";
+  }
+}
 
 export type AdminSection =
   | "dashboard"
@@ -26,6 +43,8 @@ export type AdminSection =
   | "projects"
   | "leads"
   | "estimates"
+  | "outreach"
+  | "portalInbox"
   | "analytics"
   | "seo"
   | "responses"
@@ -58,6 +77,8 @@ const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
   projects: { title: "Projects", subtitle: "Every active job across every customer in one place." },
   leads: { title: "Leads", subtitle: "Every quote request from the website." },
   estimates: { title: "Estimates", subtitle: "Every roof estimate submitted online." },
+  outreach: { title: "SMS Outreach", subtitle: "AI texting agent — conversations, drafts, and follow-ups." },
+  portalInbox: { title: "Portal Inbox", subtitle: "Service requests and messages from the customer portal." },
   analytics: { title: "Website Analytics", subtitle: "Traffic, top pages, and lead-source breakdown — built in, no Google Analytics." },
   seo: { title: "SEO Activity", subtitle: "Every real search-optimization change shipped to the site, logged with dates." },
   responses: { title: "AI Chat Responses", subtitle: "Copy-paste answers for common questions." },
@@ -72,6 +93,8 @@ const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overvi
   { id: "projects", label: "Projects", icon: Briefcase, group: "crm" },
   { id: "leads", label: "Leads", icon: Inbox, group: "crm" },
   { id: "estimates", label: "Estimates", icon: Calculator, group: "crm" },
+  { id: "outreach", label: "SMS Outreach", icon: MessageSquareText, group: "crm" },
+  { id: "portalInbox", label: "Portal Inbox", icon: Inbox, group: "crm" },
   { id: "analytics", label: "Analytics", icon: BarChart3, group: "insights" },
   { id: "seo", label: "SEO Activity", icon: Search, group: "insights" },
   { id: "responses", label: "AI Responses", icon: MessageSquare, group: "tools" },
@@ -260,7 +283,15 @@ export default function AdminShell({
         </header>
 
         <main className="flex-1 p-4 md:p-6 max-w-[1400px] w-full mx-auto">
-          {children}
+          {/* The two newest sections are routed here (the page-level
+              switch predates them); everything else comes in as children. */}
+          {section === "outreach" ? (
+            <Outreach adminKey={getStoredAdminKey()} />
+          ) : section === "portalInbox" ? (
+            <PortalInbox adminKey={getStoredAdminKey()} />
+          ) : (
+            children
+          )}
         </main>
       </div>
     </div>

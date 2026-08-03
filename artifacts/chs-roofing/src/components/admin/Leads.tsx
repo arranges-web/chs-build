@@ -1,5 +1,7 @@
-import { Inbox, Mail, MapPin, Phone, UserPlus } from "lucide-react";
-import type { CustomerPrefill } from "./AdminShell";
+import { useState } from "react";
+import { Inbox, Loader2, Mail, MapPin, Phone, Sparkles, UserPlus } from "lucide-react";
+import { api } from "@/lib/api";
+import { getStoredAdminKey, type CustomerPrefill } from "./AdminShell";
 
 type AnyRow = Record<string, unknown>;
 
@@ -23,6 +25,20 @@ type Props = {
 };
 
 export default function Leads({ rows, loading, onConvert }: Props) {
+  // Per-lead "Text with AI" state: id → "ok" or an error message.
+  const [engagingId, setEngagingId] = useState<number | null>(null);
+  const [engageResult, setEngageResult] = useState<Record<number, string>>({});
+
+  const engage = async (leadId: number) => {
+    setEngagingId(leadId);
+    const res = await api.engageLead(leadId, getStoredAdminKey());
+    setEngagingId(null);
+    setEngageResult((prev) => ({
+      ...prev,
+      [leadId]: "error" in res ? res.error : "ok",
+    }));
+  };
+
   if (loading && (rows ?? []).length === 0) {
     return <p className="text-sm text-muted-foreground">Loading…</p>;
   }
@@ -132,6 +148,14 @@ export default function Leads({ rows, loading, onConvert }: Props) {
                 <UserPlus className="w-3.5 h-3.5" />
                 Convert to client
               </button>
+              {phone && typeof r.id === "number" && (
+                <LeadEngageButton
+                  leadId={r.id}
+                  busy={engagingId === r.id}
+                  result={engageResult[r.id]}
+                  onEngage={() => void engage(r.id as number)}
+                />
+              )}
               {phone && (
                 <a
                   href={`sms:${phone}`}
@@ -162,5 +186,47 @@ export default function Leads({ rows, loading, onConvert }: Props) {
         );
       })}
     </div>
+  );
+}
+
+function LeadEngageButton({
+  leadId,
+  busy,
+  result,
+  onEngage,
+}: {
+  leadId: number;
+  busy: boolean;
+  result: string | undefined;
+  onEngage: () => void;
+}) {
+  if (result === "ok") {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-100 px-3 py-2 rounded-full">
+        <Sparkles className="w-3.5 h-3.5" />
+        Agent engaged — check SMS Outreach
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-2">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={onEngage}
+        aria-label={`Text lead #${leadId} with the AI agent`}
+        className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary transition-colors disabled:opacity-60"
+      >
+        {busy ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        ) : (
+          <Sparkles className="w-3.5 h-3.5" />
+        )}
+        {busy ? "Engaging…" : "Text with AI"}
+      </button>
+      {result && result !== "ok" && (
+        <span className="text-[11px] text-destructive">{result}</span>
+      )}
+    </span>
   );
 }

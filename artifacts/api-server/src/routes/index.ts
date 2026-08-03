@@ -7,6 +7,10 @@ import adminCustomersRouter from "./adminCustomers";
 import trackRouter from "./track";
 import adminAnalyticsRouter from "./adminAnalytics";
 import adminAuthRouter from "./adminAuth";
+import adminPortalContentRouter from "./adminPortalContent";
+import adminOutreachRouter from "./adminOutreach";
+import smsWebhookRouter from "./smsWebhook";
+import roofrWebhookRouter from "./roofrWebhook";
 
 const router: IRouter = Router();
 
@@ -25,8 +29,12 @@ router.use(trackRouter);
 // in yet. When the gated routers ran first, that recipient would
 // get a 401 long before reaching the public route, and the
 // /admin/join page surfaced it as "invite link invalid".
+router.use(smsWebhookRouter);
+router.use(roofrWebhookRouter);
 router.use(adminAuthRouter);
 router.use(adminCustomersRouter);
 router.use(adminAnalyticsRouter);
+router.use(adminPortalContentRouter);
+router.use(adminOutreachRouter);
 
 export default router;

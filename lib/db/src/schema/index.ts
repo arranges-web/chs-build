@@ -21,3 +21,5 @@ export * from "./leads";
 export * from "./customers";
 export * from "./analytics";
 export * from "./admins";
+export * from "./portal";
+export * from "./outreach";

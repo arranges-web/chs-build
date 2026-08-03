@@ -12,6 +12,9 @@ import {
   insertJobUpdateSchema,
   insertJobPhotoSchema,
   insertJobAlbumSchema,
+  jobMilestonesTable,
+  jobDocumentsTable,
+  jobInspectionsTable,
 } from "@workspace/db";
 import { asc } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
@@ -78,6 +81,27 @@ router.get("/admin/customers/:id", async (req, res) => {
           .where(inArray(jobAlbumsTable.jobId, jobIds))
           .orderBy(asc(jobAlbumsTable.sortOrder), asc(jobAlbumsTable.createdAt))
       : [];
+    const milestones = jobIds.length
+      ? await db
+          .select()
+          .from(jobMilestonesTable)
+          .where(inArray(jobMilestonesTable.jobId, jobIds))
+          .orderBy(asc(jobMilestonesTable.sortOrder), asc(jobMilestonesTable.createdAt))
+      : [];
+    const documents = jobIds.length
+      ? await db
+          .select()
+          .from(jobDocumentsTable)
+          .where(inArray(jobDocumentsTable.jobId, jobIds))
+          .orderBy(asc(jobDocumentsTable.createdAt))
+      : [];
+    const inspections = jobIds.length
+      ? await db
+          .select()
+          .from(jobInspectionsTable)
+          .where(inArray(jobInspectionsTable.jobId, jobIds))
+          .orderBy(asc(jobInspectionsTable.createdAt))
+      : [];
 
     res.json({
       customer,
@@ -86,6 +110,9 @@ router.get("/admin/customers/:id", async (req, res) => {
         updates: updates.filter((u) => u.jobId === j.id),
         photos: photos.filter((p) => p.jobId === j.id),
         albums: albums.filter((a) => a.jobId === j.id),
+        milestones: milestones.filter((m) => m.jobId === j.id),
+        documents: documents.filter((d) => d.jobId === j.id),
+        inspections: inspections.filter((i) => i.jobId === j.id),
       })),
     });
   } catch (err) {
@@ -213,6 +240,12 @@ router.patch("/admin/jobs/:id", async (req, res) => {
       "startDate",
       "estimatedCompletion",
       "photoAlbumUrl",
+      "projectManager",
+      "projectManagerPhone",
+      "roofSystem",
+      "warrantyManufacturer",
+      "warrantyWorkmanship",
+      "warrantyStartDate",
     ] as const) {
       if (k in req.body) update[k] = req.body[k] ?? null;
     }

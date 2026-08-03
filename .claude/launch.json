@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chs-roofing",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@workspace/chs-roofing", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}

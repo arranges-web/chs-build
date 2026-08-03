@@ -1,21 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
+  Camera,
   CheckCircle2,
+  ClipboardCheck,
   Clock,
   ExternalLink,
+  FileText,
   Hammer,
   Images,
+  ListChecks,
+  Loader2,
   Mail,
   MessageSquare,
   Pause,
+  Pencil,
   Phone,
   Plus,
   RefreshCw,
   Save,
   Trash2,
+  UserCog,
+  X,
 } from "lucide-react";
-import { api, type Customer, type Job, type JobAlbum, type JobUpdate } from "@/lib/api";
+import {
+  api,
+  type Customer,
+  type Job,
+  type JobAlbum,
+  type JobInspection,
+  type JobMilestone,
+  type JobUpdate,
+} from "@/lib/api";
 
 const STATUS_OPTS = [
   { value: "scheduled", label: "Scheduled", icon: Clock },
@@ -168,15 +184,22 @@ export default function JobDetail({ adminKey, jobId, customerId, onBack }: Props
             </div>
           </article>
 
-          <div className="grid lg:grid-cols-[340px_1fr] gap-6">
-            <StatusPanel adminKey={adminKey} job={job} onChanged={load} />
+          <div className="grid lg:grid-cols-[340px_1fr] gap-6 items-start">
+            <div className="space-y-6">
+              <StatusPanel adminKey={adminKey} job={job} onChanged={load} />
+              <DetailsPanel adminKey={adminKey} job={job} onChanged={load} />
+            </div>
             <div className="space-y-6">
               <UpdatesPanel
                 adminKey={adminKey}
                 job={job}
                 onChanged={load}
               />
+              <MilestonesPanel adminKey={adminKey} job={job} onChanged={load} />
+              <InspectionsPanel adminKey={adminKey} job={job} onChanged={load} />
+              <DocumentsPanel adminKey={adminKey} job={job} onChanged={load} />
               <PhotoAlbumPanel adminKey={adminKey} job={job} onChanged={load} />
+              <PhotosPanel adminKey={adminKey} job={job} onChanged={load} />
             </div>
           </div>
         </>
@@ -624,6 +647,979 @@ function PhotoAlbumPanel({
           </button>
         </div>
       )}
+    </section>
+  );
+}
+
+// ─── Project manager + warranty details ─────────────────────────
+
+const inputCls =
+  "w-full h-10 px-3 rounded-lg border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+/** Trim an ISO datetime down to what <input type="date"> wants. */
+const toDateInput = (s: string | null | undefined) => (s ? s.slice(0, 10) : "");
+
+function DetailsPanel({
+  adminKey,
+  job,
+  onChanged,
+}: {
+  adminKey: string;
+  job: Job;
+  onChanged: () => void;
+}) {
+  const [pm, setPm] = useState(job.projectManager ?? "");
+  const [pmPhone, setPmPhone] = useState(job.projectManagerPhone ?? "");
+  const [roofSystem, setRoofSystem] = useState(job.roofSystem ?? "");
+  const [wMfr, setWMfr] = useState(job.warrantyManufacturer ?? "");
+  const [wWork, setWWork] = useState(job.warrantyWorkmanship ?? "");
+  const [wStart, setWStart] = useState(toDateInput(job.warrantyStartDate));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+
+  useEffect(() => {
+    setPm(job.projectManager ?? "");
+    setPmPhone(job.projectManagerPhone ?? "");
+    setRoofSystem(job.roofSystem ?? "");
+    setWMfr(job.warrantyManufacturer ?? "");
+    setWWork(job.warrantyWorkmanship ?? "");
+    setWStart(toDateInput(job.warrantyStartDate));
+  }, [job]);
+
+  const dirty =
+    pm !== (job.projectManager ?? "") ||
+    pmPhone !== (job.projectManagerPhone ?? "") ||
+    roofSystem !== (job.roofSystem ?? "") ||
+    wMfr !== (job.warrantyManufacturer ?? "") ||
+    wWork !== (job.warrantyWorkmanship ?? "") ||
+    wStart !== toDateInput(job.warrantyStartDate);
+
+  const save = async () => {
+    setSaving(true);
+    setError(null);
+    const res = await api.updateJob(
+      job.id,
+      {
+        projectManager: pm.trim() || null,
+        projectManagerPhone: pmPhone.trim() || null,
+        roofSystem: roofSystem.trim() || null,
+        warrantyManufacturer: wMfr.trim() || null,
+        warrantyWorkmanship: wWork.trim() || null,
+        warrantyStartDate: wStart || null,
+      },
+      adminKey,
+    );
+    setSaving(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setSavedAt(Date.now());
+    onChanged();
+  };
+
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
+        <UserCog className="w-4 h-4 text-primary" />
+        Project &amp; warranty
+      </h3>
+      <p className="text-[11px] text-muted-foreground mb-4">
+        Shown to the customer on their portal's project page.
+      </p>
+
+      <div className="space-y-3">
+        <label className="block">
+          <span className="block text-xs font-semibold text-foreground mb-1">Project manager</span>
+          <input value={pm} onChange={(e) => setPm(e.target.value)} placeholder="Name" className={inputCls} />
+        </label>
+        <label className="block">
+          <span className="block text-xs font-semibold text-foreground mb-1">PM phone</span>
+          <input value={pmPhone} onChange={(e) => setPmPhone(e.target.value)} placeholder="305-555-0123" className={inputCls} />
+        </label>
+        <label className="block">
+          <span className="block text-xs font-semibold text-foreground mb-1">Roof system</span>
+          <input value={roofSystem} onChange={(e) => setRoofSystem(e.target.value)} placeholder='e.g. GAF Timberline HDZ, "Charcoal"' className={inputCls} />
+        </label>
+        <div className="pt-2 border-t border-border/60">
+          <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground mb-2">
+            Warranty
+          </p>
+          <div className="space-y-3">
+            <label className="block">
+              <span className="block text-xs font-semibold text-foreground mb-1">Manufacturer warranty</span>
+              <input value={wMfr} onChange={(e) => setWMfr(e.target.value)} placeholder="e.g. 25-year limited" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-foreground mb-1">Workmanship warranty</span>
+              <input value={wWork} onChange={(e) => setWWork(e.target.value)} placeholder="e.g. 10-year CHS workmanship" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-foreground mb-1">Warranty start date</span>
+              <input type="date" value={wStart} onChange={(e) => setWStart(e.target.value)} className={inputCls} />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {error && <p className="mt-3 text-[11px] text-destructive whitespace-pre-line">{error}</p>}
+
+      <button
+        type="button"
+        onClick={() => void save()}
+        disabled={!dirty || saving}
+        className="mt-4 w-full inline-flex items-center justify-center gap-1.5 bg-primary disabled:opacity-60 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-primary/30 transition-all"
+      >
+        <Save className="w-4 h-4" />
+        {saving ? "Saving…" : dirty ? "Save details" : savedAt ? "Saved" : "Up to date"}
+      </button>
+    </section>
+  );
+}
+
+// ─── Milestones ─────────────────────────────────────────────────
+
+const MILESTONE_CYCLE = ["pending", "in_progress", "complete"] as const;
+
+const MILESTONE_META: Record<string, { label: string; cls: string; icon: typeof Clock }> = {
+  pending: { label: "Pending", cls: "bg-foreground/[0.05] text-foreground/70", icon: Clock },
+  in_progress: { label: "In progress", cls: "bg-primary/10 text-primary", icon: Hammer },
+  complete: { label: "Complete", cls: "bg-emerald-100 text-emerald-700", icon: CheckCircle2 },
+};
+
+function MilestonesPanel({
+  adminKey,
+  job,
+  onChanged,
+}: {
+  adminKey: string;
+  job: Job;
+  onChanged: () => void;
+}) {
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editDate, setEditDate] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [newTitle, setNewTitle] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const milestones = useMemo(
+    () => [...job.milestones].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id),
+    [job.milestones],
+  );
+
+  const seed = async () => {
+    setSeeding(true);
+    setError(null);
+    const res = await api.seedJobMilestones(job.id, adminKey);
+    setSeeding(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    onChanged();
+  };
+
+  const cycleStatus = async (m: JobMilestone) => {
+    const i = MILESTONE_CYCLE.indexOf(m.status as (typeof MILESTONE_CYCLE)[number]);
+    const next = MILESTONE_CYCLE[(i + 1) % MILESTONE_CYCLE.length];
+    setBusyId(m.id);
+    setError(null);
+    const res = await api.updateJobMilestone(
+      m.id,
+      {
+        status: next,
+        // Stamp today's date the first time a step completes.
+        ...(next === "complete" && !m.completedDate
+          ? { completedDate: new Date().toISOString().slice(0, 10) }
+          : {}),
+      },
+      adminKey,
+    );
+    setBusyId(null);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    onChanged();
+  };
+
+  const openEdit = (m: JobMilestone) => {
+    setEditingId(m.id);
+    setEditDate(toDateInput(m.completedDate));
+    setEditNotes(m.notes ?? "");
+  };
+
+  const saveEdit = async (m: JobMilestone) => {
+    setBusyId(m.id);
+    setError(null);
+    const res = await api.updateJobMilestone(
+      m.id,
+      { completedDate: editDate || null, notes: editNotes.trim() || null },
+      adminKey,
+    );
+    setBusyId(null);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setEditingId(null);
+    onChanged();
+  };
+
+  const remove = async (m: JobMilestone) => {
+    if (!confirm(`Delete milestone "${m.title}"?`)) return;
+    await api.deleteJobMilestone(m.id, adminKey);
+    onChanged();
+  };
+
+  const addCustom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim()) return;
+    setAdding(true);
+    setError(null);
+    const res = await api.addJobMilestone(
+      { jobId: job.id, title: newTitle.trim(), sortOrder: milestones.length },
+      adminKey,
+    );
+    setAdding(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setNewTitle("");
+    onChanged();
+  };
+
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
+        <ListChecks className="w-4 h-4 text-primary" />
+        Timeline milestones
+      </h3>
+      <p className="text-[11px] text-muted-foreground mb-4">
+        The step-by-step timeline the customer follows in their portal. Click a status chip to
+        advance it.
+      </p>
+
+      {error && <p className="mb-3 text-[11px] text-destructive whitespace-pre-line">{error}</p>}
+
+      {milestones.length === 0 ? (
+        <div className="mb-4 p-4 rounded-xl border border-dashed border-border bg-background text-center">
+          <p className="text-sm text-muted-foreground mb-3">
+            No milestones yet. Start from the standard roofing timeline and tweak from there.
+          </p>
+          <button
+            type="button"
+            onClick={() => void seed()}
+            disabled={seeding}
+            className="inline-flex items-center gap-1.5 bg-primary text-white text-xs font-semibold px-4 py-2 rounded-full shadow-sm shadow-primary/30 hover:bg-primary/90 disabled:opacity-60"
+          >
+            {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+            Add standard timeline
+          </button>
+        </div>
+      ) : (
+        <ol className="space-y-2 mb-4">
+          {milestones.map((m) => {
+            const meta = MILESTONE_META[m.status] ?? MILESTONE_META.pending;
+            const MIcon = meta.icon;
+            const isEditing = editingId === m.id;
+            return (
+              <li key={m.id} className="rounded-xl border border-border/60 bg-background p-3">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    disabled={busyId === m.id}
+                    onClick={() => void cycleStatus(m)}
+                    title="Click to cycle status"
+                    className={`inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] font-semibold px-2 py-1 rounded-full transition-colors disabled:opacity-60 ${meta.cls}`}
+                  >
+                    {busyId === m.id ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <MIcon className="w-3 h-3" />
+                    )}
+                    {meta.label}
+                  </button>
+                  <p className="font-semibold text-sm text-foreground flex-1 min-w-0 truncate">
+                    {m.title}
+                  </p>
+                  {m.completedDate && !isEditing && (
+                    <span className="text-[11px] text-muted-foreground shrink-0">
+                      {fmtDate(m.completedDate)}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => (isEditing ? setEditingId(null) : openEdit(m))}
+                    className="text-muted-foreground hover:text-foreground shrink-0"
+                    aria-label={isEditing ? "Close editor" : `Edit ${m.title}`}
+                  >
+                    {isEditing ? <X className="w-3.5 h-3.5" /> : <Pencil className="w-3.5 h-3.5" />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void remove(m)}
+                    className="text-muted-foreground hover:text-destructive shrink-0"
+                    aria-label={`Delete ${m.title}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                {!isEditing && m.notes && (
+                  <p className="mt-1.5 text-[12px] text-muted-foreground leading-relaxed pl-1">
+                    {m.notes}
+                  </p>
+                )}
+                {isEditing && (
+                  <div className="mt-2.5 grid sm:grid-cols-[160px_1fr_auto] gap-2">
+                    <input
+                      type="date"
+                      value={editDate}
+                      onChange={(e) => setEditDate(e.target.value)}
+                      className={inputCls}
+                      aria-label="Completed date"
+                    />
+                    <input
+                      value={editNotes}
+                      onChange={(e) => setEditNotes(e.target.value)}
+                      placeholder="Notes shown to the customer (optional)"
+                      className={inputCls}
+                    />
+                    <button
+                      type="button"
+                      disabled={busyId === m.id}
+                      onClick={() => void saveEdit(m)}
+                      className="h-10 px-3 rounded-lg bg-primary text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 disabled:opacity-60"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      Save
+                    </button>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      )}
+
+      <form onSubmit={addCustom} className="flex gap-2">
+        <input
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          placeholder="Add a custom milestone…"
+          maxLength={120}
+          className={inputCls}
+        />
+        <button
+          type="submit"
+          disabled={adding || !newTitle.trim()}
+          className="h-10 px-3 rounded-lg bg-primary text-white text-sm font-semibold inline-flex items-center gap-1.5 disabled:opacity-60 shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          {adding ? "…" : "Add"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+// ─── Inspections ────────────────────────────────────────────────
+
+const INSPECTION_STATUS = [
+  { value: "upcoming", label: "Upcoming", cls: "bg-foreground/[0.05] text-foreground/70" },
+  { value: "passed", label: "Passed", cls: "bg-emerald-100 text-emerald-700" },
+  { value: "failed", label: "Failed", cls: "bg-destructive/10 text-destructive" },
+  { value: "reinspection", label: "Reinspection", cls: "bg-amber-100 text-amber-700" },
+];
+
+type InspectionDraft = {
+  inspectionType: string;
+  status: string;
+  date: string;
+  timeWindow: string;
+  county: string;
+  inspectorNotes: string;
+};
+
+const emptyInspection: InspectionDraft = {
+  inspectionType: "",
+  status: "upcoming",
+  date: "",
+  timeWindow: "",
+  county: "",
+  inspectorNotes: "",
+};
+
+function InspectionForm({
+  initial,
+  busy,
+  submitLabel,
+  onSubmit,
+  onCancel,
+}: {
+  initial: InspectionDraft;
+  busy: boolean;
+  submitLabel: string;
+  onSubmit: (draft: InspectionDraft) => void;
+  onCancel: () => void;
+}) {
+  const [draft, setDraft] = useState<InspectionDraft>(initial);
+  const set = (patch: Partial<InspectionDraft>) => setDraft((d) => ({ ...d, ...patch }));
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!draft.inspectionType.trim()) return;
+        onSubmit(draft);
+      }}
+      className="p-3 rounded-xl border border-border/60 bg-background space-y-2"
+    >
+      <div className="grid sm:grid-cols-2 gap-2">
+        <input
+          value={draft.inspectionType}
+          onChange={(e) => set({ inspectionType: e.target.value })}
+          placeholder="Inspection type (e.g. Tin cap / dry-in)"
+          className={inputCls}
+        />
+        <select
+          value={draft.status}
+          onChange={(e) => set({ status: e.target.value })}
+          className={inputCls}
+        >
+          {INSPECTION_STATUS.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+        <input
+          type="date"
+          value={draft.date}
+          onChange={(e) => set({ date: e.target.value })}
+          className={inputCls}
+          aria-label="Inspection date"
+        />
+        <input
+          value={draft.timeWindow}
+          onChange={(e) => set({ timeWindow: e.target.value })}
+          placeholder="Time window (e.g. 8 AM – 12 PM)"
+          className={inputCls}
+        />
+        <input
+          value={draft.county}
+          onChange={(e) => set({ county: e.target.value })}
+          placeholder="County (e.g. Miami-Dade)"
+          className={inputCls}
+        />
+        <input
+          value={draft.inspectorNotes}
+          onChange={(e) => set({ inspectorNotes: e.target.value })}
+          placeholder="Inspector notes (optional)"
+          className={inputCls}
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="submit"
+          disabled={busy || !draft.inspectionType.trim()}
+          className="h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-60"
+        >
+          {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+          {submitLabel}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="h-9 px-3 text-xs font-semibold text-muted-foreground hover:text-foreground"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function InspectionsPanel({
+  adminKey,
+  job,
+  onChanged,
+}: {
+  adminKey: string;
+  job: Job;
+  onChanged: () => void;
+}) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const add = async (d: InspectionDraft) => {
+    setBusy(true);
+    setError(null);
+    const res = await api.addJobInspection(
+      {
+        jobId: job.id,
+        inspectionType: d.inspectionType.trim(),
+        status: d.status,
+        date: d.date || undefined,
+        timeWindow: d.timeWindow.trim() || undefined,
+        county: d.county.trim() || undefined,
+        inspectorNotes: d.inspectorNotes.trim() || undefined,
+      },
+      adminKey,
+    );
+    setBusy(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setShowAdd(false);
+    onChanged();
+  };
+
+  const saveEdit = async (id: number, d: InspectionDraft) => {
+    setBusy(true);
+    setError(null);
+    const res = await api.updateJobInspection(
+      id,
+      {
+        inspectionType: d.inspectionType.trim(),
+        status: d.status,
+        date: d.date || null,
+        timeWindow: d.timeWindow.trim() || null,
+        county: d.county.trim() || null,
+        inspectorNotes: d.inspectorNotes.trim() || null,
+      },
+      adminKey,
+    );
+    setBusy(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setEditingId(null);
+    onChanged();
+  };
+
+  const remove = async (i: JobInspection) => {
+    if (!confirm(`Delete the "${i.inspectionType}" inspection?`)) return;
+    await api.deleteJobInspection(i.id, adminKey);
+    onChanged();
+  };
+
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-display font-bold text-foreground text-base inline-flex items-center gap-2">
+          <ClipboardCheck className="w-4 h-4 text-primary" />
+          Inspections
+        </h3>
+        {!showAdd && (
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
+          >
+            <Plus className="w-3 h-3" />
+            Add inspection
+          </button>
+        )}
+      </div>
+      <p className="text-[11px] text-muted-foreground mb-4">
+        County inspections tied to this job — the customer sees dates, windows, and results.
+      </p>
+
+      {error && <p className="mb-3 text-[11px] text-destructive whitespace-pre-line">{error}</p>}
+
+      {showAdd && (
+        <div className="mb-3">
+          <InspectionForm
+            initial={emptyInspection}
+            busy={busy}
+            submitLabel="Add inspection"
+            onSubmit={(d) => void add(d)}
+            onCancel={() => setShowAdd(false)}
+          />
+        </div>
+      )}
+
+      {job.inspections.length === 0 && !showAdd ? (
+        <p className="text-sm text-muted-foreground">No inspections logged yet.</p>
+      ) : (
+        <ol className="space-y-2">
+          {job.inspections.map((i) => {
+            const meta =
+              INSPECTION_STATUS.find((s) => s.value === i.status) ?? INSPECTION_STATUS[0];
+            if (editingId === i.id) {
+              return (
+                <li key={i.id}>
+                  <InspectionForm
+                    initial={{
+                      inspectionType: i.inspectionType,
+                      status: i.status,
+                      date: toDateInput(i.date),
+                      timeWindow: i.timeWindow ?? "",
+                      county: i.county ?? "",
+                      inspectorNotes: i.inspectorNotes ?? "",
+                    }}
+                    busy={busy}
+                    submitLabel="Save changes"
+                    onSubmit={(d) => void saveEdit(i.id, d)}
+                    onCancel={() => setEditingId(null)}
+                  />
+                </li>
+              );
+            }
+            return (
+              <li key={i.id} className="rounded-xl border border-border/60 bg-background p-3">
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className={`text-[10px] uppercase tracking-[0.14em] font-semibold px-2 py-1 rounded-full shrink-0 ${meta.cls}`}
+                  >
+                    {meta.label}
+                  </span>
+                  <p className="font-semibold text-sm text-foreground flex-1 min-w-0 truncate">
+                    {i.inspectionType}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(i.id)}
+                    className="text-muted-foreground hover:text-foreground shrink-0"
+                    aria-label={`Edit ${i.inspectionType}`}
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void remove(i)}
+                    className="text-muted-foreground hover:text-destructive shrink-0"
+                    aria-label={`Delete ${i.inspectionType}`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[12px] text-muted-foreground">
+                  {i.date && <span>{fmtDate(i.date)}</span>}
+                  {i.timeWindow && <span>{i.timeWindow}</span>}
+                  {i.county && <span>{i.county}</span>}
+                </div>
+                {i.inspectorNotes && (
+                  <p className="mt-1 text-[12px] text-foreground/75 leading-relaxed">
+                    {i.inspectorNotes}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      )}
+    </section>
+  );
+}
+
+// ─── Documents ──────────────────────────────────────────────────
+
+const DOC_CATEGORIES = [
+  "contract",
+  "permit",
+  "insurance",
+  "noa",
+  "specs",
+  "color",
+  "change-order",
+  "warranty",
+  "invoice",
+  "receipt",
+  "other",
+];
+
+const docLabel = (c: string) =>
+  c === "noa" ? "NOA" : c.replace(/-/g, " ").replace(/^\w/, (ch) => ch.toUpperCase());
+
+function DocumentsPanel({
+  adminKey,
+  job,
+  onChanged,
+}: {
+  adminKey: string;
+  job: Job;
+  onChanged: () => void;
+}) {
+  const [label, setLabel] = useState("");
+  const [category, setCategory] = useState("contract");
+  const [url, setUrl] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!label.trim() || !url.trim()) {
+      setError("A label and a URL are both required.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const res = await api.addJobDocument(
+      { jobId: job.id, label: label.trim(), category, url: url.trim() },
+      adminKey,
+    );
+    setBusy(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setLabel("");
+    setUrl("");
+    onChanged();
+  };
+
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
+        <FileText className="w-4 h-4 text-primary" />
+        Documents
+      </h3>
+      <p className="text-[11px] text-muted-foreground mb-4">
+        Contracts, permits, NOAs — link them here and the customer can open them from their portal.
+      </p>
+
+      {job.documents.length > 0 && (
+        <ol className="space-y-2 mb-4">
+          {job.documents.map((d) => (
+            <li
+              key={d.id}
+              className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-background"
+            >
+              {d.category && (
+                <span className="text-[10px] uppercase tracking-[0.14em] font-semibold text-foreground/70 bg-foreground/[0.04] px-2 py-0.5 rounded-full shrink-0">
+                  {docLabel(d.category)}
+                </span>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-sm text-foreground truncate">{d.label}</p>
+                <a
+                  href={d.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline truncate max-w-full"
+                >
+                  <ExternalLink className="w-3 h-3 shrink-0" />
+                  <span className="truncate">{d.url}</span>
+                </a>
+              </div>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!confirm(`Remove "${d.label}"?`)) return;
+                  await api.deleteJobDocument(d.id, adminKey);
+                  onChanged();
+                }}
+                className="text-muted-foreground hover:text-destructive shrink-0"
+                aria-label={`Remove ${d.label}`}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      <form onSubmit={add} className="space-y-2">
+        <div className="grid sm:grid-cols-[1fr_170px] gap-2">
+          <input
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="Label (e.g. Signed contract)"
+            maxLength={120}
+            className={inputCls}
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={inputCls}
+            aria-label="Document category"
+          >
+            {DOC_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {docLabel(c)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://drive.google.com/… or any public link"
+          className={inputCls}
+        />
+        {error && <p className="text-[11px] text-destructive whitespace-pre-line">{error}</p>}
+        <button
+          type="submit"
+          disabled={busy}
+          className="w-full inline-flex items-center justify-center gap-1.5 bg-primary disabled:opacity-60 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-primary/30 transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          {busy ? "Adding…" : "Add document"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+// ─── Categorized photos ─────────────────────────────────────────
+
+const PHOTO_CATEGORIES = [
+  "before",
+  "tear-off",
+  "deck-repairs",
+  "underlayment",
+  "dry-in",
+  "installation",
+  "flashing",
+  "drone",
+  "final",
+  "warranty",
+];
+
+const photoLabel = (c: string) => c.replace(/-/g, " ").replace(/^\w/, (ch) => ch.toUpperCase());
+
+function PhotosPanel({
+  adminKey,
+  job,
+  onChanged,
+}: {
+  adminKey: string;
+  job: Job;
+  onChanged: () => void;
+}) {
+  const [url, setUrl] = useState("");
+  const [caption, setCaption] = useState("");
+  const [category, setCategory] = useState("before");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url.trim()) {
+      setError("A photo URL is required.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    const res = await api.addJobPhoto(
+      {
+        jobId: job.id,
+        url: url.trim(),
+        caption: caption.trim() || undefined,
+        category,
+      },
+      adminKey,
+    );
+    setBusy(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    setUrl("");
+    setCaption("");
+    onChanged();
+  };
+
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
+        <Camera className="w-4 h-4 text-primary" />
+        Job photos
+      </h3>
+      <p className="text-[11px] text-muted-foreground mb-4">
+        Individual photo links, tagged by phase — the portal groups them by category for the
+        customer.
+      </p>
+
+      {job.photos.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-4">
+          {job.photos.map((p) => (
+            <figure
+              key={p.id}
+              className="relative group rounded-xl border border-border/60 bg-background overflow-hidden"
+            >
+              <img
+                src={p.url}
+                alt={p.caption ?? "Job photo"}
+                loading="lazy"
+                className="w-full h-28 object-cover"
+              />
+              <figcaption className="p-2">
+                {p.category && (
+                  <span className="text-[9px] uppercase tracking-[0.14em] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">
+                    {photoLabel(p.category)}
+                  </span>
+                )}
+                {p.caption && (
+                  <p className="mt-1 text-[11px] text-muted-foreground truncate">{p.caption}</p>
+                )}
+              </figcaption>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!confirm("Delete this photo?")) return;
+                  await api.deleteJobPhoto(p.id, adminKey);
+                  onChanged();
+                }}
+                className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Delete photo"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </figure>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={add} className="space-y-2">
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://… direct image link"
+          className={inputCls}
+        />
+        <div className="grid sm:grid-cols-[1fr_170px] gap-2">
+          <input
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            placeholder="Caption (optional)"
+            maxLength={140}
+            className={inputCls}
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className={inputCls}
+            aria-label="Photo category"
+          >
+            {PHOTO_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {photoLabel(c)}
+              </option>
+            ))}
+          </select>
+        </div>
+        {error && <p className="text-[11px] text-destructive whitespace-pre-line">{error}</p>}
+        <button
+          type="submit"
+          disabled={busy}
+          className="w-full inline-flex items-center justify-center gap-1.5 bg-primary disabled:opacity-60 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-primary/30 transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          {busy ? "Adding…" : "Add photo"}
+        </button>
+      </form>
     </section>
   );
 }

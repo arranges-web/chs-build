@@ -48,6 +48,14 @@ export const jobsTable = pgTable("jobs", {
   // sidesteps the cost of stuffing base64 data URLs into Postgres and
   // lets the team manage their own gallery.
   photoAlbumUrl: text("photo_album_url"),
+  // Portal dashboard fields
+  projectManager: text("project_manager"),
+  projectManagerPhone: text("project_manager_phone"),
+  // Warranty Center
+  roofSystem: text("roof_system"), // e.g. "GAF Timberline HDZ Shingle System"
+  warrantyManufacturer: text("warranty_manufacturer"),
+  warrantyWorkmanship: text("warranty_workmanship"),
+  warrantyStartDate: text("warranty_start_date"),
 });
 
 export const insertJobSchema = createInsertSchema(jobsTable).omit({
@@ -92,6 +100,9 @@ export const jobPhotosTable = pgTable("job_photos", {
     .references(() => jobsTable.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
   caption: text("caption"),
+  // Gallery category: before | tear-off | deck-repairs | underlayment |
+  // dry-in | installation | flashing | drone | final | warranty
+  category: text("category"),
 });
 
 export const insertJobPhotoSchema = createInsertSchema(jobPhotosTable).omit({

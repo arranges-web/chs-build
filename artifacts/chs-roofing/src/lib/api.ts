@@ -207,6 +207,7 @@ export type JobPhoto = {
   jobId: number;
   url: string;
   caption: string | null;
+  category: string | null;
   createdAt: string;
 };
 
@@ -216,6 +217,58 @@ export type JobAlbum = {
   label: string;
   url: string;
   sortOrder: number;
+  createdAt: string;
+};
+
+export type JobMilestone = {
+  id: number;
+  jobId: number;
+  title: string;
+  status: "pending" | "in_progress" | "complete" | string;
+  sortOrder: number;
+  completedDate: string | null;
+  notes: string | null;
+  createdAt: string;
+};
+
+export type JobDocument = {
+  id: number;
+  jobId: number;
+  label: string;
+  category: string | null;
+  url: string;
+  createdAt: string;
+};
+
+export type JobInspection = {
+  id: number;
+  jobId: number;
+  inspectionType: string;
+  status: "upcoming" | "passed" | "failed" | "reinspection" | string;
+  date: string | null;
+  timeWindow: string | null;
+  county: string | null;
+  inspectorNotes: string | null;
+  createdAt: string;
+};
+
+export type ServiceRequest = {
+  id: number;
+  customerId: number;
+  jobId: number | null;
+  requestType: string;
+  message: string | null;
+  status: "new" | "in_progress" | "closed" | string;
+  createdAt: string;
+};
+
+export type CustomerMessage = {
+  id: number;
+  customerId: number;
+  sender: "customer" | "team" | string;
+  authorName: string | null;
+  body: string;
+  readByTeam: boolean;
   createdAt: string;
 };
 
@@ -231,15 +284,26 @@ export type Job = {
   /** External photo gallery URL — Google Photos shared album, Drive
    *  folder, Dropbox, etc. Set per-job by the admin. */
   photoAlbumUrl: string | null;
+  projectManager: string | null;
+  projectManagerPhone: string | null;
+  roofSystem: string | null;
+  warrantyManufacturer: string | null;
+  warrantyWorkmanship: string | null;
+  warrantyStartDate: string | null;
   createdAt: string;
   updates: JobUpdate[];
   photos: JobPhoto[];
   albums: JobAlbum[];
+  milestones: JobMilestone[];
+  documents: JobDocument[];
+  inspections: JobInspection[];
 };
 
 export type PortalLookupResponse = {
   customer: Customer;
   jobs: Job[];
+  messages: CustomerMessage[];
+  requests: ServiceRequest[];
 };
 
 export type AdminJob = {
@@ -274,6 +338,69 @@ export type AnalyticsResponse = {
   pageviewsByDay: Array<{ day: string; views: number; sessions: number }>;
   topPaths: Array<{ path: string; views: number }>;
   topReferrers: Array<{ referrer: string; views: number }>;
+};
+
+// ─── SMS Outreach ──────────────────────────────────────────────
+export type SmsContact = {
+  id: number;
+  phone: string;
+  name: string | null;
+  leadId: number | null;
+  customerId: number | null;
+  consentSource: string | null;
+  optedOut: boolean;
+  aiEnabled: boolean;
+  lastMessageAt: string | null;
+  createdAt: string;
+};
+
+export type SmsContactRow = SmsContact & {
+  unread: number;
+  lastBody: string | null;
+  hasDraft: boolean;
+};
+
+export type SmsMessage = {
+  id: number;
+  contactId: number;
+  direction: "inbound" | "outbound" | string;
+  body: string;
+  status: "draft" | "sent" | "failed" | "simulated" | "received" | string;
+  authorName: string | null;
+  twilioSid: string | null;
+  errorMessage: string | null;
+  readByTeam: boolean;
+  createdAt: string;
+};
+
+export type OutreachSettings = {
+  id: number;
+  agentName: string;
+  instructions: string | null;
+  autoEngageLeads: boolean;
+  autoReply: boolean;
+  sendWindowStart: number;
+  sendWindowEnd: number;
+  timezone: string;
+  updatedAt: string;
+};
+
+export type OutreachStatus = {
+  twilioConfigured: boolean;
+  aiConfigured: boolean;
+  roofrSecretConfigured: boolean;
+  settings: OutreachSettings;
+};
+
+export type AdminServiceRequestRow = ServiceRequest & {
+  customerName: string | null;
+  customerPhone: string | null;
+  accountNumber: string | null;
+};
+
+export type AdminCustomerMessageRow = CustomerMessage & {
+  customerName: string | null;
+  accountNumber: string | null;
 };
 
 // ─── Admin auth ────────────────────────────────────────────────
@@ -328,6 +455,14 @@ export const api = {
   // Public portal
   portalLookup: (identifier: string) =>
     postJson<PortalLookupResponse>("/portal/lookup", { identifier }),
+  portalSubmitRequest: (payload: {
+    identifier: string;
+    requestType: string;
+    message?: string;
+    jobId?: number;
+  }) => postJsonResult<{ row: ServiceRequest }>("/portal/requests", payload),
+  portalSendMessage: (payload: { identifier: string; body: string }) =>
+    postJsonResult<{ row: CustomerMessage }>("/portal/messages", payload),
 
   // Admin (key required)
   // ─── Admin auth ───────────────────────────────────────────────
@@ -424,7 +559,7 @@ export const api = {
     deleteJson(`/admin/job-updates/${id}`, { headers: { "x-admin-key": key } }),
 
   addJobPhoto: (
-    payload: { jobId: number; url: string; caption?: string },
+    payload: { jobId: number; url: string; caption?: string; category?: string },
     key: string,
   ) => postJsonResult<{ row: JobPhoto }>("/admin/job-photos", payload, { "x-admin-key": key }),
   deleteJobPhoto: (id: number, key: string) =>
@@ -438,6 +573,127 @@ export const api = {
 
   // Multiple labeled album links per job — "Part 1 done", "Final
   // walkthrough", etc. Each gets embedded in the customer portal.
+  // Admin · portal content (milestones / documents / inspections)
+  addJobMilestone: (
+    payload: {
+      jobId: number;
+      title: string;
+      status?: string;
+      sortOrder?: number;
+      completedDate?: string;
+      notes?: string;
+    },
+    key: string,
+  ) => postJsonResult<{ row: JobMilestone }>("/admin/job-milestones", payload, { "x-admin-key": key }),
+  seedJobMilestones: (jobId: number, key: string) =>
+    postJsonResult<{ rows: JobMilestone[] }>(`/admin/jobs/${jobId}/milestones/template`, {}, {
+      "x-admin-key": key,
+    }),
+  updateJobMilestone: (id: number, payload: Partial<JobMilestone>, key: string) =>
+    patchJsonResult<{ row: JobMilestone }>(`/admin/job-milestones/${id}`, payload, {
+      "x-admin-key": key,
+    }),
+  deleteJobMilestone: (id: number, key: string) =>
+    deleteJson(`/admin/job-milestones/${id}`, { headers: { "x-admin-key": key } }),
+
+  addJobDocument: (
+    payload: { jobId: number; label: string; category?: string; url: string },
+    key: string,
+  ) => postJsonResult<{ row: JobDocument }>("/admin/job-documents", payload, { "x-admin-key": key }),
+  deleteJobDocument: (id: number, key: string) =>
+    deleteJson(`/admin/job-documents/${id}`, { headers: { "x-admin-key": key } }),
+
+  addJobInspection: (
+    payload: {
+      jobId: number;
+      inspectionType: string;
+      status?: string;
+      date?: string;
+      timeWindow?: string;
+      county?: string;
+      inspectorNotes?: string;
+    },
+    key: string,
+  ) =>
+    postJsonResult<{ row: JobInspection }>("/admin/job-inspections", payload, {
+      "x-admin-key": key,
+    }),
+  updateJobInspection: (id: number, payload: Partial<JobInspection>, key: string) =>
+    patchJsonResult<{ row: JobInspection }>(`/admin/job-inspections/${id}`, payload, {
+      "x-admin-key": key,
+    }),
+  deleteJobInspection: (id: number, key: string) =>
+    deleteJson(`/admin/job-inspections/${id}`, { headers: { "x-admin-key": key } }),
+
+  // Admin · service requests + customer messages
+  listServiceRequests: (key: string) =>
+    getJsonResult<{ rows: AdminServiceRequestRow[] }>("/admin/service-requests", {
+      headers: { "x-admin-key": key },
+    }),
+  updateServiceRequest: (id: number, status: string, key: string) =>
+    patchJsonResult<{ row: ServiceRequest }>(`/admin/service-requests/${id}`, { status }, {
+      "x-admin-key": key,
+    }),
+  listCustomerMessages: (key: string) =>
+    getJsonResult<{ rows: AdminCustomerMessageRow[] }>("/admin/customer-messages", {
+      headers: { "x-admin-key": key },
+    }),
+  replyCustomerMessage: (payload: { customerId: number; body: string }, key: string) =>
+    postJsonResult<{ row: CustomerMessage }>("/admin/customer-messages", payload, {
+      "x-admin-key": key,
+    }),
+  markCustomerMessagesRead: (customerId: number, key: string) =>
+    postJsonResult<{ ok: true }>(`/admin/customer-messages/mark-read/${customerId}`, {}, {
+      "x-admin-key": key,
+    }),
+
+  // Admin · SMS outreach
+  outreachStatus: (key: string) =>
+    getJsonResult<OutreachStatus>("/admin/outreach/status", { headers: { "x-admin-key": key } }),
+  updateOutreachSettings: (payload: Partial<OutreachSettings>, key: string) =>
+    patchJsonResult<{ settings: OutreachSettings }>("/admin/outreach/settings", payload, {
+      "x-admin-key": key,
+    }),
+  listSmsContacts: (key: string) =>
+    getJsonResult<{ rows: SmsContactRow[] }>("/admin/outreach/contacts", {
+      headers: { "x-admin-key": key },
+    }),
+  getSmsThread: (contactId: number, key: string) =>
+    getJsonResult<{ contact: SmsContact; messages: SmsMessage[] }>(
+      `/admin/outreach/contacts/${contactId}/messages`,
+      { headers: { "x-admin-key": key } },
+    ),
+  updateSmsContact: (
+    id: number,
+    payload: Partial<Pick<SmsContact, "name" | "aiEnabled" | "optedOut">>,
+    key: string,
+  ) =>
+    patchJsonResult<{ row: SmsContact }>(`/admin/outreach/contacts/${id}`, payload, {
+      "x-admin-key": key,
+    }),
+  createSmsContact: (
+    payload: { phone?: string; name?: string; leadId?: number; customerId?: number },
+    key: string,
+  ) => postJsonResult<{ row: SmsContact }>("/admin/outreach/contacts", payload, { "x-admin-key": key }),
+  sendSmsMessage: (payload: { contactId: number; body: string }, key: string) =>
+    postJsonResult<{ row: SmsMessage }>("/admin/outreach/messages", payload, {
+      "x-admin-key": key,
+    }),
+  draftSmsReply: (contactId: number, key: string) =>
+    postJsonResult<{ draft: string }>(`/admin/outreach/contacts/${contactId}/draft`, {}, {
+      "x-admin-key": key,
+    }),
+  approveSmsDraft: (draftId: number, key: string, body?: string) =>
+    postJsonResult<{ row: SmsMessage }>(`/admin/outreach/drafts/${draftId}/approve`, body ? { body } : {}, {
+      "x-admin-key": key,
+    }),
+  discardSmsDraft: (draftId: number, key: string) =>
+    deleteJson(`/admin/outreach/drafts/${draftId}`, { headers: { "x-admin-key": key } }),
+  engageLead: (leadId: number, key: string) =>
+    postJsonResult<{ ok: true }>(`/admin/outreach/engage-lead/${leadId}`, {}, {
+      "x-admin-key": key,
+    }),
+
   addJobAlbum: (
     payload: { jobId: number; label: string; url: string; sortOrder?: number },
     key: string,

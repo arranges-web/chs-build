@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { db, leadsTable, insertLeadSchema } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { engageLead } from "../lib/outreachAgent";
 
 const router: IRouter = Router();
 
@@ -23,6 +24,10 @@ router.post("/leads", async (req, res) => {
     }
     const [row] = await db.insert(leadsTable).values(parsed.data).returning();
     res.status(201).json({ ok: true, id: row.id });
+    // Hand the lead to the SMS outreach agent (drafts, or auto-sends
+    // when enabled in settings). Fire-and-forget — never blocks or
+    // fails the form submission.
+    void engageLead(row);
   } catch (err) {
     handleError(res, err);
   }

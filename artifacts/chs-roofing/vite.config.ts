@@ -57,6 +57,15 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    // Local dev outside Replit: forward /api to the api-server. On
+    // Replit the platform reverse proxy does this instead. Set
+    // API_PROXY_TARGET to override the default.
+    proxy: {
+      "/api": {
+        target: process.env.API_PROXY_TARGET ?? "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port,
