@@ -267,6 +267,12 @@
     transform: translateY(-4px);
   }
 
+  /* Hide scrollbars but keep scrolling behavior — used by the portal's
+     horizontal section-nav strip so the active-chip auto-scroll doesn't
+     drag a visible scrollbar along with it. */
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
   /* Shingle-lift: roof-themed corner-tilt for cards that represent roofs.
      Lifts the top-left corner like a shingle being peeled, with a directional shadow. */
   .shingle-lift {

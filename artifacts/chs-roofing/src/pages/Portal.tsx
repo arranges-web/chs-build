@@ -156,6 +156,41 @@ const scrollToSection = (id: string) => {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
+/**
+ * Scroll-spy: track which section is currently in view so the sticky
+ * nav can highlight it. Uses IntersectionObserver with a top rootMargin
+ * that matches the sticky nav's approx height (~56px) plus a little
+ * headroom, so a section "activates" the moment its heading crosses
+ * under the nav bar.
+ */
+function useActiveSection(ids: readonly string[]): string {
+  const [active, setActive] = useState<string>(ids[0] ?? "");
+  useEffect(() => {
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+    const observed = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => !!el);
+    if (observed.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        // Track every intersecting section, pick the topmost one.
+        const inView = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (inView[0]) {
+          setActive(inView[0].target.id);
+        }
+      },
+      // Push the top boundary down by the sticky nav height so
+      // "active" flips right as the section's heading passes the nav.
+      { rootMargin: "-72px 0px -60% 0px", threshold: 0 },
+    );
+    observed.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [ids]);
+  return active;
+}
+
 // ─── Date helpers ──────────────────────────────────────────────
 
 const fmtDate = (s?: string | null) => {
@@ -521,27 +556,10 @@ export default function PortalPage() {
             </div>
           )}
 
-          {/* Sticky section navigation */}
-          <nav
-            aria-label="Portal sections"
-            className="sticky top-0 z-30 glass-surface border-b border-border/60 mt-6"
-          >
-            <div className="container mx-auto max-w-4xl px-4">
-              <div className="flex gap-1.5 overflow-x-auto py-2.5 -mx-1 px-1">
-                {NAV_ITEMS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => scrollToSection(item.id)}
-                    className="flex-none inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-[13px] font-semibold text-foreground/70 hover:text-primary hover:bg-primary/[0.06] transition-colors whitespace-nowrap"
-                  >
-                    <item.icon className="w-3.5 h-3.5" />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </nav>
+          {/* Sticky section navigation with scroll-spy active state.
+              The active chip auto-scrolls into view on desktop and mobile
+              so a customer three sections deep still sees where they are. */}
+          <PortalNav />
 
           <div className="container mx-auto max-w-4xl px-4 py-8 space-y-6">
             {selectedJob && (
@@ -579,6 +597,58 @@ export default function PortalPage() {
 // Shared shell
 // ═══════════════════════════════════════════════════════════════
 
+/**
+ * Sticky section nav with live scroll-spy. The current chip is
+ * outlined so a customer can scan the strip and immediately see
+ * where they are in the page. The active chip also gets scrolled
+ * into the horizontal strip's own view so it doesn't fall off
+ * screen on mobile as they scroll.
+ */
+function PortalNav() {
+  const activeIds = useMemo(() => NAV_ITEMS.map((n) => n.id), []);
+  const active = useActiveSection(activeIds);
+
+  // Auto-scroll the active chip into the strip's visible area.
+  useEffect(() => {
+    const el = document.querySelector<HTMLButtonElement>(
+      `[data-nav-chip="${active}"]`,
+    );
+    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [active]);
+
+  return (
+    <nav
+      aria-label="Portal sections"
+      className="sticky top-0 z-30 glass-surface border-b border-border/60 mt-6"
+    >
+      <div className="container mx-auto max-w-4xl px-4">
+        <div className="flex gap-1.5 overflow-x-auto py-2.5 -mx-1 px-1 no-scrollbar">
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.id === active;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                data-nav-chip={item.id}
+                onClick={() => scrollToSection(item.id)}
+                aria-current={isActive ? "true" : undefined}
+                className={`flex-none inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-[13px] font-semibold whitespace-nowrap transition-colors ${
+                  isActive
+                    ? "bg-primary text-white shadow-sm shadow-primary/25"
+                    : "text-foreground/70 hover:text-primary hover:bg-primary/[0.06]"
+                }`}
+              >
+                <item.icon className="w-3.5 h-3.5" />
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
 function Section({
   id,
   icon: Icon,
@@ -593,7 +663,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-20">
+    <section id={id} className="scroll-mt-24">
       <div className="bg-card border border-border/60 rounded-3xl shadow-sm p-6 md:p-7">
         <header className="mb-5">
           <h2 className="font-display font-bold text-xl text-foreground tracking-tight flex items-center gap-2.5">

@@ -27,6 +27,7 @@ import {
   type JobUpdate,
 } from "@/lib/api";
 import { compressImage } from "@/lib/imageUpload";
+import QRCode from "qrcode";
 import type { CustomerPrefill } from "./AdminShell";
 
 type Detail = { customer: Customer; jobs: Job[] };
@@ -838,6 +839,8 @@ function JobAdminCard({
 // ─── Tiny form helpers ─────────────────────────────────────────
 function PortalAccessCard({ customer }: { customer: Customer }) {
   const [copied, setCopied] = useState<"email" | "account" | "link" | null>(null);
+  const [showQr, setShowQr] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   // Prefilled portal URL — opening this link signs the customer in
   // automatically without them having to type their email or account
   // number. This is what makes "share the portal link" actually easy.
@@ -845,6 +848,23 @@ function PortalAccessCard({ customer }: { customer: Customer }) {
   // (chs-roofing.com, the Replit preview URL, a future staging host).
   const portalUrl = `${window.location.origin}/portal?account=${encodeURIComponent(customer.accountNumber)}`;
   const portalLoginPage = `${window.location.origin}/portal`;
+
+  // Lazily generate a QR code the first time the admin taps "Show QR"
+  // so customers standing in the driveway can scan the link with their
+  // phone camera — no typing an email or account number required.
+  useEffect(() => {
+    if (!showQr || qrDataUrl) return;
+    void QRCode.toDataURL(portalUrl, {
+      width: 320,
+      margin: 2,
+      errorCorrectionLevel: "M",
+      color: { dark: "#162033", light: "#FFFFFF" },
+    })
+      .then(setQrDataUrl)
+      .catch(() => {
+        /* silently ignore — admin can still copy the link */
+      });
+  }, [showQr, qrDataUrl, portalUrl]);
 
   const copy = async (key: "email" | "account" | "link", text: string) => {
     try {
@@ -969,7 +989,48 @@ This link signs you in automatically with your account number (${customer.accoun
                 Text portal link
               </a>
             )}
+            <button
+              type="button"
+              onClick={() => setShowQr((s) => !s)}
+              className="inline-flex items-center gap-1.5 bg-card border border-border/60 text-foreground text-xs font-semibold px-3 py-2 rounded-full hover:border-primary/40 hover:text-primary transition-colors"
+            >
+              {showQr ? "Hide QR code" : "Show QR code"}
+            </button>
           </div>
+
+          {showQr && (
+            <div className="mt-4 rounded-2xl border border-border/60 bg-muted/40 p-4 flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-40 h-40 shrink-0 rounded-xl bg-white border border-border/60 flex items-center justify-center overflow-hidden">
+                {qrDataUrl ? (
+                  <img src={qrDataUrl} alt={`Portal QR code for ${customer.name}`} className="w-full h-full" />
+                ) : (
+                  <span className="text-[11px] text-muted-foreground">Generating…</span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1 text-center sm:text-left">
+                <p className="text-[11px] uppercase tracking-[0.18em] font-semibold text-primary">
+                  Scan to sign in
+                </p>
+                <p className="text-sm font-semibold text-foreground mt-0.5">
+                  Point their phone camera at this code
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+                  Opens {customer.name.split(" ")[0]}'s portal directly — no
+                  typing needed. Great for showing the portal in person or
+                  printing on a project handout.
+                </p>
+                {qrDataUrl && (
+                  <a
+                    href={qrDataUrl}
+                    download={`chs-portal-${customer.accountNumber}.png`}
+                    className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary hover:underline"
+                  >
+                    Download PNG
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
