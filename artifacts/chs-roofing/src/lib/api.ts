@@ -571,6 +571,17 @@ export const api = {
       headers: { "x-admin-key": key },
     }),
 
+  // One-click demo seed. `reset: true` wipes the DEMO account first
+  // so the admin can go back to a fresh example after clicking around.
+  loadDemo: (key: string, reset = false) =>
+    postJsonResult<{
+      ok: true;
+      reset: boolean;
+      accountNumber: string;
+      email: string;
+      jobId: number;
+    }>(`/admin/demo${reset ? "?reset=1" : ""}`, {}, { "x-admin-key": key }),
+
   // Multiple labeled album links per job — "Part 1 done", "Final
   // walkthrough", etc. Each gets embedded in the customer portal.
   // Admin · portal content (milestones / documents / inspections)

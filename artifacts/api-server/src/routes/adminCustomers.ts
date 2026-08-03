@@ -462,4 +462,21 @@ router.delete("/admin/job-photos/:id", async (req, res) => {
   }
 });
 
+// ─── Demo seed ─────────────────────────────────────────────────
+//
+// One-click "load the demo customer" for the admin. Calls into the
+// shared seedDemo() so the shell command and the button do exactly
+// the same thing. Query param `?reset=1` wipes and re-inserts —
+// useful for going back to a clean state after clicking around.
+router.post("/admin/demo", async (req, res) => {
+  try {
+    const { seedDemo } = await import("@workspace/db");
+    const reset = req.query.reset === "1" || req.query.reset === "true";
+    const result = await seedDemo({ reset });
+    res.json({ ok: true, reset, ...result });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
 export default router;

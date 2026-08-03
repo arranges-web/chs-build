@@ -7,6 +7,8 @@ import {
   Eye,
   HardHat,
   Inbox,
+  RefreshCw,
+  Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -47,6 +49,12 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOp
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [jobs, setJobs] = useState<AdminJob[] | null>(null);
+  const [demoState, setDemoState] = useState<
+    | { kind: "idle" }
+    | { kind: "loading"; reset: boolean }
+    | { kind: "ready"; portalUrl: string; reset: boolean }
+    | { kind: "error"; message: string }
+  >({ kind: "idle" });
 
   useEffect(() => {
     let cancelled = false;
@@ -66,6 +74,19 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOp
     };
   }, [adminKey]);
 
+  const loadDemo = async (reset: boolean) => {
+    setDemoState({ kind: "loading", reset });
+    const res = await api.loadDemo(adminKey, reset);
+    if ("error" in res) {
+      setDemoState({ kind: "error", message: res.error });
+      return;
+    }
+    const portalUrl = `${window.location.origin}/portal?account=${encodeURIComponent(
+      res.data.accountNumber,
+    )}`;
+    setDemoState({ kind: "ready", portalUrl, reset });
+  };
+
   const activeJobs = (jobs ?? []).filter(
     (j) => j.status === "in_progress" || j.status === "scheduled",
   );
@@ -74,6 +95,79 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOp
 
   return (
     <div className="space-y-6">
+      {/* Demo portal launcher — click "Load demo data" and the CHS
+          founder can open the customer portal end-to-end with a
+          realistic project already populated. Reset wipes and
+          re-seeds it, so it's safe to click around and reset. */}
+      <section className="bg-gradient-to-br from-primary/[0.06] via-card to-card border border-primary/25 rounded-2xl p-5 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary mb-1">
+              <Sparkles className="w-3.5 h-3.5" />
+              Demo portal
+            </div>
+            <h3 className="font-display font-bold text-foreground text-lg">
+              See exactly what your customers see.
+            </h3>
+            <p className="text-[13px] text-muted-foreground mt-0.5">
+              Loads a rich sample project (Cordero · Palm Drive) with
+              milestones, photos, documents, inspections, warranty, and
+              messages — then opens the portal for you.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 md:shrink-0">
+            <button
+              type="button"
+              onClick={() => void loadDemo(false)}
+              disabled={demoState.kind === "loading"}
+              className="inline-flex items-center justify-center gap-1.5 bg-primary text-white text-sm font-semibold px-4 h-10 rounded-full shadow-md shadow-primary/30 hover:bg-primary/90 disabled:opacity-60 transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {demoState.kind === "loading" && !demoState.reset ? "Loading…" : "Load demo data"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!confirm("Reset the demo customer? This wipes the current demo data and re-seeds it fresh.")) return;
+                void loadDemo(true);
+              }}
+              disabled={demoState.kind === "loading"}
+              className="inline-flex items-center justify-center gap-1.5 bg-card border border-border/60 text-foreground text-sm font-semibold px-4 h-10 rounded-full hover:border-primary/40 disabled:opacity-60 transition-colors"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${demoState.kind === "loading" && demoState.reset ? "animate-spin" : ""}`} />
+              Reset demo
+            </button>
+          </div>
+        </div>
+
+        {demoState.kind === "error" && (
+          <p className="mt-3 text-[12px] text-destructive">
+            {demoState.message}
+          </p>
+        )}
+        {demoState.kind === "ready" && (
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 bg-card border border-border/60 rounded-xl p-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-primary">
+                {demoState.reset ? "Demo reset — ready" : "Demo ready"}
+              </p>
+              <p className="font-mono text-[12px] text-foreground/85 truncate">
+                {demoState.portalUrl}
+              </p>
+            </div>
+            <a
+              href={demoState.portalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 bg-primary text-white text-sm font-semibold px-4 h-10 rounded-full hover:bg-primary/90 shrink-0"
+            >
+              Open portal
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
+      </section>
+
       {/* Metric cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <MetricCard
