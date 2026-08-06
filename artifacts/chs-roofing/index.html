@@ -13,6 +13,26 @@
     <meta name="geo.placename" content="Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Sanibel" />
     <link rel="canonical" href="https://chs-roofing.com/" />
 
+    <!-- Meta Pixel — loads site-wide. The Lead event fires ONLY
+         from the /inspection-request-received page (and other
+         confirmed-conversion pages) via lib/gtag.ts helpers, never
+         on a click of a submit button, so we don't inflate leads. -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1394670238570653');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1394670238570653&ev=PageView&noscript=1"
+    /></noscript>
+
     <!-- Google tag (gtag.js) — single loader, two destinations:
          AW-… → Google Ads (conversion tracking)
          G-…  → Google Analytics 4 (audience, traffic, events)

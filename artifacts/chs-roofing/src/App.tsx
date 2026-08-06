@@ -38,6 +38,8 @@ const Portal = lazy(() => import("@/pages/Portal"));
 const ThankYou = lazy(() => import("@/pages/ThankYou"));
 const RoofCoatingQuote = lazy(() => import("@/pages/RoofCoatingQuote"));
 const StormDamageQuote = lazy(() => import("@/pages/StormDamageQuote"));
+const FreeRoofInspection = lazy(() => import("@/pages/FreeRoofInspection"));
+const InspectionRequestReceived = lazy(() => import("@/pages/InspectionRequestReceived"));
 const RoofingFortMyers = lazy(() => import("@/pages/locations/FortMyers"));
 const RoofingNaples = lazy(() => import("@/pages/locations/Naples"));
 const RoofingBonitaSprings = lazy(() => import("@/pages/locations/BonitaSprings"));
@@ -110,6 +112,8 @@ function Router() {
       <Route path="/free-quote">{lazyEl(LandingPage)}</Route>
       <Route path="/roof-coating-quote">{lazyEl(RoofCoatingQuote)}</Route>
       <Route path="/storm-damage-quote">{lazyEl(StormDamageQuote)}</Route>
+      <Route path="/free-roof-inspection">{lazyEl(FreeRoofInspection)}</Route>
+      <Route path="/inspection-request-received">{lazyEl(InspectionRequestReceived)}</Route>
       <Route path="/admin/join">{lazyEl(AdminRegister)}</Route>
       <Route path="/admin">{lazyEl(Admin)}</Route>
       <Route path="/portal">{lazyEl(Portal)}</Route>
