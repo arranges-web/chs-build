@@ -136,3 +136,20 @@ export function fireInspectionLead(): void {
   // /contact leads.
   gaLeadConversion({ source: "free-roof-inspection" });
 }
+
+/**
+ * Post-conversion firehose for the roof-repair thank-you page.
+ * Same pattern as fireInspectionLead — Meta Lead + GA4 events —
+ * with a distinct `content_name` so Meta/GA reports can split
+ * inspection leads from repair leads.
+ */
+export function fireRepairLead(): void {
+  metaEvent("Lead", {
+    content_name: "Roof Repair Inquiry",
+    content_category: "Roof Repair",
+  });
+  gaEvent("repair_form_submit", {
+    content_name: "Roof Repair Inquiry",
+  });
+  gaLeadConversion({ source: "roof-repair" });
+}
