@@ -476,7 +476,7 @@ router.delete("/admin/job-photos/:id", async (req, res) => {
 // useful for going back to a clean state after clicking around.
 router.post("/admin/demo", async (req, res) => {
   try {
-    const { seedDemo } = await import("@workspace/db");
+    const { seedDemo } = await import("@workspace/db/seed");
     const reset = req.query.reset === "1" || req.query.reset === "true";
     const result = await seedDemo({ reset });
     res.json({ ok: true, reset, ...result });

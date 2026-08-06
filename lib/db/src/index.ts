@@ -14,6 +14,3 @@ export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const db = drizzle(pool, { schema });
 
 export * from "./schema";
-// Expose the demo-seed function so the api-server's /admin/demo
-// endpoint can trigger it from the admin dashboard.
-export { seedDemo } from "./seed";
