@@ -285,11 +285,17 @@ export default function FreeRoofInspection() {
                 A professional inspection can uncover issues before they become emergencies.
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Client-picked real CHS photos. The blue-tarps photo
+                from the Repairs folder isn't in the repo yet — swap
+                in the actual image import once it lands in
+                attached_assets/. Until then we use the shingle-valley
+                shot as a stand-in so the grid always fills. */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { src: FOUNDER_PHOTOS.repair[3], caption: "Damaged & missing shingles" },
-                { src: FOUNDER_PHOTOS.repair[0], caption: "Rotten roof decking" },
-                { src: FOUNDER_PHOTOS.repair[2], caption: "Failed flashing & pipe boots" },
+                { src: FOUNDER_PHOTOS.repairBefore.tile, caption: "Broken tile" },
+                { src: FOUNDER_PHOTOS.repairBefore.shingle, caption: "Shingle repair — before" },
+                { src: FOUNDER_PHOTOS.repairBefore.deadValley, caption: "Dead-valley repair" },
+                { src: FOUNDER_PHOTOS.repairBefore.shingleValley, caption: "Storm damage — tarped" },
               ].map((p, i) => (
                 <figure key={i} className="rounded-2xl overflow-hidden border border-border/60 bg-card shadow-sm">
                   <img src={p.src} alt={p.caption} loading="lazy" className="aspect-[4/3] w-full object-cover" />

@@ -112,6 +112,16 @@ export const FOUNDER_PHOTOS = {
     repairShingleValleyAfter,
     repairTileAfter,
   ] as const,
+  // Before-photos exposed by name so landing pages can pick specific
+  // shots (e.g. the client wants Broken Tile / Shingle Repair /
+  // Dead Valley shown in the problem section of the inspection page).
+  repairBefore: {
+    tile: repairTileBefore,
+    shingle: repairShingleBefore,
+    deadValley: repairDeadValleyBefore,
+    shingleValley: repairShingleValleyBefore,
+    cricket: repairCricketBefore,
+  } as const,
   gutter: [gutter1, gutter2, gutter3, gutter4, gutter5, gutter6] as const,
   coatingHero,
   coating: [coating1, coating2, coating3, coating4, coating5] as const,
@@ -120,12 +130,26 @@ export const FOUNDER_PHOTOS = {
   tileTreasureCay: tileTreasureCayPhoto,
   flat: [flat1, flat2, flat3, flat4] as const,
   multifamily: [multifamily1, multifamily2, multifamily3, multifamily4, multifamily5, multifamily6] as const,
+  // Rewire to real repair pairs — the ba_1/2/3 placeholders were
+  // 72-byte stubs that had never been replaced with real images, so
+  // the before/after gallery on the ad landing pages was rendering
+  // broken. These are all real CHS repair photos the client
+  // provided. Kept in the order the client asked for:
+  //   1. Broken tile (before) → tile repair pair
+  //   2. Shingle repair (before) → shingle replacement pair
+  //   3. Dead-valley shingle repair pair
   beforeAfter: [
-    { before: baBefore1, after: baAfter1 },
-    { before: baBefore2, after: baAfter2 },
-    { before: baBefore3, after: baAfter3 },
+    { before: repairTileBefore, after: repairTileAfter, label: "Tile repair" },
+    { before: repairShingleBefore, after: repairShingleAfter, label: "Shingle replacement" },
+    { before: repairDeadValleyBefore, after: repairDeadValleyAfter, label: "Dead-valley shingle repair" },
   ] as const,
 };
+
+// Deliberately keep the ba_* imports at the top of the file so a
+// grep for baBefore1 still lands somewhere — but only so the
+// bundler doesn't drop them if any older page still references
+// them. Once nothing does, they can go too.
+void baBefore1; void baAfter1; void baBefore2; void baAfter2; void baBefore3; void baAfter3;
 
 export const PHOTOS = {
   beachfrontMetal: photoBeachfrontMetal,

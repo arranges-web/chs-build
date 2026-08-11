@@ -301,9 +301,48 @@ export default function AdminPage() {
             </form>
           )}
 
-          <p className="mt-4 text-[11px] text-muted-foreground leading-relaxed">
-            New here? Open the invite link your team sent you to create your account.
-          </p>
+          <div className="mt-5 pt-5 border-t border-border/60 space-y-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Trouble signing in?
+            </p>
+            <ul className="text-[12px] text-foreground/80 leading-relaxed space-y-1.5 list-disc pl-4">
+              <li>
+                <strong>New teammate?</strong> Open the invite link the owner
+                sent you (looks like <code className="text-[11px]">/admin/join?invite=…</code>) —
+                that's how you set your email and password the first time.
+              </li>
+              <li>
+                <strong>Forgot your invite?</strong> Ask the owner to send a
+                fresh one from the admin dashboard → Invite Teammates.
+              </li>
+              <li>
+                <strong>Owner / first-time setup?</strong> Use the admin key
+                (the <code className="text-[11px]">ADMIN_KEY</code> value in
+                Replit Secrets) — click{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginError(null);
+                    setMode("key");
+                  }}
+                  className="text-primary hover:underline font-semibold"
+                >
+                  Use admin key instead
+                </button>{" "}
+                above.
+              </li>
+              <li>
+                <strong>Still stuck?</strong> Text or call{" "}
+                <a
+                  href={`tel:${SITE.phoneTel}`}
+                  className="text-primary hover:underline font-semibold"
+                >
+                  {SITE.phoneDisplay}
+                </a>
+                .
+              </li>
+            </ul>
+          </div>
         </div>
       </main>
     );

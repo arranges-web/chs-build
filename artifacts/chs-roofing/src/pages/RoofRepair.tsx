@@ -159,6 +159,30 @@ const FAQS = [
     q: "Do you offer emergency service?",
     a: "Yes — emergency leak inspections and temporary tarping/protection are available. Call " + SITE.phoneDisplay + " and we'll route you to the on-call team.",
   },
+  {
+    q: "Will my repair be covered by a warranty?",
+    a: "Qualifying repairs come with our 10-year workmanship warranty. We walk you through what's covered before you sign — no fine-print surprises.",
+  },
+  {
+    q: "Do you work with insurance claims?",
+    a: "We document every visible finding with photos and provide a written report you can hand to your adjuster. We don't determine coverage or guarantee approval — that's between you and your carrier — but a thorough report has helped a lot of SWFL homeowners get their claims covered.",
+  },
+  {
+    q: "What if my leak comes back after the repair?",
+    a: "Call us. Repairs are backed by our workmanship warranty for qualifying work, and if something we fixed isn't holding up, we come back out and make it right.",
+  },
+  {
+    q: "Do I need to be home for the inspection?",
+    a: "It's preferred but not required. Access arrangements and inspection findings can be discussed in advance — call the office to set up a time that works for you.",
+  },
+  {
+    q: "How long does a typical repair take?",
+    a: "Most residential repairs are completed the same day the crew arrives. Larger repairs or those requiring materials to be ordered may take longer — we'll tell you upfront when we deliver the estimate.",
+  },
+  {
+    q: "Are you licensed and insured?",
+    a: `Yes. ${SITE.legalName} (${SITE.brand}) is a fully licensed and insured Florida roofing contractor — License ${SITE.license}. Verify at MyFloridaLicense.com.`,
+  },
 ];
 
 const BEFORE_AFTER =
@@ -235,6 +259,20 @@ export default function RoofRepair() {
       />
 
       {/* Minimal sticky header */}
+      {/* Bright top strip — makes the phone number impossible to miss.
+          Client asked for a more prominent phone near the top of the
+          page; this always-visible bar delivers that on both desktop
+          and mobile. */}
+      <div className="bg-primary text-white text-center py-2 px-3 text-[13px] font-semibold">
+        <a
+          href={`tel:${SITE.phoneTel}`}
+          onClick={() => gaEvent("click_to_call", { location: "top-strip" })}
+          className="inline-flex items-center gap-1.5 hover:underline"
+        >
+          <Phone className="w-3.5 h-3.5" />
+          Roof leaking? Call {SITE.phoneDisplay} for a same-day or next-day inspection
+        </a>
+      </div>
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-border/60">
         <div className="container mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 shrink-0" aria-label={`${SITE.brand} home`}>
@@ -248,18 +286,22 @@ export default function RoofRepair() {
               </span>
             </div>
           </Link>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Phone rendered as a red pill so it doesn't lose out to
+                the schedule CTA — client asked for the phone number
+                to be more prominent near the top. */}
             <a
               href={`tel:${SITE.phoneTel}`}
               onClick={() => gaEvent("click_to_call", { location: "header" })}
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-foreground hover:text-primary"
+              className="inline-flex items-center gap-1.5 bg-card border-2 border-primary text-primary px-3 sm:px-4 h-10 rounded-full font-bold text-sm tracking-tight hover:bg-primary hover:text-white transition-colors"
             >
-              <Phone className="w-4 h-4 text-primary" />
-              {SITE.phoneDisplay}
+              <Phone className="w-4 h-4" />
+              <span className="hidden sm:inline">{SITE.phoneDisplay}</span>
+              <span className="sm:hidden">Call</span>
             </a>
             <a
               href="#quote-form"
-              className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-full font-semibold text-sm tracking-tight shadow-md shadow-primary/30 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-full font-semibold text-sm tracking-tight shadow-md shadow-primary/30 transition-all"
             >
               Schedule Inspection
               <ArrowRight className="w-3.5 h-3.5" />
@@ -295,18 +337,49 @@ export default function RoofRepair() {
                   Roof Leak?{" "}
                   <span className="text-primary">Get It Fixed Before It Gets Worse.</span>
                 </h1>
+
+                {/* Trust statement — client asked for a line right
+                    under the headline highlighting family-owned +
+                    license + honest recommendations. Kept short so
+                    it reads as trust, not a wall of text. */}
+                <p className="text-[14px] font-semibold text-white/95 mb-5 max-w-xl inline-flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="inline-flex items-center gap-1.5">
+                    <HomeIcon className="w-3.5 h-3.5 text-primary" />
+                    Family-owned
+                  </span>
+                  <span className="text-white/40">·</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                    FL License {SITE.license}
+                  </span>
+                  <span className="text-white/40">·</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <ClipboardCheck className="w-3.5 h-3.5 text-primary" />
+                    Honest recommendations
+                  </span>
+                </p>
+
                 <p className="text-lg md:text-xl text-gray-200/95 leading-relaxed mb-4 max-w-xl">
                   Professional roof repairs starting at{" "}
                   <strong className="text-white">$250</strong>.
                 </p>
-                <p className="text-[15px] text-gray-200/90 leading-relaxed mb-6 max-w-xl">
+                <p className="text-[15px] text-gray-200/90 leading-relaxed mb-5 max-w-xl">
                   Serving Southwest Florida with fast inspections, honest
                   recommendations, and quality repairs backed by experienced
                   roofing professionals.
                 </p>
-                <p className="text-[13px] text-white/85 mb-6">
-                  Florida Roofing License <strong className="text-white">{SITE.license}</strong>
-                </p>
+
+                {/* Emergency-leak callout — the exact copy the client
+                    asked for. Amber pill so it visually separates
+                    from the "info" paragraphs above. */}
+                <div className="mb-6 max-w-xl rounded-2xl border border-amber-300/50 bg-amber-500/10 px-4 py-3 flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
+                  <p className="text-[14px] text-white/95 leading-snug">
+                    <strong className="text-amber-200">Need emergency roof leak assistance?</strong>{" "}
+                    Call us today. Same-day or next-day inspections may be
+                    available depending on scheduling.
+                  </p>
+                </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
@@ -367,8 +440,63 @@ export default function RoofRepair() {
           </div>
         </section>
 
-        {/* ─── WARNING SIGNS ────────────────────────────────────── */}
+        {/* ─── HOW IT WORKS — 4 simple steps ────────────────────── */}
         <section className="py-16 md:py-20 bg-background">
+          <div className="container mx-auto max-w-6xl px-4">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary mb-2">
+                How it works
+              </p>
+              <h2 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-foreground leading-tight">
+                Four Simple Steps From Leak to Fixed
+              </h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                {
+                  n: "1",
+                  icon: MessageSquare,
+                  title: "Tell us about it",
+                  body: "Fill out the short form or call — takes about 60 seconds. The dispatcher will call to schedule.",
+                },
+                {
+                  n: "2",
+                  icon: ClipboardCheck,
+                  title: "We inspect",
+                  body: "A CHS pro comes out, walks the roof, and documents everything with photos.",
+                },
+                {
+                  n: "3",
+                  icon: FileText,
+                  title: "You get a written estimate",
+                  body: "Line-itemed, plain-English pricing within 24–48 hours. No obligation, no upselling.",
+                },
+                {
+                  n: "4",
+                  icon: Wrench,
+                  title: "We fix it right",
+                  body: "Repair completed to FL wind code and backed by our workmanship warranty where applicable.",
+                },
+              ].map((s) => (
+                <div key={s.n} className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm h-full">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="w-10 h-10 rounded-full bg-primary text-white font-display font-bold text-base flex items-center justify-center shadow-md shadow-primary/30">
+                      {s.n}
+                    </span>
+                    <s.icon className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg tracking-tight text-foreground mb-1.5">
+                    {s.title}
+                  </h3>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{s.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ─── WARNING SIGNS ────────────────────────────────────── */}
+        <section className="py-16 md:py-20 bg-muted/40">
           <div className="container mx-auto max-w-6xl px-4">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary mb-2">
@@ -394,7 +522,7 @@ export default function RoofRepair() {
         </section>
 
         {/* ─── WHAT'S INCLUDED ──────────────────────────────────── */}
-        <section className="py-16 md:py-20 bg-muted/40">
+        <section className="py-16 md:py-20 bg-background">
           <div className="container mx-auto max-w-4xl px-4">
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary mb-2">
