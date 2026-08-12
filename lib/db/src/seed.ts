@@ -14,7 +14,7 @@
  * account already exists.
  */
 import { eq } from "drizzle-orm";
-import { db, pool } from "./index";
+import { db } from "./index";
 import {
   customersTable,
   jobsTable,
@@ -341,22 +341,16 @@ async function backfillIfEmpty(customerId: number, jobId: number): Promise<void>
   }
 }
 
-async function main() {
-  console.log("Seeding demo customer…");
-  const result = await seedDemo({ reset: process.argv.includes("--reset") });
-  console.log("\nDone.\n");
-  console.log("Try the portal:");
-  console.log(`  → /portal?account=${result.accountNumber}`);
-  console.log(`  → /portal  with  ${result.email}\n`);
-  await pool.end();
-}
-
-// Only run main() when invoked directly (via `pnpm run seed`), not
-// when imported by the api-server for the admin button.
-if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch((err) => {
-    console.error("Seed failed:", err);
-    void pool.end().catch(() => {});
-    process.exit(1);
-  });
-}
+// IMPORTANT: this module deliberately does NOT run any CLI code at
+// import time and NEVER calls pool.end(). The previous version had
+// an `if (import.meta.url === file://${process.argv[1]}) main()`
+// guard that was supposed to only fire on `tsx seed.ts`, but the
+// check misfired under Replit's runtime — the api-server's dynamic
+// `import("@workspace/db")` sometimes matched it, main() ran,
+// pool.end() closed the pg pool, and every subsequent admin query
+// died with "Cannot use a pool after calling end on the pool".
+//
+// The CLI now lives in `seed-cli.ts` (see package.json → `seed`
+// script). That file is the only thing that closes the pool.
+// Anything else that wants to seed just calls `seedDemo()` and
+// leaves the pool alone.
