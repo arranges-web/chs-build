@@ -12,6 +12,12 @@
     <meta name="geo.region" content="US-FL" />
     <meta name="geo.placename" content="Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Sanibel" />
     <link rel="canonical" href="https://chs-roofing.com/" />
+    <!-- hreflang — CHS ships English and Spanish content on the same
+         URLs via runtime i18n. Declare both variants so Google + LLM
+         crawlers understand we serve both languages. -->
+    <link rel="alternate" hreflang="en" href="https://chs-roofing.com/" />
+    <link rel="alternate" hreflang="es" href="https://chs-roofing.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://chs-roofing.com/" />
 
     <!-- Meta Pixel — loads site-wide. The Lead event fires ONLY
          from the /inspection-request-received page (and other
@@ -138,16 +144,79 @@
         "longitude": -81.9495
       },
       "areaServed": [
-        { "@type": "City", "name": "Cape Coral" },
-        { "@type": "City", "name": "Fort Myers" },
-        { "@type": "City", "name": "Naples" },
-        { "@type": "City", "name": "Bonita Springs" },
-        { "@type": "City", "name": "Estero" },
-        { "@type": "City", "name": "Sanibel" },
-        { "@type": "City", "name": "Punta Gorda" },
-        { "@type": "City", "name": "Sarasota" },
-        { "@type": "City", "name": "Lehigh Acres" },
-        { "@type": "City", "name": "North Port" }
+        { "@type": "City", "name": "Cape Coral", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Fort Myers", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "North Fort Myers", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Naples", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Bonita Springs", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Estero", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Sanibel", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Marco Island", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Punta Gorda", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Port Charlotte", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Sarasota", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "Lehigh Acres", "addressRegion": "FL", "addressCountry": "US" },
+        { "@type": "City", "name": "North Port", "addressRegion": "FL", "addressCountry": "US" }
+      ],
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": 26.5629,
+          "longitude": -81.9495
+        },
+        "geoRadius": "80000"
+      },
+      "hasCredential": {
+        "@type": "EducationalOccupationalCredential",
+        "credentialCategory": "license",
+        "name": "Florida Certified Roofing Contractor",
+        "recognizedBy": {
+          "@type": "GovernmentOrganization",
+          "name": "Florida Department of Business & Professional Regulation",
+          "url": "https://www.myfloridalicense.com/"
+        },
+        "identifier": "CCC1333902"
+      },
+      "knowsAbout": [
+        "Asphalt shingle roof installation",
+        "Standing seam metal roofing",
+        "5V crimp metal roofing",
+        "Concrete and clay tile roofing",
+        "TPO flat roofing",
+        "Modified bitumen flat roofing",
+        "Silicone and acrylic roof coating restoration",
+        "Hurricane and wind damage roof repair",
+        "Roof leak diagnosis and repair",
+        "Emergency roof tarping",
+        "Roof insurance claim documentation",
+        "Florida roof wind code compliance",
+        "Gutter installation and replacement",
+        "Roof maintenance and preventative care"
+      ],
+      "makesOffer": [
+        {
+          "@type": "Offer",
+          "name": "Free 21-Point Roof Inspection",
+          "url": "https://chs-roofing.com/free-roof-inspection",
+          "priceCurrency": "USD",
+          "price": "0",
+          "eligibleRegion": { "@type": "State", "name": "Florida" }
+        },
+        {
+          "@type": "Offer",
+          "name": "Roof Repair",
+          "url": "https://chs-roofing.com/roof-repair",
+          "priceCurrency": "USD",
+          "price": "250",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "priceCurrency": "USD",
+            "price": "250",
+            "description": "Starting at"
+          },
+          "eligibleRegion": { "@type": "State", "name": "Florida" }
+        }
       ],
       "openingHoursSpecification": [
         {
@@ -161,13 +230,77 @@
         "@type": "OfferCatalog",
         "name": "Roofing services",
         "itemListElement": [
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "New Roof Installation" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roof Repair" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roof Maintenance" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Storm Damage Restoration" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Specialty Roofing" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gutters" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Roof Coating & Restoration" } }
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "New Roof Installation",
+              "serviceType": "Roof installation",
+              "url": "https://chs-roofing.com/services/installation",
+              "provider": { "@id": "https://chs-roofing.com/#organization" }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Roof Repair",
+              "serviceType": "Roof repair",
+              "url": "https://chs-roofing.com/services/repair",
+              "provider": { "@id": "https://chs-roofing.com/#organization" }
+            },
+            "priceCurrency": "USD",
+            "price": "250",
+            "priceSpecification": {
+              "@type": "UnitPriceSpecification",
+              "priceCurrency": "USD",
+              "price": "250",
+              "description": "Starting at"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Roof Maintenance",
+              "serviceType": "Roof maintenance",
+              "url": "https://chs-roofing.com/services/maintenance"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Hurricane & Storm Damage Restoration",
+              "serviceType": "Roof storm damage repair",
+              "url": "https://chs-roofing.com/services/storm-damage"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Specialty Roofing",
+              "url": "https://chs-roofing.com/services/specialty-roofing"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Gutter Installation & Replacement",
+              "url": "https://chs-roofing.com/services/gutters"
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Roof Coating & Restoration",
+              "serviceType": "Silicone and acrylic roof coating",
+              "url": "https://chs-roofing.com/services/roof-coating"
+            }
+          }
         ]
       },
       "aggregateRating": {

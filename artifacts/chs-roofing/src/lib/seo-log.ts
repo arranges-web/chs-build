@@ -27,6 +27,37 @@ export type SeoChange = {
 
 export const SEO_CHANGES: SeoChange[] = [
   {
+    date: "2026-08-12",
+    category: "Structured Data",
+    title: "AI/LLM discoverability layer — llms.txt, ai.txt, richer JSON-LD",
+    description:
+      "Published /llms.txt (LLM-friendly site index) and /ai.txt (AI usage policy). Updated robots.txt with explicit allowlist for GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Applebot-Extended, and every other current answer-engine crawler. Global RoofingContractor JSON-LD in index.html expanded with GeoCircle service area, hasCredential for the FL license, knowsAbout topic list (14 roofing specialties), makesOffer for the free inspection + $250 repair, richer per-service Offer entries with URLs, and hreflang for the en/es bilingual UI.",
+    pages: ["/llms.txt", "/ai.txt", "/robots.txt", "/"],
+  },
+  {
+    date: "2026-08-12",
+    category: "Sitemap",
+    title: "Refreshed sitemap lastmod dates across every URL",
+    description:
+      "Bumped lastmod on every entry so Google + Bing recrawl and pick up the recent schema and content changes on the next fetch.",
+  },
+  {
+    date: "2026-08-06",
+    category: "New Page",
+    title: "Published /free-roof-inspection Meta Ads landing page",
+    description:
+      "New indexable landing page for the 21-point inspection Meta Ads campaign. Full FAQPage schema, TCPA-compliant footer, dedicated /inspection-request-received thank-you page (noindex) firing Meta Pixel Lead and GA4 conversion.",
+    pages: ["/free-roof-inspection"],
+  },
+  {
+    date: "2026-08-06",
+    category: "New Page",
+    title: "Published /roof-repair Meta Ads landing page ($250 starting)",
+    description:
+      "Repair-focused ad landing with RoofingContractor + LocalBusiness JSON-LD scoped to a repair offer catalog (Shingle Repair Offer priced at $250 \"starting at\"), 11-item FAQPage, before/after gallery, sticky mobile Call/Schedule CTAs, and dedicated /thank-you-repair page (noindex) firing Meta Pixel Lead + GA4 repair_form_submit.",
+    pages: ["/roof-repair"],
+  },
+  {
     date: "2026-07-08",
     category: "New Page",
     title: "Published a Fort Myers roofing landing page",

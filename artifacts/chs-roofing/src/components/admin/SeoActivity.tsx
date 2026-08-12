@@ -1,16 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Bot,
   CalendarDays,
   CheckCircle2,
   FileText,
   Instagram,
   Facebook,
+  Globe,
   Link2,
   ListTree,
+  Loader2,
   MapPin,
   Search,
   Sparkles,
   TrendingUp,
+  XCircle,
 } from "lucide-react";
 import { SOCIAL_POSTS } from "@/lib/social-calendar";
 import { SEO_CHANGES, seoChangesInLastNDays, type SeoChangeCategory } from "@/lib/seo-log";
@@ -138,6 +142,9 @@ export default function SeoActivity() {
           </div>
         </div>
       </div>
+
+      {/* GEO / AI answer-engine discoverability */}
+      <DiscoverabilityPanel />
 
       {/* Timeline */}
       <div className="bg-card border border-border/60 rounded-2xl p-5 md:p-7">
@@ -273,5 +280,269 @@ function StatCard({
         {hint && <span className="block text-white/40">{hint}</span>}
       </p>
     </div>
+  );
+}
+
+/**
+ * Live status panel for the pieces that make CHS discoverable and
+ * quotable by AI answer engines (ChatGPT, Claude, Perplexity,
+ * Gemini). Each row HEAD-fetches the actual asset from the deployed
+ * origin so this reflects what's really live — not what's declared
+ * in code — the same way the sitemap counter above does.
+ */
+type CheckStatus = "loading" | "ok" | "missing";
+type CheckRow = {
+  key: string;
+  label: string;
+  path: string;
+  what: string;
+};
+
+const DISCOVERABILITY_CHECKS: CheckRow[] = [
+  {
+    key: "sitemap",
+    label: "sitemap.xml",
+    path: "/sitemap.xml",
+    what: "Lists every indexable page for search engines and AI crawlers.",
+  },
+  {
+    key: "robots",
+    label: "robots.txt",
+    path: "/robots.txt",
+    what: "Crawler access rules — explicit allowlist for GPTBot, ClaudeBot, PerplexityBot, Google-Extended, and more.",
+  },
+  {
+    key: "llms",
+    label: "llms.txt",
+    path: "/llms.txt",
+    what: "LLM-friendly site index following the llmstxt.org convention. Tells AI answer engines what CHS does, what to say about us, and where to link.",
+  },
+  {
+    key: "ai",
+    label: "ai.txt",
+    path: "/ai.txt",
+    what: "AI usage policy — allows answer-engine indexing, requires attribution, blocks derivative image training.",
+  },
+];
+
+function DiscoverabilityPanel() {
+  const [statuses, setStatuses] = useState<Record<string, CheckStatus>>(() =>
+    Object.fromEntries(DISCOVERABILITY_CHECKS.map((c) => [c.key, "loading"])),
+  );
+  const [schemaCounts, setSchemaCounts] = useState<{
+    total: number;
+    types: string[];
+    hasOffer: boolean;
+    hasGeoCircle: boolean;
+    hasCredential: boolean;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      // Poke each discoverability file with HEAD. HEAD is cheap and
+      // enough to know it deployed.
+      await Promise.all(
+        DISCOVERABILITY_CHECKS.map(async (c) => {
+          try {
+            const r = await fetch(c.path, { method: "HEAD", cache: "no-store" });
+            if (cancelled) return;
+            setStatuses((s) => ({ ...s, [c.key]: r.ok ? "ok" : "missing" }));
+          } catch {
+            if (!cancelled) setStatuses((s) => ({ ...s, [c.key]: "missing" }));
+          }
+        }),
+      );
+
+      // Also introspect the JSON-LD blocks that are already loaded
+      // into this page — every SPA route inherits the same
+      // index.html so what's here reflects what crawlers see.
+      try {
+        const blocks = Array.from(
+          document.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]'),
+        );
+        const parsed = blocks
+          .map((b) => {
+            try {
+              return JSON.parse(b.textContent ?? "");
+            } catch {
+              return null;
+            }
+          })
+          .filter(Boolean) as Array<Record<string, unknown>>;
+        const types = new Set<string>();
+        let hasOffer = false;
+        let hasGeoCircle = false;
+        let hasCredential = false;
+        for (const p of parsed) {
+          const t = p["@type"];
+          if (typeof t === "string") types.add(t);
+          if (Array.isArray(t)) t.forEach((x) => typeof x === "string" && types.add(x));
+          const asString = JSON.stringify(p);
+          if (asString.includes('"Offer"')) hasOffer = true;
+          if (asString.includes('"GeoCircle"')) hasGeoCircle = true;
+          if (asString.includes('"EducationalOccupationalCredential"')) hasCredential = true;
+        }
+        if (!cancelled) {
+          setSchemaCounts({
+            total: parsed.length,
+            types: Array.from(types).sort(),
+            hasOffer,
+            hasGeoCircle,
+            hasCredential,
+          });
+        }
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <div className="bg-card border border-border/60 rounded-2xl p-5 md:p-7">
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <h3 className="font-display font-bold tracking-tight text-lg text-foreground flex items-center gap-2">
+            <Bot className="w-5 h-5 text-primary" />
+            AI &amp; Geo discoverability
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Live status of the files that let ChatGPT, Claude, Perplexity, and
+            Gemini find and recommend CHS Roofing. Checks the deployed origin
+            in real time — green means it's live for crawlers.
+          </p>
+        </div>
+      </div>
+
+      <ul className="grid sm:grid-cols-2 gap-3 mb-5">
+        {DISCOVERABILITY_CHECKS.map((c) => {
+          const status = statuses[c.key];
+          return (
+            <li
+              key={c.key}
+              className="flex items-start gap-3 bg-background border border-border/60 rounded-xl p-3.5"
+            >
+              <StatusIcon status={status} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <a
+                    href={c.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-sm text-foreground hover:text-primary font-mono"
+                  >
+                    {c.label}
+                  </a>
+                  <StatusPill status={status} />
+                </div>
+                <p className="text-[12px] text-muted-foreground mt-0.5 leading-snug">
+                  {c.what}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Structured data introspection — same JSON-LD Google + LLMs
+          see. Reads from the DOM so it stays in sync automatically. */}
+      <div className="bg-muted/40 border border-border/60 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <ListTree className="w-4 h-4 text-primary" />
+          <p className="font-semibold text-sm text-foreground">
+            Structured data on this page
+          </p>
+        </div>
+        {schemaCounts ? (
+          <>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">
+              <strong className="text-foreground">{schemaCounts.total}</strong>{" "}
+              JSON-LD block{schemaCounts.total === 1 ? "" : "s"} declared —{" "}
+              <span className="font-mono text-[11px]">
+                {schemaCounts.types.join(", ") || "no types detected"}
+              </span>
+              .
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <SchemaFlag ok={schemaCounts.hasCredential} label="License credential" />
+              <SchemaFlag ok={schemaCounts.hasGeoCircle} label="GeoCircle service area" />
+              <SchemaFlag ok={schemaCounts.hasOffer} label="Priced Offers" />
+            </div>
+          </>
+        ) : (
+          <p className="text-[13px] text-muted-foreground">Checking…</p>
+        )}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2 items-center">
+        <a
+          href="https://search.google.com/test/rich-results?url=https%3A%2F%2Fchs-roofing.com%2F"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 bg-card border border-border/60 hover:border-primary/40 text-foreground text-[12px] font-semibold px-3 py-1.5 rounded-full"
+        >
+          <Globe className="w-3 h-3" />
+          Google Rich Results Test
+        </a>
+        <a
+          href="https://validator.schema.org/#url=https%3A%2F%2Fchs-roofing.com%2F"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 bg-card border border-border/60 hover:border-primary/40 text-foreground text-[12px] font-semibold px-3 py-1.5 rounded-full"
+        >
+          <Globe className="w-3 h-3" />
+          Schema.org Validator
+        </a>
+        <a
+          href="https://www.google.com/search?q=chs+roofing+cape+coral"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 bg-card border border-border/60 hover:border-primary/40 text-foreground text-[12px] font-semibold px-3 py-1.5 rounded-full"
+        >
+          <Search className="w-3 h-3" />
+          Live Google check
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function StatusIcon({ status }: { status: CheckStatus }) {
+  if (status === "loading") {
+    return <Loader2 className="w-4 h-4 text-muted-foreground animate-spin shrink-0 mt-0.5" />;
+  }
+  if (status === "ok") {
+    return <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />;
+  }
+  return <XCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />;
+}
+
+function StatusPill({ status }: { status: CheckStatus }) {
+  const map: Record<CheckStatus, { label: string; cls: string }> = {
+    loading: { label: "Checking…", cls: "bg-muted text-muted-foreground" },
+    ok: { label: "Live", cls: "bg-emerald-100 text-emerald-700" },
+    missing: { label: "Missing", cls: "bg-red-100 text-red-700" },
+  };
+  const m = map[status];
+  return (
+    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${m.cls}`}>
+      {m.label}
+    </span>
+  );
+}
+
+function SchemaFlag({ ok, label }: { ok: boolean; label: string }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+        ok ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground"
+      }`}
+    >
+      {ok ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+      {label}
+    </span>
   );
 }

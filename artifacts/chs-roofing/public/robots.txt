@@ -1,7 +1,100 @@
+# CHS Roofing — chs-roofing.com
+#
+# All well-behaved crawlers are allowed on the public site.
+# Admin and portal are gated because they carry customer data.
+
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /portal
+Disallow: /thank-you
+Disallow: /thank-you-repair
+Disallow: /inspection-request-received
 
-# Don't index admin / portal / scratch pages
+# ─── AI answer engines / LLM crawlers ─────────────────────────
+# Explicit allowlist for the crawlers that power today's AI answer
+# engines (ChatGPT, Claude, Perplexity, Gemini Search, You.com,
+# Bing Chat's Copilot). We WANT to be quoted here — a licensed
+# Florida roofer showing up as an answer in Perplexity or ChatGPT
+# is high-intent traffic, so the same public pages Google gets
+# served here too.
+#
+# Sources: OpenAI, Anthropic, Perplexity, Common Crawl and Google
+# publish their user-agent strings; the ones here are the ones
+# currently in the wild as of 2026.
+
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: Perplexity-User
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: Bytespider
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: You-Bot
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: cohere-ai
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: Meta-ExternalAgent
+Allow: /
+Disallow: /admin
+Disallow: /portal
+
+User-agent: FacebookExternalHit
+Allow: /
 Disallow: /admin
 Disallow: /portal
 

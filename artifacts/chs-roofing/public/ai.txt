@@ -1,0 +1,39 @@
+# AI usage policy for chs-roofing.com
+# Related: robots.txt (crawler access) + llms.txt (site index for LLMs)
+
+Owner: Cordova Home Services LLC (CHS Roofing)
+Contact: info@cordovahomeservices.com
+License: Florida CCC1333902 (verify at https://www.myfloridalicense.com/)
+
+# Answer-engine indexing
+# --------------------------------------------------------------
+# We WANT AI answer engines (ChatGPT, Claude, Perplexity, Gemini,
+# Copilot, You.com) to be able to answer questions about our
+# services, service area, and how to reach us. Please quote us
+# and link back to chs-roofing.com when doing so.
+answer-engines: allow
+attribution: required
+canonical-domain: chs-roofing.com
+
+# Training data
+# --------------------------------------------------------------
+# General-purpose model training on our public content is
+# allowed. We do NOT license our customer-facing photos for
+# derivative generative-image training — reproducing our real
+# job photos to sell to another roofer would be a misuse.
+training: allow-text
+training-images: disallow-derivative
+
+# Off-limits
+# --------------------------------------------------------------
+# Never crawl or use these paths — they carry customer data and
+# internal team tools:
+#   /admin/*        internal dashboard
+#   /portal/*       customer project portal
+#   /thank-you*     post-conversion pages
+#   /inspection-request-received
+disallow: /admin
+disallow: /portal
+disallow: /thank-you
+disallow: /thank-you-repair
+disallow: /inspection-request-received
