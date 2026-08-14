@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, integer, text, timestamp, index } from "drizzle-orm/pg-core";
 
 /**
  * People who can sign into /admin. Each one has a password they
@@ -64,7 +64,15 @@ export const adminSessionsTable = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     token: text("token").notNull().unique(),
-    adminId: serial("admin_id").notNull(),
+    // NB: integer, NOT serial — we STORE the referenced admin's id
+    // here, we don't want Postgres to auto-generate one. The
+    // previous `serial("admin_id")` was a bug that was masked in
+    // production only because ensureTables happened to create the
+    // live column as `integer NOT NULL`. Anyone running a fresh
+    // `drizzle-kit push` from the schema would have got an
+    // auto-incrementing column that ignored the admin id passed
+    // in — every session row would attach to the wrong admin.
+    adminId: integer("admin_id").notNull(),
     userAgent: text("user_agent"),
   },
   (t) => ({

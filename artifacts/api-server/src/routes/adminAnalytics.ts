@@ -15,37 +15,9 @@ const router: IRouter = Router();
 
 router.use("/admin", adminAuth);
 
-/**
- * GET /api/admin/jobs — every job + customer info joined. Powers
- * the new admin "Projects" view.
- */
-router.get("/admin/jobs", async (_req, res) => {
-  try {
-    const rows = await db
-      .select({
-        id: jobsTable.id,
-        createdAt: jobsTable.createdAt,
-        customerId: jobsTable.customerId,
-        title: jobsTable.title,
-        serviceType: jobsTable.serviceType,
-        status: jobsTable.status,
-        progress: jobsTable.progress,
-        startDate: jobsTable.startDate,
-        estimatedCompletion: jobsTable.estimatedCompletion,
-        photoAlbumUrl: jobsTable.photoAlbumUrl,
-        customerName: customersTable.name,
-        customerEmail: customersTable.email,
-        customerPhone: customersTable.phone,
-        accountNumber: customersTable.accountNumber,
-      })
-      .from(jobsTable)
-      .leftJoin(customersTable, eq(jobsTable.customerId, customersTable.id))
-      .orderBy(desc(jobsTable.createdAt));
-    res.json({ rows });
-  } catch (err) {
-    handleError(res, err);
-  }
-});
+// NOTE: GET /admin/jobs lives in adminCustomers.ts. It used to be
+// duplicated here too, but adminCustomersRouter mounts first so
+// Express always hit that copy — this one was dead code. Removed.
 
 async function pageViewsExist(): Promise<boolean> {
   try {

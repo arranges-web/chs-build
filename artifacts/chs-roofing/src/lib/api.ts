@@ -514,7 +514,7 @@ export const api = {
 
   // Admin · CRM
   listCustomers: (key: string) =>
-    getJson<{ rows: Customer[] }>("/admin/customers", {
+    getJsonResult<{ rows: Customer[] }>("/admin/customers", {
       headers: { "x-admin-key": key },
     }),
   getCustomer: (id: number, key: string) =>

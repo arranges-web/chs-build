@@ -66,7 +66,7 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOp
       ]);
       if (cancelled) return;
       if ("data" in a) setAnalytics(a.data);
-      if (c) setCustomers(c.rows);
+      if ("data" in c) setCustomers(c.data.rows);
       if ("data" in j) setJobs(j.data.rows);
     })();
     return () => {

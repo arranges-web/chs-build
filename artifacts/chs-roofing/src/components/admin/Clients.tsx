@@ -88,7 +88,10 @@ export default function Clients({
   const loadList = async () => {
     setLoading(true);
     const res = await api.listCustomers(adminKey);
-    if (res) setList(res.rows);
+    if ("data" in res) setList(res.data.rows);
+    // else: keep whatever we had; api.listCustomers now surfaces
+    // the real server error via getJsonResult, so if we ever want
+    // to render a banner here we can flip on `res.error`.
     setLoading(false);
   };
 

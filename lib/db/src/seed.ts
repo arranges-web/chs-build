@@ -51,7 +51,12 @@ type InspectionSeed = {
   county?: string;
   notes?: string;
 };
-type MessageSeed = { sender: "customer" | "office"; body: string; author: string };
+// `sender` matches what the rest of the app writes:
+//   "customer"  — from the customer via the portal
+//   "team"      — from CHS staff (portal, admin dashboard, SMS webhook)
+// The old "office" value was seed-only and made the admin PortalInbox
+// unread-count skip demo replies. Aligned.
+type MessageSeed = { sender: "customer" | "team"; body: string; author: string };
 type UpdateSeed = { body: string; author: string; daysAgo: number };
 
 const DEMO_ACCOUNT = "CHS-DEMO01";
@@ -114,7 +119,7 @@ const UPDATES: UpdateSeed[] = [
 
 const MESSAGES: MessageSeed[] = [
   { sender: "customer", author: "John Cordero", body: "Any chance we could pick a slightly darker shingle color? Sarah wants to see a Weathered Wood swatch." },
-  { sender: "office", author: "Roberto", body: "No problem — I'll drop off two swatches tomorrow around 3 PM. If Weathered Wood works we can still get the change in before the material order goes out Friday." },
+  { sender: "team", author: "Roberto", body: "No problem — I'll drop off two swatches tomorrow around 3 PM. If Weathered Wood works we can still get the change in before the material order goes out Friday." },
   { sender: "customer", author: "John Cordero", body: "Perfect, thank you Roberto." },
 ];
 

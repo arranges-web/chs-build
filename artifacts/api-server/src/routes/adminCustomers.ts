@@ -181,6 +181,11 @@ router.patch("/admin/customers/:id", async (req, res) => {
 
 // ─── Jobs ───────────────────────────────────────────────────────
 
+// NOTE: this is the ONLY registration of GET /admin/jobs. A
+// duplicate copy used to live in adminAnalytics.ts too, and because
+// adminCustomersRouter mounts first, THIS handler always won —
+// silently dropping any fields the other one added (like
+// photo_album_url). Keep this the single source of truth.
 router.get("/admin/jobs", async (_req, res) => {
   try {
     const rows = await db
@@ -193,6 +198,7 @@ router.get("/admin/jobs", async (_req, res) => {
         progress: jobsTable.progress,
         startDate: jobsTable.startDate,
         estimatedCompletion: jobsTable.estimatedCompletion,
+        photoAlbumUrl: jobsTable.photoAlbumUrl,
         createdAt: jobsTable.createdAt,
         customerName: customersTable.name,
         customerEmail: customersTable.email,
