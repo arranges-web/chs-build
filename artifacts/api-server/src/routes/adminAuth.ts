@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, adminsTable, adminInvitesTable } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { normalizeRole, requireFullAccess } from "../lib/roles";
 import { generateToken, hashPassword, passwordTooWeak, verifyPassword } from "../lib/passwords";
 import {
   COOKIE_NAME,
@@ -53,11 +54,16 @@ function clearSessionCookie(res: import("express").Response) {
  * before any account exists. After they accept their own invite,
  * the resulting account can be used to invite teammates.
  */
-router.post("/admin/auth/invites", adminAuth, async (req, res) => {
+router.post("/admin/auth/invites", adminAuth, requireFullAccess, async (req, res) => {
   try {
     const email = req.body?.email ? String(req.body.email).trim().toLowerCase() : null;
     const name = req.body?.name ? String(req.body.name).trim() : null;
     const label = req.body?.label ? String(req.body.label).slice(0, 64) : "admin";
+    // Which kind of account this link creates. Only crew or admin can
+    // be invited — "owner" is not grantable, it's bootstrapped once
+    // from ADMIN_KEY.
+    const requested = normalizeRole(req.body?.role);
+    const role = requested === "crew" ? "crew" : "admin";
     const token = generateToken();
     const expires = new Date(Date.now() + INVITE_DAYS * 24 * 60 * 60 * 1000);
 
@@ -67,7 +73,7 @@ router.post("/admin/auth/invites", adminAuth, async (req, res) => {
         token,
         email,
         name,
-        role: "admin",
+        role,
         expiresAt: expires,
         createdByLabel: label,
       })
@@ -79,6 +85,7 @@ router.post("/admin/auth/invites", adminAuth, async (req, res) => {
         token: row.token,
         email: row.email,
         name: row.name,
+        role: row.role,
         expiresAt: row.expiresAt,
       },
     });

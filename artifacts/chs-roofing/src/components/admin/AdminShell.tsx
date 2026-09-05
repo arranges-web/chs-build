@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BarChart3,
   Briefcase,
@@ -19,9 +19,11 @@ import {
   Link as LinkIcon,
   HelpCircle,
   UserPlus,
+  HardHat,
+  ChevronDown,
 } from "lucide-react";
 import { SITE } from "@/lib/site-config";
-import { getAdminKey } from "@/lib/api";
+import { getAdminKey, isFullAccessRole } from "@/lib/api";
 
 /**
  * The legacy admin key, if key-auth was used. Read through the api
@@ -35,6 +37,7 @@ export function getStoredAdminKey(): string {
 
 export type AdminSection =
   | "dashboard"
+  | "myJobs"
   | "clients"
   | "projects"
   | "leads"
@@ -60,6 +63,10 @@ export type CustomerPrefill = {
 type Counts = { newLeads: number; inbox: number };
 
 type Props = {
+  /** The signed-in account's role. Drives which nav items exist at
+   *  all. The API enforces the same split, so this is convenience,
+   *  not security — a crew member typing a section id still gets 403. */
+  role?: string;
   section: AdminSection;
   onChangeSection: (s: AdminSection) => void;
   loading?: boolean;
@@ -71,6 +78,7 @@ type Props = {
 
 const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
   dashboard: { title: "Today", subtitle: "What needs your attention right now, then the rest at a glance." },
+  myJobs: { title: "My Jobs", subtitle: "The projects assigned to you. Tap one to post progress, photos, and milestones." },
   clients: { title: "Clients", subtitle: "Customer CRM, jobs, updates, and photo log." },
   projects: { title: "Projects", subtitle: "Every active job across every customer in one place." },
   leads: { title: "Leads", subtitle: "Every quote request from the website." },
@@ -82,7 +90,7 @@ const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
   responses: { title: "AI Chat Responses", subtitle: "Copy-paste answers for common questions." },
   signature: { title: "Email Signature", subtitle: "Generate a branded HTML signature for your team." },
   links: { title: "Quote Links", subtitle: "Build pre-filled /contact links to share with customers." },
-  invites: { title: "Team", subtitle: "Send a signup link so a teammate can create their own admin login." },
+  invites: { title: "Team", subtitle: "Who can sign in, what they can reach, and how much work is on them." },
   settings: { title: "Settings & Backup", subtitle: "Backups, demo data, team access, and the recovery key." },
 };
 
@@ -93,7 +101,18 @@ type NavGroup = "today" | "sales" | "customers" | "marketing" | "settings";
  * who we're serving (Customers), how we get found (Marketing), and
  * housekeeping (Settings). Order within a group = frequency of use.
  */
-const NAV: { id: AdminSection; label: string; icon: typeof Users; group: NavGroup }[] = [
+type NavItem = {
+  id: AdminSection;
+  label: string;
+  icon: typeof Users;
+  group: NavGroup;
+  /** Crew logins see only items marked true. Everything else is
+   *  office-only and the API returns 403 for them regardless. */
+  crew?: boolean;
+};
+
+const NAV: NavItem[] = [
+  { id: "myJobs", label: "My Jobs", icon: HardHat, group: "today", crew: true },
   { id: "dashboard", label: "Today", icon: LayoutDashboard, group: "today" },
 
   { id: "leads", label: "Leads", icon: Inbox, group: "sales" },
@@ -127,6 +146,7 @@ const GROUP_LABEL: Record<NavGroup, string> = {
 };
 
 export default function AdminShell({
+  role,
   section,
   onChangeSection,
   loading,
@@ -137,6 +157,22 @@ export default function AdminShell({
 }: Props) {
   const meta = TITLES[section];
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const crewOnly = !isFullAccessRole(role);
+  const nav = useMemo(() => NAV.filter((n) => (crewOnly ? n.crew === true : true)), [crewOnly]);
+  const groups = useMemo(
+    () => GROUPS.filter((g) => nav.some((n) => n.group === g)),
+    [nav],
+  );
+
+  // Only the group you're working in stays expanded. With 12 items and
+  // 5 headers the sidebar used to overflow and scroll; now it fits.
+  const groupOf = (s: AdminSection): NavGroup =>
+    NAV.find((n) => n.id === s)?.group ?? "today";
+  const [openGroup, setOpenGroup] = useState<NavGroup | null>(() => groupOf(section));
+  useEffect(() => {
+    setOpenGroup(groupOf(section));
+  }, [section]);
 
   // Lock body scroll when the mobile drawer is open.
   useEffect(() => {
@@ -179,33 +215,58 @@ export default function AdminShell({
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 space-y-5">
-          {GROUPS.map((g) => (
+        <nav className="flex-1 overflow-y-auto py-3 space-y-1.5 [scrollbar-width:thin]">
+          {groups.map((g) => {
+            const items = nav.filter((n) => n.group === g);
+            const hasLabel = Boolean(GROUP_LABEL[g]);
+            const expanded = !hasLabel || openGroup === g;
+            const countFor = (id: AdminSection) =>
+              id === "leads" ? counts.newLeads : id === "portalInbox" ? counts.inbox : null;
+            // Roll the group's badges up onto its header so collapsing
+            // a group can never hide a "needs you" signal.
+            const groupCount = items.reduce((sum, n) => sum + (countFor(n.id) ?? 0), 0);
+            const containsActive = items.some((n) => n.id === section);
+            return (
             <div key={g} className="px-3">
-              {GROUP_LABEL[g] && (
-                <p className="px-3 text-[10px] uppercase tracking-[0.22em] font-semibold text-white/40 mb-2">
-                  {GROUP_LABEL[g]}
-                </p>
+              {hasLabel && (
+                <button
+                  type="button"
+                  onClick={() => setOpenGroup(expanded ? null : g)}
+                  aria-expanded={expanded}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] uppercase tracking-[0.22em] font-semibold text-white/45 hover:text-white/80 hover:bg-white/[0.04] transition-colors"
+                >
+                  <ChevronDown
+                    className={`w-3 h-3 shrink-0 transition-transform ${expanded ? "" : "-rotate-90"}`}
+                  />
+                  <span className="flex-1 text-left">{GROUP_LABEL[g]}</span>
+                  {!expanded && groupCount > 0 && (
+                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-white text-[9px] font-bold inline-flex items-center justify-center tracking-normal">
+                      {groupCount > 99 ? "99+" : groupCount}
+                    </span>
+                  )}
+                  {!expanded && containsActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" aria-hidden="true" />
+                  )}
+                </button>
               )}
-              <ul className="space-y-1">
-                {NAV.filter((n) => n.group === g).map((n) => {
+              <ul className={`space-y-0.5 ${hasLabel ? "mt-0.5 mb-1" : "mb-1"} ${expanded ? "" : "hidden"}`}>
+                {items.map((n) => {
                   const isActive = section === n.id;
                   // Badges mean "needs you", not lifetime totals.
-                  const count =
-                    n.id === "leads" ? counts.newLeads : n.id === "portalInbox" ? counts.inbox : null;
+                  const count = countFor(n.id);
                   return (
                     <li key={n.id}>
                       <button
                         type="button"
                         onClick={() => navigate(n.id)}
-                        className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                        className={`group w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[13px] font-semibold transition-colors ${
                           isActive
                             ? "bg-primary text-white shadow-md shadow-primary/30"
                             : "text-white/85 hover:bg-white/[0.06]"
                         }`}
                       >
                         <span
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
                             isActive ? "bg-white/10" : "bg-white/[0.04] group-hover:bg-white/10"
                           }`}
                         >
@@ -227,7 +288,8 @@ export default function AdminShell({
                 })}
               </ul>
             </div>
-          ))}
+            );
+          })}
         </nav>
 
         <div className="px-3 py-4 border-t border-white/10 space-y-1.5">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  HardHat,
   ArrowLeft,
   Camera,
   CheckCircle2,
@@ -31,6 +32,7 @@ import {
   type JobInspection,
   type JobMilestone,
   type JobUpdate,
+  type TeamMember,
 } from "@/lib/api";
 
 const STATUS_OPTS = [
@@ -187,6 +189,7 @@ export default function JobDetail({ adminKey, jobId, customerId, onBack }: Props
           <div className="grid lg:grid-cols-[340px_1fr] gap-6 items-start">
             <div className="space-y-6">
               <StatusPanel adminKey={adminKey} job={job} onChanged={load} />
+              <AssigneePanel job={job} onChanged={load} />
               <DetailsPanel adminKey={adminKey} job={job} onChanged={load} />
             </div>
             <div className="space-y-6">
@@ -658,6 +661,85 @@ const inputCls =
 
 /** Trim an ISO datetime down to what <input type="date"> wants. */
 const toDateInput = (s: string | null | undefined) => (s ? s.slice(0, 10) : "");
+
+/**
+ * Who's running this job. Office-only: the panel hides itself for crew
+ * logins (and the API rejects them anyway). Assigning here is what puts
+ * the job into that person's "My Jobs" list.
+ */
+function AssigneePanel({ job, onChanged }: { job: Job; onChanged: () => void }) {
+  const [team, setTeam] = useState<TeamMember[] | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const r = await api.listTeam();
+      if (cancelled) return;
+      if ("error" in r) {
+        // 403 = this is a crew login; there's nothing for them here.
+        if (r.status === 403) setHidden(true);
+        else setError(r.error);
+        return;
+      }
+      setTeam(r.data.rows);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (hidden) return null;
+
+  const current = (team ?? []).find((m) => m.id === job.assignedAdminId) ?? null;
+
+  const assign = async (value: string) => {
+    setSaving(true);
+    setError(null);
+    const res = await api.setJobAssignee(job.id, value === "" ? null : Number(value));
+    setSaving(false);
+    if ("error" in res) {
+      setError(res.error);
+      return;
+    }
+    onChanged();
+  };
+
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <h3 className="font-display font-bold text-foreground text-base mb-1 inline-flex items-center gap-2">
+        <HardHat className="w-4 h-4 text-primary" />
+        Assigned crew
+      </h3>
+      <p className="text-[11px] text-muted-foreground mb-3">
+        {current
+          ? `${current.name} sees this job in "My Jobs" and can post progress on it.`
+          : "Unassigned — nobody sees this in their My Jobs list yet."}
+      </p>
+
+      <select
+        value={job.assignedAdminId ?? ""}
+        onChange={(e) => void assign(e.target.value)}
+        disabled={saving || team === null}
+        className={inputCls}
+      >
+        <option value="">— Unassigned —</option>
+        {(team ?? []).map((m) => (
+          <option key={m.id} value={m.id}>
+            {m.name}
+            {m.role === "crew" ? " (crew)" : " (office)"} · {m.assignedJobs} job
+            {m.assignedJobs === 1 ? "" : "s"}
+          </option>
+        ))}
+      </select>
+
+      {saving && <p className="text-[11px] text-muted-foreground mt-2">Saving…</p>}
+      {error && <p className="text-[11px] text-destructive mt-2">{error}</p>}
+    </section>
+  );
+}
 
 function DetailsPanel({
   adminKey,

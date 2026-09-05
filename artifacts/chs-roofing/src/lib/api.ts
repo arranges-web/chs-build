@@ -228,6 +228,25 @@ async function deleteJson(path: string, init?: RequestInit): Promise<boolean> {
   }
 }
 
+/**
+ * DELETE that keeps the server's reason. `deleteJson` returns a bare
+ * boolean, which is fine for "remove this photo" but useless where the
+ * server refuses with something the user needs to read — e.g. "the
+ * owner account can't be removed".
+ */
+async function deleteJsonResult<T extends object>(
+  path: string,
+  init?: RequestInit,
+): Promise<ApiResult<T>> {
+  try {
+    const res = await request(path, { ...init, method: "DELETE" });
+    if (!res.ok) return { error: await readError(res), status: res.status };
+    return { data: (await res.json()) as T };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
 async function postJsonAuthed<T extends object>(
   path: string,
   body: unknown,
@@ -366,6 +385,8 @@ export type CustomerMessage = {
 };
 
 export type Job = {
+  /** Crew member this job is assigned to, or null when unassigned. */
+  assignedAdminId?: number | null;
   id: number;
   customerId: number;
   title: string;
@@ -520,6 +541,43 @@ export type AdminProfile = {
   role: string;
 };
 
+export type AdminRole = "owner" | "admin" | "crew";
+
+/** True for owner/admin. Anything else is treated as crew — the API
+ *  fails closed the same way, so the UI must not be more generous. */
+export function isFullAccessRole(role: string | null | undefined): boolean {
+  const r = (role ?? "").toLowerCase();
+  return r === "owner" || r === "admin";
+}
+
+export type TeamMember = {
+  id: number;
+  name: string;
+  email: string;
+  role: AdminRole;
+  createdAt: string | null;
+  lastLoginAt: string | null;
+  assignedJobs: number;
+  isYou: boolean;
+};
+
+export type MyJobRow = {
+  id: number;
+  customerId: number;
+  title: string;
+  serviceType: string | null;
+  status: string;
+  progress: number;
+  startDate: string | null;
+  estimatedCompletion: string | null;
+  photoAlbumUrl: string | null;
+  createdAt: string | null;
+  customerName: string | null;
+  customerPhone: string | null;
+  customerAddress: string | null;
+  accountNumber: string | null;
+};
+
 export type WhoAmI = {
   ok: true;
   via: "session" | "admin-key";
@@ -598,13 +656,51 @@ export const api = {
     getJsonResult<{ invite: { email: string | null; name: string | null; role: string } }>(
       `/admin/auth/invites/${encodeURIComponent(token)}`,
     ),
+  // ─── Team & roles ──────────────────────────────────────────────
+  listTeam: () =>
+    getJsonResult<{ rows: TeamMember[]; meId: number | null }>("/admin/team"),
+  setTeamRole: (id: number, role: "admin" | "crew") =>
+    patchJsonResult<{ row: { id: number; name: string; role: string } }>(
+      `/admin/team/${id}`,
+      { role },
+    ),
+  removeTeamMember: (id: number) =>
+    deleteJsonResult<{ ok: true; unassignedJobs: number }>(`/admin/team/${id}`),
+  /** Jobs assigned to the signed-in account. The crew's whole view. */
+  listMyJobs: () => getJsonResult<{ rows: MyJobRow[] }>("/admin/my-jobs"),
+  /** One assigned job with its progress log and milestones. */
+  getMyJob: (id: number) =>
+    getJsonResult<{
+      job: Job;
+      customer: {
+        id: number;
+        name: string;
+        phone: string | null;
+        address: string | null;
+        accountNumber: string;
+      } | null;
+      updates: JobUpdate[];
+      milestones: JobMilestone[];
+    }>(`/admin/my-jobs/${id}`),
+  setJobAssignee: (jobId: number, assignedAdminId: number | null) =>
+    patchJsonResult<{ row: { id: number; assignedAdminId: number | null } }>(
+      `/admin/jobs/${jobId}/assignee`,
+      { assignedAdminId },
+    ),
+
   adminCreateInvite: (
-    payload: { email?: string; name?: string; label?: string },
+    payload: { email?: string; name?: string; label?: string; role?: "admin" | "crew" },
     key: string,
   ) =>
     postJsonResult<{
       ok: true;
-      invite: { token: string; email: string | null; name: string | null; expiresAt: string };
+      invite: {
+        token: string;
+        email: string | null;
+        name: string | null;
+        role: string;
+        expiresAt: string;
+      };
     }>("/admin/auth/invites", payload, { "x-admin-key": key }),
 
   listLeads: (key: string) =>

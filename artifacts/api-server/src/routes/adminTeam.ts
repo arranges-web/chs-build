@@ -1,9 +1,16 @@
 import { Router, type IRouter } from "express";
 import { and, asc, count, eq, sql } from "drizzle-orm";
-import { db, adminsTable, jobsTable, customersTable } from "@workspace/db";
+import {
+  db,
+  adminsTable,
+  jobsTable,
+  customersTable,
+  jobUpdatesTable,
+  jobMilestonesTable,
+} from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
-import { contextOf, isFullAccess, normalizeRole, requireFullAccess } from "../lib/roles";
+import { contextOf, guardJob, normalizeRole, requireFullAccess } from "../lib/roles";
 
 const router: IRouter = Router();
 
@@ -48,6 +55,56 @@ router.get("/admin/my-jobs", async (_req, res) => {
       .where(eq(jobsTable.assignedAdminId, me.id))
       .orderBy(asc(jobsTable.estimatedCompletion));
     res.json({ rows });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
+/**
+ * One assigned job, with the progress log and milestones the crew
+ * member actually works with. Deliberately NOT the CRM record: no
+ * customer email (their portal login), no admin notes, no documents,
+ * no estimates. guardJob makes this 403 for a job that isn't theirs,
+ * so a crew member can't read another crew's project by id.
+ */
+router.get("/admin/my-jobs/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    if (!(await guardJob(res, id))) return;
+
+    const [job] = await db.select().from(jobsTable).where(eq(jobsTable.id, id)).limit(1);
+    if (!job) {
+      res.status(404).json({ error: "Job not found." });
+      return;
+    }
+    const [customer] = await db
+      .select({
+        id: customersTable.id,
+        name: customersTable.name,
+        phone: customersTable.phone,
+        address: customersTable.address,
+        accountNumber: customersTable.accountNumber,
+      })
+      .from(customersTable)
+      .where(eq(customersTable.id, job.customerId))
+      .limit(1);
+
+    const updates = await db
+      .select()
+      .from(jobUpdatesTable)
+      .where(eq(jobUpdatesTable.jobId, id))
+      .orderBy(sql`${jobUpdatesTable.createdAt} DESC`);
+    const milestones = await db
+      .select()
+      .from(jobMilestonesTable)
+      .where(eq(jobMilestonesTable.jobId, id))
+      .orderBy(asc(jobMilestonesTable.sortOrder));
+
+    res.json({ job, customer: customer ?? null, updates, milestones });
   } catch (err) {
     handleError(res, err);
   }

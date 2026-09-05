@@ -9,6 +9,7 @@ import {
   type AdminCustomerMessageRow,
   type AdminProfile,
   type AdminServiceRequestRow,
+  isFullAccessRole,
 } from "@/lib/api";
 import { SITE } from "@/lib/site-config";
 import Seo from "@/components/Seo";
@@ -27,7 +28,9 @@ import Projects from "@/components/admin/Projects";
 import Analytics from "@/components/admin/Analytics";
 import SeoActivity from "@/components/admin/SeoActivity";
 import JobDetail from "@/components/admin/JobDetail";
-import InviteTeammates from "@/components/admin/InviteTeammates";
+import Team from "@/components/admin/Team";
+import MyJobs from "@/components/admin/MyJobs";
+import CrewJobDetail from "@/components/admin/CrewJobDetail";
 import SettingsPanel from "@/components/admin/Settings";
 import PortalInbox from "@/components/admin/PortalInbox";
 import Outreach from "@/components/admin/Outreach";
@@ -120,6 +123,9 @@ export default function AdminPage() {
       if (cancelled) return;
       if ("data" in res) {
         if (res.data.admin) setMe(res.data.admin);
+        // A crew login only has "My Jobs" — a restored section from a
+        // previous admin session on this browser would be a dead end.
+        if (res.data.admin && !isFullAccessRole(res.data.admin.role)) setSection("myJobs");
         if (res.data.via === "admin-key") setAuthedKey(getAdminKey());
       } else if (res.status === 401) {
         // Credentials are genuinely dead — forget them so the user
@@ -162,6 +168,9 @@ export default function AdminPage() {
   }, [section]);
 
   const isAuthed = !!me || !!authedKey;
+  // Key-auth (no profile) is the owner's recovery credential, so it
+  // counts as office access. Mirrors the server's requireFullAccess.
+  const officeAccess = me ? isFullAccessRole(me.role) : true;
   // Components still take an `adminKey` prop and pass it as
   // `x-admin-key`. The api client now auto-attaches the stored bearer
   // token and stored key on every request, so this value is purely
@@ -176,6 +185,17 @@ export default function AdminPage() {
   const loadAll = async (key: string) => {
     setLoading(true);
     setError(null);
+    // A crew login has no access to leads, estimates, or the portal
+    // inbox — firing those would 403 and paint an error banner over a
+    // screen they can't act on. Their view loads its own data.
+    if (!officeAccess) {
+      setLeads(null);
+      setEstimates(null);
+      setRequests(null);
+      setMessages(null);
+      setLoading(false);
+      return;
+    }
     const [leadsRes, estRes, reqRes, msgRes] = await Promise.all([
       api.listLeads(key),
       api.listEstimates(key),
@@ -468,7 +488,7 @@ export default function AdminPage() {
               </li>
               <li>
                 <strong>Forgot your invite?</strong> Ask the owner to send a
-                fresh one from the admin dashboard → Invite Teammates.
+                fresh one from the admin dashboard → Team.
               </li>
               <li>
                 <strong>Owner / first-time setup?</strong> Use the admin key
@@ -508,6 +528,7 @@ export default function AdminPage() {
     <>
       <Seo title="Admin | CHS Roofing" description="Internal admin." noIndex path="/admin" />
       <AdminShell
+        role={me?.role}
         section={section}
         onChangeSection={setSection}
         loading={loading}
@@ -529,7 +550,11 @@ export default function AdminPage() {
             {error}
           </div>
         )}
-        {openJob ? (
+        {openJob && !officeAccess ? (
+          // Crew get the stripped-down job view — the full JobDetail
+          // loads the CRM record, which the API refuses them.
+          <CrewJobDetail jobId={openJob.jobId} onBack={() => setOpenJob(null)} />
+        ) : openJob ? (
           <JobDetail
             adminKey={effectiveKey}
             jobId={openJob.jobId}
@@ -538,6 +563,9 @@ export default function AdminPage() {
           />
         ) : (
           <>
+            {section === "myJobs" && (
+              <MyJobs onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })} />
+            )}
             {section === "dashboard" && (
               <Dashboard
                 adminKey={effectiveKey}
@@ -587,7 +615,7 @@ export default function AdminPage() {
               />
             )}
             {section === "outreach" && <Outreach adminKey={effectiveKey} />}
-            {section === "invites" && <InviteTeammates adminKey={effectiveKey} />}
+            {section === "invites" && <Team adminKey={effectiveKey} />}
             {section === "settings" && (
               <SettingsPanel adminKey={effectiveKey} onNavigate={setSection} />
             )}
