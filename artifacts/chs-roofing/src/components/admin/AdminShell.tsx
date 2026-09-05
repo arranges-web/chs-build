@@ -22,8 +22,6 @@ import {
 } from "lucide-react";
 import { SITE } from "@/lib/site-config";
 import { getAdminKey } from "@/lib/api";
-import Outreach from "./Outreach";
-import PortalInbox from "./PortalInbox";
 
 /**
  * The legacy admin key, if key-auth was used. Read through the api
@@ -304,15 +302,12 @@ export default function AdminShell({
         </header>
 
         <main className="flex-1 p-4 md:p-6 max-w-[1400px] w-full mx-auto">
-          {/* The two newest sections are routed here (the page-level
-              switch predates them); everything else comes in as children. */}
-          {section === "outreach" ? (
-            <Outreach adminKey={getStoredAdminKey()} />
-          ) : section === "portalInbox" ? (
-            <PortalInbox adminKey={getStoredAdminKey()} />
-          ) : (
-            children
-          )}
+          {/* Every section renders through `children` from Admin.tsx —
+              that's the one place that knows how to reload shared data
+              and how to take over the pane for JobDetail. Special-casing
+              sections here used to block JobDetail from opening on top
+              of them. */}
+          {children}
         </main>
       </div>
     </div>

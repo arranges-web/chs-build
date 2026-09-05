@@ -42,9 +42,16 @@ const fmtDateTime = (s?: string | null) => {
       });
 };
 
-type Props = { adminKey: string };
+type Props = {
+  adminKey: string;
+  /** Called after anything here changes read-state or status, so the
+   *  parent can refresh the sidebar badge and dashboard tiles. Without
+   *  it, just-read messages keep showing as unread until a manual
+   *  Refresh. */
+  onChanged?: () => void;
+};
 
-export default function PortalInbox({ adminKey }: Props) {
+export default function PortalInbox({ adminKey, onChanged }: Props) {
   const [tab, setTab] = useState<"requests" | "messages">("requests");
   const [requests, setRequests] = useState<AdminServiceRequestRow[] | null>(null);
   const [messages, setMessages] = useState<AdminCustomerMessageRow[] | null>(null);
@@ -132,24 +139,32 @@ export default function PortalInbox({ adminKey }: Props) {
           adminKey={adminKey}
           rows={requests}
           loading={loading}
-          onUpdated={(row) =>
+          onUpdated={(row) => {
             setRequests((prev) =>
               prev ? prev.map((r) => (r.id === row.id ? { ...r, status: row.status } : r)) : prev,
-            )
-          }
+            );
+            // Tell the parent so the sidebar badge / dashboard tiles
+            // stop counting a request we just moved off "new".
+            onChanged?.();
+          }}
         />
       ) : (
         <MessagesTab
           adminKey={adminKey}
           rows={messages}
           loading={loading}
-          onChanged={() => void load(true)}
-          onMarkedRead={(customerId) =>
+          onChanged={() => {
+            void load(true);
+            onChanged?.();
+          }}
+          onMarkedRead={(customerId) => {
             setMessages((prev) =>
               prev
                 ? prev.map((m) => (m.customerId === customerId ? { ...m, readByTeam: true } : m))
                 : prev,
-            )
+            );
+            onChanged?.();
+          }
           }
         />
       )}

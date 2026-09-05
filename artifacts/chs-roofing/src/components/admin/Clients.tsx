@@ -65,6 +65,7 @@ export default function Clients({
   // "2 active · 1 complete" instead of a bare row of contact fields.
   const [jobs, setJobs] = useState<AdminJob[] | null>(null);
   const [query, setQuery] = useState("");
+  const [listError, setListError] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
@@ -97,14 +98,15 @@ export default function Clients({
 
   const loadList = async () => {
     setLoading(true);
+    setListError(null);
     const [res, jobsRes] = await Promise.all([
       api.listCustomers(adminKey),
       api.listAllJobs(adminKey),
     ]);
     if ("data" in res) setList(res.data.rows);
-    // else: keep whatever we had; api.listCustomers now surfaces
-    // the real server error via getJsonResult, so if we ever want
-    // to render a banner here we can flip on `res.error`.
+    // Surface the real reason instead of leaving `list` null, which
+    // the UI would otherwise render as "no customers match".
+    else setListError(res.error);
     if ("data" in jobsRes) setJobs(jobsRes.data.rows);
     setLoading(false);
   };
@@ -243,9 +245,17 @@ export default function Clients({
         />
       )}
 
+      {listError && (
+        <div className="mb-4 p-4 rounded-xl border border-destructive/40 bg-destructive/5 text-destructive text-sm whitespace-pre-line">
+          {listError}
+        </div>
+      )}
+
       {loading && !list ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
-      ) : list && list.length === 0 && !creating ? (
+      ) : !list ? (
+        listError ? null : <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : list.length === 0 && !creating ? (
         <div className="bg-card border border-border/60 rounded-2xl p-10 text-center">
           <UsersIcon className="w-8 h-8 mx-auto text-muted-foreground/60 mb-3" />
           <p className="font-semibold text-foreground">No customers yet.</p>

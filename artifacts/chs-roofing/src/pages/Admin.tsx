@@ -29,6 +29,8 @@ import SeoActivity from "@/components/admin/SeoActivity";
 import JobDetail from "@/components/admin/JobDetail";
 import InviteTeammates from "@/components/admin/InviteTeammates";
 import SettingsPanel from "@/components/admin/Settings";
+import PortalInbox from "@/components/admin/PortalInbox";
+import Outreach from "@/components/admin/Outreach";
 import { withoutDemo } from "@/lib/demo";
 
 type AnyRow = Record<string, unknown>;
@@ -576,6 +578,15 @@ export default function AdminPage() {
             {section === "responses" && <ChatResponses />}
             {section === "signature" && <EmailSignature />}
             {section === "links" && <QuoteLinks />}
+            {section === "portalInbox" && (
+              <PortalInbox
+                adminKey={effectiveKey}
+                // Reload so the sidebar badge and dashboard tiles drop
+                // messages the moment they're marked read here.
+                onChanged={() => void loadAll(effectiveKey)}
+              />
+            )}
+            {section === "outreach" && <Outreach adminKey={effectiveKey} />}
             {section === "invites" && <InviteTeammates adminKey={effectiveKey} />}
             {section === "settings" && (
               <SettingsPanel adminKey={effectiveKey} onNavigate={setSection} />

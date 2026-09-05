@@ -123,7 +123,21 @@ export default function Dashboard({
   // Everything below EXCLUDES the seeded demo customer. Demo data is
   // still browsable in Clients/Projects, but it must never masquerade
   // as real work that needs doing.
-  const now = Date.now();
+  // Frozen per data-load, not per render — using a live Date.now() as a
+  // memo dep defeats the memo entirely.
+  const now = useMemo(() => Date.now(), [leads, jobs]);
+
+  const newLeadIds = useMemo(() => {
+    const ids = new Set<number>();
+    for (const r of leads ?? []) {
+      const t = new Date(String(r.createdAt ?? "")).getTime();
+      if (Number.isFinite(t) && now - t <= 7 * DAY) {
+        const id = r.id as number | undefined;
+        if (id != null) ids.add(id);
+      }
+    }
+    return ids;
+  }, [leads, now]);
 
   const newLeads = useMemo(
     () =>
@@ -182,8 +196,18 @@ export default function Dashboard({
   );
 
   const upcoming = useMemo(() => withoutDemo(inspections ?? []), [inspections]);
+
+  // The inbox props arrive from the parent and are null until the first
+  // load lands. Claiming "All clear" before then is a lie that trains
+  // the owner to distrust the header.
+  const inboxLoading = requests === null || messages === null;
   const attentionTotal =
-    newLeads.length + unreadCount + newRequestCount + pastDueJobs.length + onHoldJobs.length;
+    newLeads.length +
+    unreadCount +
+    newRequestCount +
+    upcoming.length +
+    pastDueJobs.length +
+    onHoldJobs.length;
 
   const recentLeads = (leads ?? []).slice(0, 6);
   const recentEstimates = (estimates ?? []).slice(0, 5);
@@ -202,7 +226,9 @@ export default function Dashboard({
           <p className="text-[11px] uppercase tracking-[0.22em] font-semibold text-primary">{today}</p>
           <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight text-foreground mt-1">
             {greeting()}.{" "}
-            {attentionTotal === 0 ? (
+            {inboxLoading ? (
+              <span className="text-muted-foreground font-medium">Checking what's new…</span>
+            ) : attentionTotal === 0 ? (
               <span className="text-muted-foreground font-medium">All clear right now.</span>
             ) : (
               <span className="text-muted-foreground font-medium">
@@ -272,7 +298,9 @@ export default function Dashboard({
           title="Needs a reply"
           action={{ label: "Open inbox", onClick: () => onNavigate("portalInbox") }}
         >
-          {unreadByCustomer.length === 0 && openRequests.length === 0 ? (
+          {inboxLoading ? (
+            <Empty text="Loading…" muted />
+          ) : unreadByCustomer.length === 0 && openRequests.length === 0 ? (
             <Empty text="Inbox is clear." />
           ) : (
             <ul className="divide-y divide-border/40">
@@ -432,7 +460,9 @@ export default function Dashboard({
             <ul className="divide-y divide-border/40">
               {recentLeads.map((r, i) => {
                 const created = String(r.createdAt ?? "");
-                const isNew = newLeads.some((n) => n === r);
+                // Compare by id — reference equality happens to hold
+                // today but breaks the moment either list is remapped.
+                const isNew = newLeadIds.has(r.id as number);
                 const phone = (r.phone as string | undefined) ?? "";
                 return (
                   <li key={(r.id as number | undefined) ?? i} className="py-2.5 flex items-start gap-3">
