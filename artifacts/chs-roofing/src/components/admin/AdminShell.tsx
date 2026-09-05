@@ -23,7 +23,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { SITE } from "@/lib/site-config";
-import { getAdminKey, isFullAccessRole } from "@/lib/api";
+import { getAdminKey } from "@/lib/api";
 
 /**
  * The legacy admin key, if key-auth was used. Read through the api
@@ -63,10 +63,21 @@ export type CustomerPrefill = {
 type Counts = { newLeads: number; inbox: number };
 
 type Props = {
-  /** The signed-in account's role. Drives which nav items exist at
-   *  all. The API enforces the same split, so this is convenience,
-   *  not security — a crew member typing a section id still gets 403. */
-  role?: string;
+  /**
+   * Whether this session has office (owner/admin) access. Drives which
+   * nav items exist at all. Defaults to true so a shell rendered
+   * without the prop never accidentally hides everything.
+   *
+   * This is a BOOLEAN, deliberately, not a role string: the ADMIN_KEY
+   * recovery login has no admin profile and therefore no role, and
+   * deriving "crew" from a missing role is exactly the bug that hid
+   * the whole nav from the owner. Admin.tsx decides once; the shell
+   * does not re-derive it.
+   *
+   * Convenience, not security — the API enforces the same split, so a
+   * crew member reaching a section id another way still gets a 403.
+   */
+  officeAccess?: boolean;
   section: AdminSection;
   onChangeSection: (s: AdminSection) => void;
   loading?: boolean;
@@ -146,7 +157,7 @@ const GROUP_LABEL: Record<NavGroup, string> = {
 };
 
 export default function AdminShell({
-  role,
+  officeAccess = true,
   section,
   onChangeSection,
   loading,
@@ -158,7 +169,7 @@ export default function AdminShell({
   const meta = TITLES[section];
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const crewOnly = !isFullAccessRole(role);
+  const crewOnly = officeAccess === false;
   const nav = useMemo(() => NAV.filter((n) => (crewOnly ? n.crew === true : true)), [crewOnly]);
   const groups = useMemo(
     () => GROUPS.filter((g) => nav.some((n) => n.group === g)),

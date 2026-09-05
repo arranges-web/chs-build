@@ -244,6 +244,9 @@ export default function AdminPage() {
       return;
     }
     setMe(res.data.admin);
+    // Same rule as the boot path: a crew login only has "My Jobs", so
+    // don't drop them on a restored section that will 403.
+    if (res.data.admin && !isFullAccessRole(res.data.admin.role)) setSection("myJobs");
     setPassword("");
   };
 
@@ -528,7 +531,7 @@ export default function AdminPage() {
     <>
       <Seo title="Admin | CHS Roofing" description="Internal admin." noIndex path="/admin" />
       <AdminShell
-        role={me?.role}
+        officeAccess={officeAccess}
         section={section}
         onChangeSection={setSection}
         loading={loading}
