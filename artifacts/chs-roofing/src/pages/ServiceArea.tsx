@@ -126,7 +126,7 @@ export default function ServiceArea() {
     <>
       <Seo
         title="Service Area | Roofing Across Southwest Florida — CHS Roofing"
-        description="CHS Roofing serves Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Punta Gorda, Port Charlotte, North Port and surrounding Southwest Florida communities. Licensed CCC1333902."
+        description="CHS Roofing serves Cape Coral, Fort Myers, Lehigh Acres, Naples, Bonita Springs, Estero, Punta Gorda, Port Charlotte, North Port, Sarasota and surrounding Southwest Florida communities. Licensed CCC1333902."
         path="/service-area"
         jsonLd={[
           localBusinessSchema({
@@ -135,7 +135,7 @@ export default function ServiceArea() {
             latitude: 26.5629,
             longitude: -81.9495,
             description:
-              "Licensed Florida roofing contractor (CCC1333902) serving Cape Coral, Fort Myers, Naples, Bonita Springs, Estero, Punta Gorda, Port Charlotte, North Port and surrounding Southwest Florida communities.",
+              "Licensed Florida roofing contractor (CCC1333902) serving Cape Coral, Fort Myers, Lehigh Acres, Naples, Bonita Springs, Estero, Punta Gorda, Port Charlotte, North Port, Sarasota and surrounding Southwest Florida communities.",
             radiusMeters: 80000,
           }),
           breadcrumbSchema([{ name: "Service Area", path: "/service-area" }]),
@@ -162,7 +162,7 @@ export default function ServiceArea() {
             Roofing across <span className="text-primary">Southwest Florida</span>
           </>
         }
-        subtitle={`Based in ${SITE.city} and working from Punta Gorda down to Marco Island. Licensed ${SITE.license}, fully insured, family-owned.`}
+        subtitle={`Based in ${SITE.city} and working from Sarasota down to Marco Island — Lee, Charlotte, Sarasota, and Collier counties. Licensed ${SITE.license}, fully insured, family-owned.`}
         image={PHOTOS.darkMetalAerial}
         imageAlt="Aerial view of Southwest Florida rooftops"
         crumbs={[{ label: "Service Area" }]}
