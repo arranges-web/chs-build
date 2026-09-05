@@ -21,6 +21,7 @@ import {
 } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { requireFullAccess } from "../lib/roles";
 
 const router: IRouter = Router();
 
@@ -38,7 +39,7 @@ const router: IRouter = Router();
  *
  * Gated by adminAuth like every other /admin route.
  */
-router.get("/admin/backup", adminAuth, async (_req, res) => {
+router.get("/admin/backup", adminAuth, requireFullAccess, async (_req, res) => {
   try {
     const [
       customers,

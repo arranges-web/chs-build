@@ -10,10 +10,13 @@ import {
 } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { requireFullAccess } from "../lib/roles";
 
 const router: IRouter = Router();
 
 router.use("/admin", adminAuth);
+// Website analytics are office-only.
+router.use("/admin", requireFullAccess);
 
 // NOTE: GET /admin/jobs lives in adminCustomers.ts. It used to be
 // duplicated here too, but adminCustomersRouter mounts first so

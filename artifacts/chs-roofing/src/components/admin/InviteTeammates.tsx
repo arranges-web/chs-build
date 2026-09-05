@@ -126,7 +126,7 @@ export default function InviteTeammates({ adminKey }: Props) {
             <input
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. owner-sandin"
+              placeholder="e.g. owner-recovery"
               maxLength={64}
               className="w-full h-10 px-3 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />

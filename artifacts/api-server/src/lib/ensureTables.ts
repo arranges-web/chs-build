@@ -209,12 +209,22 @@ export async function ensureTables(): Promise<void> {
     ["warranty_manufacturer", "text"],
     ["warranty_workmanship", "text"],
     ["warranty_start_date", "text"],
+    // Crew assignment. Nullable + SET NULL so removing a teammate
+    // never deletes their jobs — it just unassigns them.
+    ["assigned_admin_id", 'integer REFERENCES "admins"("id") ON DELETE SET NULL'],
   ]) {
     await step(
       `jobs.${col[0]}`,
       sql.raw(`ALTER TABLE "jobs" ADD COLUMN IF NOT EXISTS "${col[0]}" ${col[1]};`),
     );
   }
+
+  // Crew accounts filter every request by this column, so it is on
+  // the hot path for them.
+  await step(
+    "jobs_assigned_admin_idx",
+    sql`CREATE INDEX IF NOT EXISTS "jobs_assigned_admin_idx" ON "jobs" ("assigned_admin_id");`,
+  );
 
   await step(
     "job_updates",

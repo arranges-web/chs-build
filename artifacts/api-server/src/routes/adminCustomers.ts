@@ -21,10 +21,19 @@ import { asc } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
 import { generateAccountNumber } from "../lib/accountNumber";
 import { handleError } from "../lib/handleError";
+import { contextOf, guardJob, isFullAccess, requireFullAccess } from "../lib/roles";
 
 const router: IRouter = Router();
 
 router.use("/admin", adminAuth);
+
+// Crew logins get past adminAuth but must not reach the CRM, the
+// full job list, demo seeding, or album management. Job-scoped
+// writes below are guarded per-job instead (guardJob), because crew
+// legitimately post progress on the work assigned to them.
+router.use("/admin/customers", requireFullAccess);
+router.use("/admin/demo", requireFullAccess);
+router.use("/admin/job-albums", requireFullAccess);
 
 // ─── Customers ──────────────────────────────────────────────────
 
@@ -218,7 +227,7 @@ router.patch("/admin/customers/:id", async (req, res) => {
 // adminCustomersRouter mounts first, THIS handler always won —
 // silently dropping any fields the other one added (like
 // photo_album_url). Keep this the single source of truth.
-router.get("/admin/jobs", async (_req, res) => {
+router.get("/admin/jobs", requireFullAccess, async (_req, res) => {
   try {
     const rows = await db
       .select({
@@ -246,7 +255,7 @@ router.get("/admin/jobs", async (_req, res) => {
   }
 });
 
-router.post("/admin/jobs", async (req, res) => {
+router.post("/admin/jobs", requireFullAccess, async (req, res) => {
   try {
     const parsed = insertJobSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -269,6 +278,28 @@ router.patch("/admin/jobs/:id", async (req, res) => {
       res.status(400).json({ error: "Invalid id" });
       return;
     }
+    if (!(await guardJob(res, id))) return;
+    // Crew can move a job along; they can't rewrite its commercial
+    // terms. Admins keep the full field set.
+    const me = contextOf(res);
+    const crewWritable = ["status", "progress", "startDate", "estimatedCompletion"] as const;
+    const allowed: readonly string[] = !me || isFullAccess(me.role)
+      ? [
+          "title",
+          "serviceType",
+          "status",
+          "progress",
+          "startDate",
+          "estimatedCompletion",
+          "photoAlbumUrl",
+          "projectManager",
+          "projectManagerPhone",
+          "roofSystem",
+          "warrantyManufacturer",
+          "warrantyWorkmanship",
+          "warrantyStartDate",
+        ]
+      : crewWritable;
     const update: Record<string, unknown> = {};
     for (const k of [
       "title",
@@ -285,7 +316,7 @@ router.patch("/admin/jobs/:id", async (req, res) => {
       "warrantyWorkmanship",
       "warrantyStartDate",
     ] as const) {
-      if (k in req.body) update[k] = req.body[k] ?? null;
+      if (k in req.body && allowed.includes(k)) update[k] = req.body[k] ?? null;
     }
     if (typeof update.photoAlbumUrl === "string") {
       const trimmed = (update.photoAlbumUrl as string).trim();
@@ -306,7 +337,7 @@ router.patch("/admin/jobs/:id", async (req, res) => {
   }
 });
 
-router.delete("/admin/jobs/:id", async (req, res) => {
+router.delete("/admin/jobs/:id", requireFullAccess, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!Number.isFinite(id)) {
@@ -337,6 +368,7 @@ router.post("/admin/job-updates", async (req, res) => {
         .json({ error: "Invalid update payload.", issues: parsed.error.issues });
       return;
     }
+    if (!(await guardJob(res, Number(parsed.data.jobId)))) return;
     const [row] = await db.insert(jobUpdatesTable).values(parsed.data).returning();
     res.status(201).json({ row });
   } catch (err) {
@@ -344,7 +376,7 @@ router.post("/admin/job-updates", async (req, res) => {
   }
 });
 
-router.delete("/admin/job-updates/:id", async (req, res) => {
+router.delete("/admin/job-updates/:id", requireFullAccess, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!Number.isFinite(id)) {
@@ -369,6 +401,7 @@ router.post("/admin/job-photos", async (req, res) => {
         .json({ error: "Invalid photo payload.", issues: parsed.error.issues });
       return;
     }
+    if (!(await guardJob(res, Number(parsed.data.jobId)))) return;
     const [row] = await db.insert(jobPhotosTable).values(parsed.data).returning();
     res.status(201).json({ row });
   } catch (err) {
@@ -382,7 +415,7 @@ router.post("/admin/job-photos", async (req, res) => {
  * were dragging down the portal. By default we only purge data: URLs —
  * pass `?all=1` to nuke external URLs too.
  */
-router.delete("/admin/jobs/:jobId/photos", async (req, res) => {
+router.delete("/admin/jobs/:jobId/photos", requireFullAccess, async (req, res) => {
   try {
     const jobId = Number(req.params.jobId);
     if (!Number.isFinite(jobId)) {
@@ -492,7 +525,7 @@ router.delete("/admin/job-albums/:id", async (req, res) => {
   }
 });
 
-router.delete("/admin/job-photos/:id", async (req, res) => {
+router.delete("/admin/job-photos/:id", requireFullAccess, async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!Number.isFinite(id)) {

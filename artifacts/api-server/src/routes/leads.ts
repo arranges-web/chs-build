@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { db, leadsTable, insertLeadSchema } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { requireFullAccess } from "../lib/roles";
 import { engageLead } from "../lib/outreachAgent";
 
 const router: IRouter = Router();
@@ -33,7 +34,7 @@ router.post("/leads", async (req, res) => {
   }
 });
 
-router.get("/admin/leads", adminAuth, async (_req, res) => {
+router.get("/admin/leads", adminAuth, requireFullAccess, async (_req, res) => {
   try {
     const rows = await db.select().from(leadsTable).orderBy(desc(leadsTable.createdAt));
     res.json({ rows });

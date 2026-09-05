@@ -10,6 +10,7 @@ import {
 } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { requireFullAccess } from "../lib/roles";
 import { twilioConfigured } from "../lib/sms";
 import {
   aiConfigured,
@@ -24,6 +25,8 @@ import {
 const router: IRouter = Router();
 
 router.use("/admin", adminAuth);
+// SMS outreach is office-only.
+router.use("/admin", requireFullAccess);
 
 // ─── Status + settings ──────────────────────────────────────────
 

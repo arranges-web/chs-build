@@ -10,6 +10,7 @@ import adminAuthRouter from "./adminAuth";
 import adminPortalContentRouter from "./adminPortalContent";
 import adminOutreachRouter from "./adminOutreach";
 import adminBackupRouter from "./adminBackup";
+import adminTeamRouter from "./adminTeam";
 import smsWebhookRouter from "./smsWebhook";
 import roofrWebhookRouter from "./roofrWebhook";
 
@@ -38,5 +39,6 @@ router.use(adminAnalyticsRouter);
 router.use(adminPortalContentRouter);
 router.use(adminOutreachRouter);
 router.use(adminBackupRouter);
+router.use(adminTeamRouter);
 
 export default router;

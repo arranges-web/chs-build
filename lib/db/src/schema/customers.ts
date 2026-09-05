@@ -56,6 +56,11 @@ export const jobsTable = pgTable("jobs", {
   // Portal dashboard fields
   projectManager: text("project_manager"),
   projectManagerPhone: text("project_manager_phone"),
+  // The crew member this job belongs to. Nullable: unassigned jobs
+  // are normal, and a job must survive the departure of the person
+  // who ran it, so the FK is ON DELETE SET NULL rather than CASCADE.
+  // Crew accounts can only see and update jobs where this is them.
+  assignedAdminId: integer("assigned_admin_id"),
   // Warranty Center
   roofSystem: text("roof_system"), // e.g. "GAF Timberline HDZ Shingle System"
   warrantyManufacturer: text("warranty_manufacturer"),

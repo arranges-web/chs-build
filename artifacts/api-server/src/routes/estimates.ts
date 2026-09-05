@@ -3,6 +3,7 @@ import { desc } from "drizzle-orm";
 import { db, estimatesTable, insertEstimateSchema } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { requireFullAccess } from "../lib/roles";
 
 const router: IRouter = Router();
 
@@ -28,7 +29,7 @@ router.post("/estimates", async (req, res) => {
   }
 });
 
-router.get("/admin/estimates", adminAuth, async (_req, res) => {
+router.get("/admin/estimates", adminAuth, requireFullAccess, async (_req, res) => {
   try {
     const rows = await db
       .select()

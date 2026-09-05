@@ -15,10 +15,20 @@ import {
 } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
+import { guardJob, requireFullAccess } from "../lib/roles";
 
 const router: IRouter = Router();
 
 router.use("/admin", adminAuth);
+
+// Portal traffic (service requests, customer messages) and document /
+// inspection management are office-only. The one exception is ticking
+// a milestone on a job you're assigned to, guarded per-job below.
+router.use("/admin/service-requests", requireFullAccess);
+router.use("/admin/customer-messages", requireFullAccess);
+router.use("/admin/job-documents", requireFullAccess);
+router.use("/admin/job-inspections", requireFullAccess);
+router.use("/admin/inspections", requireFullAccess);
 
 /** Default milestone template applied by "Add standard timeline". */
 export const DEFAULT_MILESTONES = [
@@ -37,7 +47,7 @@ export const DEFAULT_MILESTONES = [
 
 // ─── Milestones ─────────────────────────────────────────────────
 
-router.post("/admin/job-milestones", async (req, res) => {
+router.post("/admin/job-milestones", requireFullAccess, async (req, res) => {
   try {
     const parsed = insertJobMilestoneSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -52,7 +62,7 @@ router.post("/admin/job-milestones", async (req, res) => {
 });
 
 /** Seed the standard CHS timeline on a job in one click. */
-router.post("/admin/jobs/:jobId/milestones/template", async (req, res) => {
+router.post("/admin/jobs/:jobId/milestones/template", requireFullAccess, async (req, res) => {
   try {
     const jobId = Number(req.params.jobId);
     if (!Number.isFinite(jobId)) {
@@ -84,6 +94,18 @@ router.patch("/admin/job-milestones/:id", async (req, res) => {
       res.status(400).json({ error: "Invalid id" });
       return;
     }
+    // Crew tick milestones on their own jobs; resolve the parent job
+    // first so they can't advance someone else's project by id.
+    const [owning] = await db
+      .select({ jobId: jobMilestonesTable.jobId })
+      .from(jobMilestonesTable)
+      .where(eq(jobMilestonesTable.id, id))
+      .limit(1);
+    if (!owning) {
+      res.status(404).json({ error: "Milestone not found." });
+      return;
+    }
+    if (!(await guardJob(res, Number(owning.jobId)))) return;
     const update: Record<string, unknown> = {};
     for (const k of ["title", "status", "completedDate", "notes"] as const) {
       if (k in req.body) update[k] = req.body[k] ?? null;
@@ -111,7 +133,7 @@ router.patch("/admin/job-milestones/:id", async (req, res) => {
   }
 });
 
-router.delete("/admin/job-milestones/:id", async (req, res) => {
+router.delete("/admin/job-milestones/:id", requireFullAccess, async (req, res) => {
   try {
     const id = Number(req.params.id);
     await db.delete(jobMilestonesTable).where(eq(jobMilestonesTable.id, id));

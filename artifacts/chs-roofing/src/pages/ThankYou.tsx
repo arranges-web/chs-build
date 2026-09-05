@@ -29,7 +29,7 @@ import { gaLeadConversion } from "@/lib/gtag";
  *   ?from=free-quote   — paid-traffic version with a phone-first CTA
  *   ?from=contact      — standard contact-form version
  *
- * We also support ?name=Sandin to greet by first name when the form
+ * We also support ?name=Alex to greet by first name when the form
  * already collected one. Conversion-tracking pixels (Google Ads, Meta)
  * can be wired here later — the dedicated URL makes that trivial.
  */
