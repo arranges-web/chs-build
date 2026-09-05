@@ -570,6 +570,14 @@ export const api = {
     return r;
   },
 
+  /** Owner-account creation straight from the ADMIN_KEY — no invite
+   *  link. Stores the returned bearer token on success. */
+  adminBootstrap: async (payload: { key: string; name: string; email: string; password: string }) => {
+    const r = await postJsonResult<AuthSuccess>("/admin/auth/bootstrap", payload);
+    if ("data" in r) setAdminToken(r.data.token);
+    return r;
+  },
+
   adminInviteLookup: (token: string) =>
     getJsonResult<{ invite: { email: string | null; name: string | null; role: string } }>(
       `/admin/auth/invites/${encodeURIComponent(token)}`,

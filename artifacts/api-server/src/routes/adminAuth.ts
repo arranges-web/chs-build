@@ -316,4 +316,79 @@ router.get("/admin/auth/me", async (req, res) => {
   }
 });
 
+/**
+ * POST /api/admin/auth/bootstrap — create an owner account directly
+ * with the ADMIN_KEY, no invite link needed.
+ *
+ * Belt-and-braces for "I can't get in": nothing in the codebase ever
+ * deletes an admin row, but if the owner is ever locked out (lost
+ * password, fresh database, whatever) the env key is root and this
+ * turns it into a real account in one step. Rejects duplicate emails
+ * with a message pointing at password sign-in, so it can't clobber
+ * an existing account.
+ */
+router.post("/admin/auth/bootstrap", async (req, res) => {
+  try {
+    const key = String(req.body?.key ?? "");
+    const expected = process.env["ADMIN_KEY"];
+    if (!expected) {
+      res.status(503).json({ error: "ADMIN_KEY isn't set on the server, so the owner-account path is unavailable. Use an invite link instead." });
+      return;
+    }
+    if (!key || key !== expected) {
+      res.status(401).json({ error: "That admin key wasn't accepted." });
+      return;
+    }
+
+    const email = String(req.body?.email ?? "").trim().toLowerCase();
+    const name = String(req.body?.name ?? "").trim();
+    const password = String(req.body?.password ?? "");
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.status(400).json({ error: "That email doesn't look right." });
+      return;
+    }
+    if (!name) {
+      res.status(400).json({ error: "Please add your name." });
+      return;
+    }
+    const tooWeak = passwordTooWeak(password);
+    if (tooWeak) {
+      res.status(400).json({ error: tooWeak });
+      return;
+    }
+
+    const [existing] = await db
+      .select({ id: adminsTable.id })
+      .from(adminsTable)
+      .where(eq(adminsTable.email, email))
+      .limit(1);
+    if (existing) {
+      res.status(409).json({
+        error: "An admin account already exists for that email — it hasn't gone anywhere. Switch to \"Use email and password\" and sign in. If you forgot the password, create the account under a different email and we'll clean up later.",
+      });
+      return;
+    }
+
+    const passwordHash = await hashPassword(password);
+    const [admin] = await db
+      .insert(adminsTable)
+      .values({ email, name, passwordHash, role: "owner", lastLoginAt: new Date() })
+      .returning();
+
+    const { token: sessionToken, expiresAt } = await createAdminSession(
+      admin.id,
+      req.header("user-agent"),
+    );
+    setSessionCookie(req, res, sessionToken);
+    res.status(201).json({
+      ok: true,
+      token: sessionToken,
+      expiresAt,
+      admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
+    });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
+
 export default router;

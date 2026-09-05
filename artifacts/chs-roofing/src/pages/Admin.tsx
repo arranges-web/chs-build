@@ -54,6 +54,11 @@ export default function AdminPage() {
   const [adminKey, setAdminKey] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // "Create owner account with admin key" — lives under key mode.
+  const [bootOpen, setBootOpen] = useState(false);
+  const [bootName, setBootName] = useState("");
+  const [bootEmail, setBootEmail] = useState("");
+  const [bootPassword, setBootPassword] = useState("");
 
   // App state
   const [leads, setLeads] = useState<AnyRow[] | null>(null);
@@ -92,7 +97,10 @@ export default function AdminPage() {
       } catch {
         // ignore
       }
-      if (lastSection && !cancelled) setSection(lastSection);
+      // Don't restore a section that's been hidden from the nav (e.g.
+      // "outreach" is parked) — the owner would land on a dead screen
+      // with no way to see where they are.
+      if (lastSection && lastSection !== "outreach" && !cancelled) setSection(lastSection);
 
       // whoAmI sends whatever credential is stored (bearer token
       // and/or admin key). One round trip tells us if we're in.
@@ -221,6 +229,37 @@ export default function AdminPage() {
     setAuthedKey(key);
   };
 
+  /** Turn the ADMIN_KEY into a real owner account in one step. */
+  const submitBootstrap = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    const key = adminKey.trim();
+    if (!key) {
+      setLoginError("Paste your admin key above first.");
+      return;
+    }
+    if (!bootName.trim() || !bootEmail.trim() || !bootPassword) {
+      setLoginError("Name, email, and a password (10+ characters) are all required.");
+      return;
+    }
+    setSubmitting(true);
+    const res = await api.adminBootstrap({
+      key,
+      name: bootName.trim(),
+      email: bootEmail.trim(),
+      password: bootPassword,
+    });
+    setSubmitting(false);
+    if ("error" in res) {
+      setLoginError(res.error);
+      return;
+    }
+    // Token is stored by api.adminBootstrap; drop straight in.
+    setMe(res.data.admin);
+    setBootPassword("");
+    setAdminKey("");
+  };
+
   const signOut = async () => {
     await api.adminLogout(); // clears the stored token/key too
     resetToLogin();
@@ -326,6 +365,64 @@ export default function AdminPage() {
               >
                 Sign in with key
               </button>
+
+              {/* Owner-account creation from the key. Nothing ever
+                  deletes an admin row, but this guarantees the owner
+                  can always (re)create their login in 30 seconds. */}
+              <div className="mt-3 pt-3 border-t border-border/60">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginError(null);
+                    setBootOpen((o) => !o);
+                  }}
+                  className="w-full inline-flex items-center justify-between text-[12px] font-semibold text-foreground hover:text-primary transition-colors"
+                >
+                  <span>Create my owner account with this key</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${bootOpen ? "rotate-180" : ""}`} />
+                </button>
+                {bootOpen && (
+                  <div className="mt-3 space-y-2.5">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Sets up an email + password login you can use from any
+                      device — no invite link needed. Uses the key you pasted above.
+                    </p>
+                    <input
+                      value={bootName}
+                      onChange={(e) => setBootName(e.target.value)}
+                      autoComplete="name"
+                      placeholder="Your name"
+                      className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                    <input
+                      type="email"
+                      value={bootEmail}
+                      onChange={(e) => setBootEmail(e.target.value)}
+                      autoComplete="email"
+                      placeholder="you@cordovahomeservices.com"
+                      className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                    <input
+                      type="password"
+                      value={bootPassword}
+                      onChange={(e) => setBootPassword(e.target.value)}
+                      autoComplete="new-password"
+                      placeholder="Choose a password (10+ characters)"
+                      minLength={10}
+                      className="w-full h-11 px-3.5 rounded-xl border border-border/60 bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => void submitBootstrap(e)}
+                      disabled={submitting}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-secondary hover:opacity-90 disabled:opacity-60 text-white h-11 rounded-xl font-semibold text-sm tracking-tight transition-all"
+                    >
+                      {submitting ? "Creating…" : "Create owner account"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={() => {

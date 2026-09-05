@@ -90,7 +90,11 @@ const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overvi
   { id: "projects", label: "Projects", icon: Briefcase, group: "crm" },
   { id: "leads", label: "Leads", icon: Inbox, group: "crm" },
   { id: "estimates", label: "Estimates", icon: Calculator, group: "crm" },
-  { id: "outreach", label: "SMS Outreach", icon: MessageSquareText, group: "crm" },
+  // SMS Outreach is parked for now — it needs Twilio + Anthropic secrets
+  // that aren't configured, so surfacing it only shows empty/error
+  // states. The section, route, and component all still exist; add
+  // this line back to re-enable it in the sidebar.
+  // { id: "outreach", label: "SMS Outreach", icon: MessageSquareText, group: "crm" },
   { id: "portalInbox", label: "Portal Inbox", icon: Inbox, group: "crm" },
   { id: "analytics", label: "Analytics", icon: BarChart3, group: "insights" },
   { id: "seo", label: "SEO Activity", icon: Search, group: "insights" },
