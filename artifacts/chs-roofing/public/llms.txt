@@ -79,9 +79,27 @@ BBB accredited A+.
 
 ## Service-area pages
 
+Each page covers that city's permitting jurisdiction, common roof types,
+HOA requirements, and the exact ZIP codes covered.
+
+- All service areas (hub): https://chs-roofing.com/service-area
+- Roofing in Cape Coral (home city): https://chs-roofing.com/roofing-cape-coral
 - Roofing in Fort Myers: https://chs-roofing.com/roofing-fort-myers
-- Roofing in Naples: https://chs-roofing.com/roofing-naples
+- Roofing in North Fort Myers: https://chs-roofing.com/roofing-north-fort-myers
+- Roofing in Estero: https://chs-roofing.com/roofing-estero
 - Roofing in Bonita Springs: https://chs-roofing.com/roofing-bonita-springs
+- Roofing in Naples: https://chs-roofing.com/roofing-naples
+- Roofing in Punta Gorda: https://chs-roofing.com/roofing-punta-gorda
+- Roofing in Port Charlotte: https://chs-roofing.com/roofing-port-charlotte
+- Roofing in North Port: https://chs-roofing.com/roofing-north-port
+
+## Counties and permitting
+
+CHS Roofing pulls permits in four Southwest Florida jurisdictions:
+- Lee County (Cape Coral, Fort Myers, North Fort Myers, Estero, Bonita Springs)
+- Collier County (Naples, Marco Island)
+- Charlotte County (Punta Gorda, Port Charlotte)
+- Sarasota County (North Port, Englewood)
 
 ## Project galleries
 

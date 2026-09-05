@@ -6,6 +6,8 @@ export default function Naples() {
     <LocationPageTemplate
       city="Naples"
       path="/roofing-naples"
+      geo={{ latitude: 26.1420, longitude: -81.7948 }}
+      zips={["34102", "34103", "34104", "34105", "34108", "34109", "34110", "34112", "34119"]}
       heroImage={PHOTOS.terracottaWaterfront}
       heroImageAlt="Terracotta tile roof on a Naples, FL waterfront home installed by CHS Roofing"
       seoTitle="Naples, FL Roofing Contractor | Tile, Metal & Shingle Roofs — CHS Roofing"
@@ -21,8 +23,9 @@ export default function Naples() {
       ]}
       nearbyCities={[
         { name: "Bonita Springs", href: "/roofing-bonita-springs" },
+        { name: "Estero", href: "/roofing-estero" },
         { name: "Fort Myers", href: "/roofing-fort-myers" },
-        { name: "Cape Coral", href: "/" },
+        { name: "Cape Coral", href: "/roofing-cape-coral" },
       ]}
       localPoints={[
         {

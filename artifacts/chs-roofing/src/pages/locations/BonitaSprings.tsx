@@ -6,6 +6,8 @@ export default function BonitaSprings() {
     <LocationPageTemplate
       city="Bonita Springs"
       path="/roofing-bonita-springs"
+      geo={{ latitude: 26.3398, longitude: -81.7787 }}
+      zips={["34134", "34135"]}
       heroImage={PHOTOS.silverMetalPoolCage}
       heroImageAlt="Silver metal roof with screened pool cage on a Bonita Springs, FL home"
       seoTitle="Bonita Springs, FL Roof Repair & Installation | CHS Roofing"
@@ -22,7 +24,8 @@ export default function BonitaSprings() {
       nearbyCities={[
         { name: "Naples", href: "/roofing-naples" },
         { name: "Fort Myers", href: "/roofing-fort-myers" },
-        { name: "Cape Coral", href: "/" },
+        { name: "Cape Coral", href: "/roofing-cape-coral" },
+        { name: "Estero", href: "/roofing-estero" },
       ]}
       localPoints={[
         {

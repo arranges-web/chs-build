@@ -45,6 +45,13 @@ const ThankYouRepair = lazy(() => import("@/pages/ThankYouRepair"));
 const RoofingFortMyers = lazy(() => import("@/pages/locations/FortMyers"));
 const RoofingNaples = lazy(() => import("@/pages/locations/Naples"));
 const RoofingBonitaSprings = lazy(() => import("@/pages/locations/BonitaSprings"));
+const RoofingCapeCoral = lazy(() => import("@/pages/locations/CapeCoral"));
+const RoofingNorthFortMyers = lazy(() => import("@/pages/locations/NorthFortMyers"));
+const RoofingEstero = lazy(() => import("@/pages/locations/Estero"));
+const RoofingPuntaGorda = lazy(() => import("@/pages/locations/PuntaGorda"));
+const RoofingPortCharlotte = lazy(() => import("@/pages/locations/PortCharlotte"));
+const RoofingNorthPort = lazy(() => import("@/pages/locations/NorthPort"));
+const ServiceArea = lazy(() => import("@/pages/ServiceArea"));
 const Brochure = lazy(() => import("@/pages/Brochure"));
 
 const queryClient = new QueryClient();
@@ -99,6 +106,13 @@ function MainSiteRoutes() {
         <Route path="/roofing-fort-myers">{lazyEl(RoofingFortMyers)}</Route>
         <Route path="/roofing-naples">{lazyEl(RoofingNaples)}</Route>
         <Route path="/roofing-bonita-springs">{lazyEl(RoofingBonitaSprings)}</Route>
+        <Route path="/roofing-cape-coral">{lazyEl(RoofingCapeCoral)}</Route>
+        <Route path="/roofing-north-fort-myers">{lazyEl(RoofingNorthFortMyers)}</Route>
+        <Route path="/roofing-estero">{lazyEl(RoofingEstero)}</Route>
+        <Route path="/roofing-punta-gorda">{lazyEl(RoofingPuntaGorda)}</Route>
+        <Route path="/roofing-port-charlotte">{lazyEl(RoofingPortCharlotte)}</Route>
+        <Route path="/roofing-north-port">{lazyEl(RoofingNorthPort)}</Route>
+        <Route path="/service-area">{lazyEl(ServiceArea)}</Route>
         <Route path="/brochure">{lazyEl(Brochure)}</Route>
         <Route>{lazyEl(NotFound)}</Route>
       </Switch>

@@ -4,7 +4,13 @@ import { ArrowRight, CheckCircle, HelpCircle, MapPin, Phone, ShieldCheck } from 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import PageHero from "@/components/PageHero";
 import CtaSection from "@/components/CtaSection";
-import Seo, { breadcrumbSchema, faqSchema, serviceSchema } from "@/components/Seo";
+import Seo, {
+  breadcrumbSchema,
+  faqSchema,
+  localBusinessSchema,
+  reviewSchema,
+  serviceSchema,
+} from "@/components/Seo";
 import { SERVICES, SITE, TESTIMONIALS } from "@/lib/site-config";
 
 type Props = {
@@ -28,6 +34,13 @@ type Props = {
   testimonialIndices?: number[];
   /** Other city pages to cross-link for internal linking / crawl depth. */
   nearbyCities: { name: string; href: string }[];
+  /** Real coordinates for this city — powers the LocalBusiness GeoCircle
+   *  that local-pack and "near me" AI answers key off. */
+  geo: { latitude: number; longitude: number };
+  /** Service radius in metres. Defaults to ~20 miles. */
+  radiusMeters?: number;
+  /** ZIPs covered — a strong, very literal local-relevance signal. */
+  zips?: string[];
 };
 
 export default function LocationPageTemplate({
@@ -43,6 +56,9 @@ export default function LocationPageTemplate({
   faqs,
   testimonialIndices = [0, 2, 4],
   nearbyCities,
+  geo,
+  radiusMeters,
+  zips = [],
 }: Props) {
   const reviews = testimonialIndices.map((i) => TESTIMONIALS[i]).filter(Boolean);
 
@@ -53,6 +69,16 @@ export default function LocationPageTemplate({
         description={seoDescription}
         path={path}
         jsonLd={[
+          // Per-city LocalBusiness with real coordinates — the node that
+          // local pack and "roofer near me" answers actually key off.
+          localBusinessSchema({
+            city,
+            path,
+            latitude: geo.latitude,
+            longitude: geo.longitude,
+            description: seoDescription,
+            ...(radiusMeters ? { radiusMeters } : {}),
+          }),
           serviceSchema({
             name: `Roofing Services in ${city}, FL`,
             description: seoDescription,
@@ -61,6 +87,9 @@ export default function LocationPageTemplate({
           }),
           breadcrumbSchema([{ name: `Roofing in ${city}`, path }]),
           faqSchema(faqs),
+          // Real published reviews, attributed — what AI answer engines
+          // quote when asked whether CHS is any good.
+          ...reviewSchema(reviews),
         ]}
       />
 
@@ -167,6 +196,17 @@ export default function LocationPageTemplate({
               </span>
             ))}
           </div>
+
+          {/* ZIP coverage — a literal, high-signal local match for
+              "roofer in 33904" style searches. */}
+          {zips.length > 0 && (
+            <div className="mt-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">
+                ZIP codes we cover in {city}
+              </p>
+              <p className="font-mono text-sm text-foreground/80">{zips.join(" · ")}</p>
+            </div>
+          )}
         </div>
       </section>
 

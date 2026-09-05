@@ -6,6 +6,8 @@ export default function FortMyers() {
     <LocationPageTemplate
       city="Fort Myers"
       path="/roofing-fort-myers"
+      geo={{ latitude: 26.6406, longitude: -81.8723 }}
+      zips={["33901", "33905", "33907", "33908", "33912", "33913", "33916", "33919", "33966"]}
       heroImage={PHOTOS.darkMetalAerial}
       heroImageAlt="Aerial view of a dark metal roof installed by CHS Roofing near Fort Myers, FL"
       seoTitle="Roofing Company in Fort Myers, FL | Repair & Installation — CHS Roofing"
@@ -20,8 +22,9 @@ export default function FortMyers() {
         "Fort Myers Shores",
       ]}
       nearbyCities={[
-        { name: "Cape Coral", href: "/" },
-        { name: "Naples", href: "/roofing-naples" },
+        { name: "Cape Coral", href: "/roofing-cape-coral" },
+        { name: "North Fort Myers", href: "/roofing-north-fort-myers" },
+        { name: "Estero", href: "/roofing-estero" },
         { name: "Bonita Springs", href: "/roofing-bonita-springs" },
       ]}
       localPoints={[

@@ -174,6 +174,116 @@ export function serviceSchema({
 /**
  * Helper: build a FAQPage schema from a list of Q/A pairs.
  */
+/**
+ * Per-city LocalBusiness node. This is the piece that actually feeds
+ * local-pack and "roofer near me" answers: a real lat/lng for the city
+ * being served, a service radius around it, and the NAP (name /
+ * address / phone) matching the Google Business Profile exactly.
+ *
+ * Each city page gets its own `@id` so the graph has one node per
+ * location instead of every page redeclaring the same organization.
+ */
+export function localBusinessSchema({
+  city,
+  path,
+  latitude,
+  longitude,
+  description,
+  radiusMeters = 32000,
+}: {
+  city: string;
+  path: string;
+  latitude: number;
+  longitude: number;
+  description: string;
+  radiusMeters?: number;
+}): object {
+  return {
+    "@context": "https://schema.org",
+    "@type": ["RoofingContractor", "LocalBusiness"],
+    "@id": `${SITE_URL}${path}#localbusiness`,
+    name: `CHS Roofing — ${city}, FL`,
+    legalName: "Cordova Home Services LLC",
+    parentOrganization: { "@id": `${SITE_URL}/#organization` },
+    url: `${SITE_URL}${path}`,
+    description,
+    telephone: "+1-239-737-1758",
+    email: "info@cordovahomeservices.com",
+    priceRange: "$$",
+    image: `${SITE_URL}/opengraph.jpg`,
+    logo: `${SITE_URL}/apple-touch-icon-180.png`,
+    // NAP must match the Google Business Profile character-for-character.
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Cape Coral",
+      addressRegion: "FL",
+      postalCode: "33904",
+      addressCountry: "US",
+    },
+    areaServed: {
+      "@type": "GeoCircle",
+      geoMidpoint: { "@type": "GeoCoordinates", latitude, longitude },
+      geoRadius: String(radiusMeters),
+    },
+    serviceArea: {
+      "@type": "GeoCircle",
+      geoMidpoint: { "@type": "GeoCoordinates", latitude, longitude },
+      geoRadius: String(radiusMeters),
+    },
+    hasCredential: {
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: "license",
+      name: "Florida Certified Roofing Contractor",
+      identifier: "CCC1333902",
+      recognizedBy: {
+        "@type": "GovernmentOrganization",
+        name: "Florida Department of Business & Professional Regulation",
+        url: "https://www.myfloridalicense.com/",
+      },
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "08:00",
+        closes: "17:00",
+      },
+    ],
+    sameAs: [
+      "https://www.facebook.com/profile.php?id=61567718997385",
+      "https://www.instagram.com/cordova_home_services/",
+      "https://g.page/r/CYyChCOA5U9MEAE",
+      "https://www.bbb.org/us/fl/cape-coral/profile/roofing-contractors/cordova-home-services-llc-0653-90450754",
+    ],
+  };
+}
+
+/**
+ * Individual Review nodes. `aggregateRating` alone tells a crawler the
+ * average; actual Review objects with named authors and body text are
+ * what AI answer engines quote when someone asks "is CHS Roofing any
+ * good?". Only pass real, published reviews.
+ */
+export function reviewSchema(
+  reviews: Array<{ name: string; date: string; text: string }>,
+  itemId = `${SITE_URL}/#organization`,
+): object[] {
+  return reviews.map((r) => ({
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: { "@id": itemId },
+    author: { "@type": "Person", name: r.name },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: "5",
+      bestRating: "5",
+      worstRating: "1",
+    },
+    reviewBody: r.text,
+    publisher: { "@type": "Organization", name: "Google" },
+  }));
+}
+
 export function faqSchema(items: Array<{ q: string; a: string }>): object {
   return {
     "@context": "https://schema.org",
