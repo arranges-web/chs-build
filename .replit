@@ -43,10 +43,12 @@ externalPort = 3001
 localPort = 8084
 externalPort = 3003
 
-[userenv]
-
-[userenv.shared]
-ADMIN_KEY = "Gustavo"
+# ADMIN_KEY deliberately NOT set here. `[userenv.shared]` values are
+# committed to git, so a key placed here is public to anyone with
+# repo access. Set ADMIN_KEY in Replit → Secrets (encrypted, never in
+# the repo). It's the owner's recovery/bootstrap credential — the
+# admin login screen's key mode and the "Create my owner account"
+# form both read it from the environment at runtime.
 
 [nix]
 channel = "stable-25_05"
