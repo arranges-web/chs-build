@@ -1,25 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  AlertTriangle,
   ArrowRight,
   Briefcase,
   Calculator,
+  CalendarClock,
   CheckCircle2,
+  ClipboardCheck,
+  Clock,
   Eye,
   HardHat,
   Inbox,
-  RefreshCw,
-  Sparkles,
+  MessageSquare,
+  Pause,
+  Phone,
   TrendingUp,
   Users,
 } from "lucide-react";
 import {
   api,
+  type AdminCustomerMessageRow,
   type AdminJob,
+  type AdminServiceRequestRow,
   type AnalyticsResponse,
   type Customer,
+  type UpcomingInspectionRow,
 } from "@/lib/api";
 import type { AdminSection } from "./AdminShell";
-import BackupCard from "./BackupCard";
 
 type AnyRow = Record<string, unknown>;
 
@@ -27,6 +34,8 @@ type Props = {
   adminKey: string;
   leads: AnyRow[] | null;
   estimates: AnyRow[] | null;
+  requests: AdminServiceRequestRow[] | null;
+  messages: AdminCustomerMessageRow[] | null;
   onNavigate: (s: AdminSection) => void;
   onOpenJob?: (jobId: number, customerId: number) => void;
 };
@@ -38,6 +47,18 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   on_hold: { label: "On hold", cls: "bg-amber-100 text-amber-700" },
 };
 
+const REQUEST_LABEL: Record<string, string> = {
+  leak: "Roof leak inspection",
+  warranty: "Warranty service",
+  annual: "Annual inspection",
+  storm: "Storm damage inspection",
+  maintenance: "Maintenance",
+  cleaning: "Roof cleaning",
+  general: "General request",
+};
+
+const DAY = 86_400_000;
+
 const fmtDate = (s?: string | null) => {
   if (!s) return "—";
   const d = new Date(s);
@@ -46,234 +67,335 @@ const fmtDate = (s?: string | null) => {
 
 const fmtNumber = (n: number) => n.toLocaleString("en-US");
 
-export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOpenJob }: Props) {
+const relTime = (iso: string) => {
+  const ms = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(ms)) return "";
+  const m = Math.floor(ms / 60_000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return d === 1 ? "yesterday" : `${d}d ago`;
+};
+
+const greeting = () => {
+  const h = new Date().getHours();
+  return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+};
+
+export default function Dashboard({
+  adminKey,
+  leads,
+  estimates,
+  requests,
+  messages,
+  onNavigate,
+  onOpenJob,
+}: Props) {
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [customers, setCustomers] = useState<Customer[] | null>(null);
   const [jobs, setJobs] = useState<AdminJob[] | null>(null);
-  const [demoState, setDemoState] = useState<
-    | { kind: "idle" }
-    | { kind: "loading"; reset: boolean }
-    | { kind: "ready"; portalUrl: string; reset: boolean }
-    | { kind: "error"; message: string }
-  >({ kind: "idle" });
+  const [inspections, setInspections] = useState<UpcomingInspectionRow[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [a, c, j] = await Promise.all([
+      const [a, c, j, i] = await Promise.all([
         api.getAnalytics(adminKey, 30),
         api.listCustomers(adminKey),
         api.listAllJobs(adminKey),
+        api.listUpcomingInspections(adminKey),
       ]);
       if (cancelled) return;
       if ("data" in a) setAnalytics(a.data);
       if ("data" in c) setCustomers(c.data.rows);
       if ("data" in j) setJobs(j.data.rows);
+      if ("data" in i) setInspections(i.data.rows);
     })();
     return () => {
       cancelled = true;
     };
   }, [adminKey]);
 
-  const loadDemo = async (reset: boolean) => {
-    setDemoState({ kind: "loading", reset });
-    const res = await api.loadDemo(adminKey, reset);
-    if ("error" in res) {
-      setDemoState({ kind: "error", message: res.error });
-      return;
-    }
-    const portalUrl = `${window.location.origin}/portal?account=${encodeURIComponent(
-      res.data.accountNumber,
-    )}`;
-    setDemoState({ kind: "ready", portalUrl, reset });
-  };
+  // ─── Derived "needs attention" ─────────────────────────────────
+  const now = Date.now();
 
-  const activeJobs = (jobs ?? []).filter(
-    (j) => j.status === "in_progress" || j.status === "scheduled",
+  const newLeads = useMemo(
+    () =>
+      (leads ?? []).filter((r) => {
+        const t = new Date(String(r.createdAt ?? "")).getTime();
+        return Number.isFinite(t) && now - t <= 7 * DAY;
+      }),
+    [leads, now],
   );
-  const recentLeads = (leads ?? []).slice(0, 5);
+
+  const unreadByCustomer = useMemo(() => {
+    const map = new Map<number, AdminCustomerMessageRow & { count: number }>();
+    for (const m of messages ?? []) {
+      if (m.sender !== "customer" || m.readByTeam) continue;
+      const existing = map.get(m.customerId);
+      if (!existing || new Date(m.createdAt) > new Date(existing.createdAt)) {
+        map.set(m.customerId, { ...m, count: (existing?.count ?? 0) + 1 });
+      } else {
+        existing.count += 1;
+      }
+    }
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }, [messages]);
+  const unreadCount = unreadByCustomer.reduce((s, m) => s + m.count, 0);
+
+  const openRequests = useMemo(
+    () =>
+      (requests ?? [])
+        .filter((r) => r.status === "new" || r.status === "in_progress")
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [requests],
+  );
+  const newRequestCount = openRequests.filter((r) => r.status === "new").length;
+
+  const activeJobs = useMemo(
+    () => (jobs ?? []).filter((j) => j.status === "in_progress" || j.status === "scheduled"),
+    [jobs],
+  );
+  const onHoldJobs = useMemo(() => (jobs ?? []).filter((j) => j.status === "on_hold"), [jobs]);
+  const pastDueJobs = useMemo(
+    () =>
+      activeJobs.filter((j) => {
+        if (!j.estimatedCompletion) return false;
+        const t = new Date(j.estimatedCompletion).getTime();
+        return Number.isFinite(t) && t < now - DAY; // a full day past ETA
+      }),
+    [activeJobs, now],
+  );
+
+  const upcoming = inspections ?? [];
+  const attentionTotal =
+    newLeads.length + unreadCount + newRequestCount + pastDueJobs.length + onHoldJobs.length;
+
+  const recentLeads = (leads ?? []).slice(0, 6);
   const recentEstimates = (estimates ?? []).slice(0, 5);
+
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <div className="space-y-6">
-      {/* Demo portal launcher — click "Load demo data" and the CHS
-          founder can open the customer portal end-to-end with a
-          realistic project already populated. Reset wipes and
-          re-seeds it, so it's safe to click around and reset. */}
-      <section className="bg-gradient-to-br from-primary/[0.06] via-card to-card border border-primary/25 rounded-2xl p-5 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              Demo portal
-            </div>
-            <h3 className="font-display font-bold text-foreground text-lg">
-              See exactly what your customers see.
-            </h3>
-            <p className="text-[13px] text-muted-foreground mt-0.5">
-              Loads a rich sample project (Cordero · Palm Drive) with
-              milestones, photos, documents, inspections, warranty, and
-              messages — then opens the portal for you.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 md:shrink-0">
-            <button
-              type="button"
-              onClick={() => void loadDemo(false)}
-              disabled={demoState.kind === "loading"}
-              className="inline-flex items-center justify-center gap-1.5 bg-primary text-white text-sm font-semibold px-4 h-10 rounded-full shadow-md shadow-primary/30 hover:bg-primary/90 disabled:opacity-60 transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              {demoState.kind === "loading" && !demoState.reset ? "Loading…" : "Load demo data"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!confirm("Reset the demo customer? This wipes the current demo data and re-seeds it fresh.")) return;
-                void loadDemo(true);
-              }}
-              disabled={demoState.kind === "loading"}
-              className="inline-flex items-center justify-center gap-1.5 bg-card border border-border/60 text-foreground text-sm font-semibold px-4 h-10 rounded-full hover:border-primary/40 disabled:opacity-60 transition-colors"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${demoState.kind === "loading" && demoState.reset ? "animate-spin" : ""}`} />
-              Reset demo
-            </button>
-          </div>
+      {/* ─── Greeting ───────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] font-semibold text-primary">{today}</p>
+          <h2 className="font-display font-bold text-2xl md:text-3xl tracking-tight text-foreground mt-1">
+            {greeting()}.{" "}
+            {attentionTotal === 0 ? (
+              <span className="text-muted-foreground font-medium">All clear right now.</span>
+            ) : (
+              <span className="text-muted-foreground font-medium">
+                {attentionTotal} thing{attentionTotal === 1 ? "" : "s"} need{attentionTotal === 1 ? "s" : ""} you.
+              </span>
+            )}
+          </h2>
         </div>
+      </div>
 
-        {demoState.kind === "error" && (
-          <p className="mt-3 text-[12px] text-destructive">
-            {demoState.message}
-          </p>
-        )}
-        {demoState.kind === "ready" && (
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 bg-card border border-border/60 rounded-xl p-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-primary">
-                {demoState.reset ? "Demo reset — ready" : "Demo ready"}
-              </p>
-              <p className="font-mono text-[12px] text-foreground/85 truncate">
-                {demoState.portalUrl}
-              </p>
-            </div>
-            <a
-              href={demoState.portalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 bg-primary text-white text-sm font-semibold px-4 h-10 rounded-full hover:bg-primary/90 shrink-0"
-            >
-              Open portal
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
-        )}
-      </section>
-
-      {/* Data safety — one-click full backup. Every customer, job,
-          lead, estimate, portal record, message, and SMS row in one
-          dated JSON file the owner keeps wherever they like, independent
-          of the hosting provider. */}
-      <BackupCard />
-
-      {/* Metric cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <MetricCard
-          icon={Users}
-          label="Customers"
-          value={customers ? fmtNumber(customers.length) : "—"}
-          sub="total in CRM"
-          onClick={() => onNavigate("clients")}
-        />
-        <MetricCard
-          icon={Briefcase}
-          label="Active projects"
-          value={fmtNumber(activeJobs.length)}
-          sub="scheduled + in progress"
-          onClick={() => onNavigate("projects" as AdminSection)}
-        />
-        <MetricCard
+      {/* ─── Needs attention ────────────────────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        <AttentionTile
           icon={Inbox}
-          label="Leads"
-          value={leads ? fmtNumber(leads.length) : "—"}
-          sub="all time"
+          label="New leads"
+          hint="last 7 days"
+          value={newLeads.length}
+          tone="primary"
           onClick={() => onNavigate("leads")}
         />
-        <MetricCard
-          icon={Calculator}
-          label="Estimates"
-          value={estimates ? fmtNumber(estimates.length) : "—"}
-          sub="all time"
-          onClick={() => onNavigate("estimates")}
+        <AttentionTile
+          icon={MessageSquare}
+          label="Unread messages"
+          hint="from customers"
+          value={unreadCount}
+          tone="primary"
+          onClick={() => onNavigate("portalInbox")}
         />
-        <MetricCard
-          icon={Eye}
-          label="Pageviews"
-          value={analytics ? fmtNumber(analytics.totals.views) : "—"}
-          sub={`last ${analytics?.days ?? 30} days`}
-          onClick={() => onNavigate("analytics" as AdminSection)}
+        <AttentionTile
+          icon={ClipboardCheck}
+          label="New requests"
+          hint="portal service requests"
+          value={newRequestCount}
+          tone="primary"
+          onClick={() => onNavigate("portalInbox")}
         />
-        <MetricCard
-          icon={TrendingUp}
-          label="Sessions"
-          value={analytics ? fmtNumber(analytics.totals.sessions) : "—"}
-          sub={`last ${analytics?.days ?? 30} days`}
-          onClick={() => onNavigate("analytics" as AdminSection)}
+        <AttentionTile
+          icon={CalendarClock}
+          label="Inspections"
+          hint="scheduled or pending"
+          value={upcoming.length}
+          tone="info"
+          onClick={() => onNavigate("projects")}
+        />
+        <AttentionTile
+          icon={AlertTriangle}
+          label="Past ETA"
+          hint="active jobs over date"
+          value={pastDueJobs.length}
+          tone="warn"
+          onClick={() => onNavigate("projects")}
+        />
+        <AttentionTile
+          icon={Pause}
+          label="On hold"
+          hint="jobs paused"
+          value={onHoldJobs.length}
+          tone="warn"
+          onClick={() => onNavigate("projects")}
         />
       </div>
 
-      {/* 30-day trend */}
-      {analytics && analytics.pageviewsByDay.length > 0 && (
-        <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-bold text-foreground text-base">
-              Pageviews · last 30 days
-            </h3>
-            <button
-              type="button"
-              onClick={() => onNavigate("analytics" as AdminSection)}
-              className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Full analytics <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-          <Sparkline data={analytics.pageviewsByDay} />
-        </section>
-      )}
-
       <div className="grid lg:grid-cols-2 gap-4">
-        {/* Active projects */}
-        <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-bold text-foreground text-base inline-flex items-center gap-2">
-              <HardHat className="w-4 h-4 text-primary" />
-              Active projects
-            </h3>
-            <button
-              type="button"
-              onClick={() => onNavigate("projects" as AdminSection)}
-              className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
-            >
-              See all <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-          {activeJobs.length === 0 ? (
-            <EmptyState text="No active projects." />
+        {/* ─── Needs a reply ─────────────────────────────────────── */}
+        <Panel
+          icon={MessageSquare}
+          title="Needs a reply"
+          action={{ label: "Open inbox", onClick: () => onNavigate("portalInbox") }}
+        >
+          {unreadByCustomer.length === 0 && openRequests.length === 0 ? (
+            <Empty text="Inbox is clear." />
           ) : (
-            <ul className="space-y-3">
+            <ul className="divide-y divide-border/40">
+              {unreadByCustomer.slice(0, 4).map((m) => (
+                <li key={`m-${m.customerId}`} className="py-2.5 flex items-start gap-3">
+                  <span className="mt-1 w-2 h-2 rounded-full bg-primary shrink-0" aria-hidden="true" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <p className="font-semibold text-sm text-foreground truncate">
+                        {m.customerName ?? "Customer"}
+                        {m.count > 1 && (
+                          <span className="ml-1.5 text-[10px] font-bold text-primary">{m.count} new</span>
+                        )}
+                      </p>
+                      <span className="text-[11px] text-muted-foreground shrink-0">{relTime(m.createdAt)}</span>
+                    </div>
+                    <p className="text-[12px] text-muted-foreground truncate">{m.body}</p>
+                  </div>
+                </li>
+              ))}
+              {openRequests.slice(0, 4).map((r) => (
+                <li key={`r-${r.id}`} className="py-2.5 flex items-start gap-3">
+                  <span
+                    className={`mt-1 w-2 h-2 rounded-full shrink-0 ${r.status === "new" ? "bg-primary" : "bg-amber-500"}`}
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <p className="font-semibold text-sm text-foreground truncate">
+                        {r.customerName ?? "Customer"}
+                        <span className="ml-1.5 text-[11px] font-medium text-muted-foreground">
+                          · {REQUEST_LABEL[r.requestType] ?? r.requestType}
+                        </span>
+                      </p>
+                      <span className="text-[11px] text-muted-foreground shrink-0">{relTime(r.createdAt)}</span>
+                    </div>
+                    <p className="text-[12px] text-muted-foreground truncate">
+                      {r.message || (r.status === "new" ? "New request — no notes" : "In progress")}
+                    </p>
+                  </div>
+                  {r.customerPhone && (
+                    <a
+                      href={`tel:${r.customerPhone}`}
+                      className="shrink-0 w-8 h-8 rounded-full bg-foreground/[0.04] hover:bg-primary/10 hover:text-primary flex items-center justify-center"
+                      aria-label={`Call ${r.customerName ?? "customer"}`}
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        {/* ─── Upcoming inspections ──────────────────────────────── */}
+        <Panel
+          icon={CalendarClock}
+          title="Upcoming inspections"
+          action={{ label: "All projects", onClick: () => onNavigate("projects") }}
+        >
+          {inspections === null ? (
+            <Empty text="Loading…" muted />
+          ) : upcoming.length === 0 ? (
+            <Empty text="Nothing scheduled." />
+          ) : (
+            <ul className="divide-y divide-border/40">
+              {upcoming.slice(0, 5).map((i) => (
+                <li key={i.id}>
+                  <button
+                    type="button"
+                    onClick={() => i.customerId != null && onOpenJob?.(i.jobId, i.customerId)}
+                    className="w-full text-left py-2.5 flex items-start gap-3 rounded-lg hover:bg-muted/40 -mx-2 px-2 transition-colors"
+                  >
+                    <span className="mt-0.5 w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                      <ClipboardCheck className="w-4 h-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-sm text-foreground truncate">
+                        {i.inspectionType}
+                        {i.status === "reinspection" && (
+                          <span className="ml-1.5 text-[10px] uppercase tracking-wider font-bold text-amber-700">re-inspect</span>
+                        )}
+                      </p>
+                      <p className="text-[12px] text-muted-foreground truncate">
+                        {i.customerName ?? "—"} · {i.jobTitle ?? "Job"}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-[12px] font-semibold text-foreground">{i.date ?? "TBD"}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {[i.timeWindow, i.county].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        {/* ─── Active projects ───────────────────────────────────── */}
+        <Panel
+          icon={HardHat}
+          title="Active projects"
+          action={{ label: "See all", onClick: () => onNavigate("projects") }}
+        >
+          {jobs === null ? (
+            <Empty text="Loading…" muted />
+          ) : activeJobs.length === 0 ? (
+            <Empty text="No active projects." />
+          ) : (
+            <ul className="space-y-1">
               {activeJobs.slice(0, 5).map((j) => {
                 const meta = STATUS_META[j.status] ?? STATUS_META.scheduled;
+                const late = pastDueJobs.some((p) => p.id === j.id);
                 return (
                   <li key={j.id}>
                     <button
                       type="button"
                       onClick={() => onOpenJob?.(j.id, j.customerId)}
-                      className="w-full text-left rounded-lg hover:bg-muted/40 -mx-2 px-2 py-1.5 transition-colors"
+                      className="w-full text-left rounded-lg hover:bg-muted/40 -mx-2 px-2 py-2 transition-colors"
                     >
                       <div className="flex items-baseline gap-2 flex-wrap">
                         <p className="font-semibold text-foreground text-sm truncate">{j.title}</p>
                         <span className={`text-[10px] uppercase tracking-[0.16em] font-semibold px-2 py-0.5 rounded-full ${meta.cls}`}>
                           {meta.label}
                         </span>
+                        {late && (
+                          <span className="text-[10px] uppercase tracking-[0.16em] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                            past ETA
+                          </span>
+                        )}
                       </div>
                       <p className="text-[12px] text-muted-foreground mt-0.5 truncate">
                         {j.customerName ?? "—"}
@@ -286,95 +408,211 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOp
               })}
             </ul>
           )}
-        </section>
+        </Panel>
 
-        {/* Recent leads */}
-        <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-bold text-foreground text-base inline-flex items-center gap-2">
-              <Inbox className="w-4 h-4 text-primary" />
-              Latest leads
-            </h3>
-            <button
-              type="button"
-              onClick={() => onNavigate("leads")}
-              className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
-            >
-              See all <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
+        {/* ─── Latest leads ──────────────────────────────────────── */}
+        <Panel
+          icon={Inbox}
+          title="Latest leads"
+          action={{ label: "See all", onClick: () => onNavigate("leads") }}
+        >
           {recentLeads.length === 0 ? (
-            <EmptyState text="No leads yet." />
+            <Empty text="No leads yet." />
           ) : (
-            <ul className="space-y-3">
-              {recentLeads.map((r, i) => (
-                <li key={(r.id as number | undefined) ?? i}>
-                  <p className="font-semibold text-foreground text-sm">
-                    {(r.name as string) || "Anonymous lead"}
-                  </p>
-                  <p className="text-[12px] text-muted-foreground">
-                    {(r.serviceType as string) || "—"}
-                    {r.email ? ` · ${r.email}` : ""}
-                  </p>
-                </li>
-              ))}
+            <ul className="divide-y divide-border/40">
+              {recentLeads.map((r, i) => {
+                const created = String(r.createdAt ?? "");
+                const isNew = newLeads.some((n) => n === r);
+                const phone = (r.phone as string | undefined) ?? "";
+                return (
+                  <li key={(r.id as number | undefined) ?? i} className="py-2.5 flex items-start gap-3">
+                    {isNew ? (
+                      <span className="mt-1 w-2 h-2 rounded-full bg-primary shrink-0" aria-hidden="true" />
+                    ) : (
+                      <span className="mt-1 w-2 h-2 rounded-full bg-border shrink-0" aria-hidden="true" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="font-semibold text-foreground text-sm truncate">
+                          {(r.name as string) || "Anonymous lead"}
+                        </p>
+                        {created && (
+                          <span className="text-[11px] text-muted-foreground shrink-0">{relTime(created)}</span>
+                        )}
+                      </div>
+                      <p className="text-[12px] text-muted-foreground truncate capitalize">
+                        {((r.serviceType as string) || "—").replace(/-/g, " ")}
+                        {r.zip ? ` · ${r.zip}` : ""}
+                        {r.source ? ` · ${String(r.source).split(":")[0]}` : ""}
+                      </p>
+                    </div>
+                    {phone && (
+                      <a
+                        href={`tel:${phone}`}
+                        className="shrink-0 w-8 h-8 rounded-full bg-foreground/[0.04] hover:bg-primary/10 hover:text-primary flex items-center justify-center"
+                        aria-label={`Call ${(r.name as string) || "lead"}`}
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
-        </section>
-
-        {/* Recent estimates */}
-        <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm lg:col-span-2">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display font-bold text-foreground text-base inline-flex items-center gap-2">
-              <Calculator className="w-4 h-4 text-primary" />
-              Latest estimates
-            </h3>
-            <button
-              type="button"
-              onClick={() => onNavigate("estimates")}
-              className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
-            >
-              See all <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-          {recentEstimates.length === 0 ? (
-            <EmptyState text="No estimates yet." />
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-[11px] uppercase tracking-wider text-foreground/60">
-                    <th className="text-left font-semibold px-2 py-2">Contact</th>
-                    <th className="text-left font-semibold px-2 py-2">Material</th>
-                    <th className="text-right font-semibold px-2 py-2">Range</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/40">
-                  {recentEstimates.map((r, i) => (
-                    <tr key={(r.id as number | undefined) ?? i}>
-                      <td className="px-2 py-2">
-                        <p className="font-semibold text-foreground">
-                          {(r.name as string) || "—"}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground truncate max-w-[200px]">
-                          {(r.email as string) ?? ""}
-                        </p>
-                      </td>
-                      <td className="px-2 py-2 capitalize">
-                        {((r.material as string) ?? "").replace(/-/g, " ")}
-                      </td>
-                      <td className="px-2 py-2 text-right font-semibold text-foreground whitespace-nowrap">
-                        {fmtCurrency(r.lowEstimate)} – {fmtCurrency(r.highEstimate)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
+        </Panel>
       </div>
+
+      {/* ─── Business at a glance (secondary) ───────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard
+          icon={Users}
+          label="Customers"
+          value={customers ? fmtNumber(customers.length) : "—"}
+          sub="in CRM"
+          onClick={() => onNavigate("clients")}
+        />
+        <MetricCard
+          icon={Briefcase}
+          label="Active projects"
+          value={fmtNumber(activeJobs.length)}
+          sub="scheduled + in progress"
+          onClick={() => onNavigate("projects")}
+        />
+        <MetricCard
+          icon={Eye}
+          label="Site visits"
+          value={analytics ? fmtNumber(analytics.totals.views) : "—"}
+          sub={`last ${analytics?.days ?? 30} days`}
+          onClick={() => onNavigate("analytics")}
+        />
+        <MetricCard
+          icon={TrendingUp}
+          label="Sessions"
+          value={analytics ? fmtNumber(analytics.totals.sessions) : "—"}
+          sub={`last ${analytics?.days ?? 30} days`}
+          onClick={() => onNavigate("analytics")}
+        />
+      </div>
+
+      {recentEstimates.length > 0 && (
+        <Panel
+          icon={Calculator}
+          title="Latest estimates"
+          action={{ label: "See all", onClick: () => onNavigate("estimates") }}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-[11px] uppercase tracking-wider text-foreground/60">
+                  <th className="text-left font-semibold px-2 py-2">Contact</th>
+                  <th className="text-left font-semibold px-2 py-2">Material</th>
+                  <th className="text-right font-semibold px-2 py-2">Range</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {recentEstimates.map((r, i) => (
+                  <tr key={(r.id as number | undefined) ?? i}>
+                    <td className="px-2 py-2">
+                      <p className="font-semibold text-foreground">{(r.name as string) || "—"}</p>
+                      <p className="text-[11px] text-muted-foreground truncate max-w-[200px]">
+                        {(r.email as string) ?? ""}
+                      </p>
+                    </td>
+                    <td className="px-2 py-2 capitalize">{((r.material as string) ?? "").replace(/-/g, " ")}</td>
+                    <td className="px-2 py-2 text-right font-semibold text-foreground whitespace-nowrap">
+                      {fmtCurrency(r.lowEstimate)} – {fmtCurrency(r.highEstimate)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Panel>
+      )}
     </div>
+  );
+}
+
+// ─── Building blocks ──────────────────────────────────────────
+
+function AttentionTile({
+  icon: Icon,
+  label,
+  hint,
+  value,
+  tone,
+  onClick,
+}: {
+  icon: typeof Users;
+  label: string;
+  hint: string;
+  value: number;
+  tone: "primary" | "warn" | "info";
+  onClick: () => void;
+}) {
+  const active = value > 0;
+  const tones = {
+    primary: { ring: "border-primary/50", icon: "bg-primary text-white", num: "text-primary" },
+    warn: { ring: "border-amber-400/60", icon: "bg-amber-500 text-white", num: "text-amber-700" },
+    info: { ring: "border-blue-400/60", icon: "bg-blue-600 text-white", num: "text-blue-700" },
+  }[tone];
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`text-left rounded-2xl p-4 border transition-all hover:shadow-md ${
+        active ? `bg-card ${tones.ring} shadow-sm` : "bg-muted/40 border-border/60 hover:border-border"
+      }`}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <span
+          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+            active ? tones.icon : "bg-foreground/[0.06] text-muted-foreground"
+          }`}
+        >
+          <Icon className="w-4 h-4" />
+        </span>
+        <span className={`font-display font-bold text-3xl leading-none tracking-tight ${active ? tones.num : "text-muted-foreground/60"}`}>
+          {value}
+        </span>
+      </div>
+      <p className={`text-[13px] font-semibold leading-tight ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</p>
+      <p className="text-[11px] text-muted-foreground mt-0.5">{hint}</p>
+    </button>
+  );
+}
+
+function Panel({
+  icon: Icon,
+  title,
+  action,
+  children,
+}: {
+  icon: typeof Users;
+  title: string;
+  action?: { label: string; onClick: () => void };
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-display font-bold text-foreground text-base inline-flex items-center gap-2">
+          <Icon className="w-4 h-4 text-primary" />
+          {title}
+        </h3>
+        {action && (
+          <button
+            type="button"
+            onClick={action.onClick}
+            className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
+          >
+            {action.label} <ArrowRight className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+      {children}
+    </section>
   );
 }
 
@@ -397,17 +635,11 @@ function MetricCard({
       onClick={onClick}
       className="text-left bg-card border border-border/60 rounded-2xl p-4 shadow-sm hover:border-primary/40 hover:shadow-md transition-all"
     >
-      <div className="flex items-center justify-between mb-2">
-        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-primary" />
-        </div>
+      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mb-2">
+        <Icon className="w-4 h-4 text-primary" />
       </div>
-      <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
-        {label}
-      </p>
-      <p className="font-display font-bold text-2xl text-foreground tracking-tight mt-0.5">
-        {value}
-      </p>
+      <p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">{label}</p>
+      <p className="font-display font-bold text-2xl text-foreground tracking-tight mt-0.5">{value}</p>
       <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>
     </button>
   );
@@ -418,9 +650,7 @@ function ProgressBar({ progress, className = "" }: { progress: number; className
   return (
     <div className={className}>
       <div className="flex items-baseline justify-between mb-1">
-        <span className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
-          Progress
-        </span>
+        <span className="text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">Progress</span>
         <span className="text-[11px] font-semibold text-foreground">{pct}%</span>
       </div>
       <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
@@ -430,47 +660,10 @@ function ProgressBar({ progress, className = "" }: { progress: number; className
   );
 }
 
-function Sparkline({
-  data,
-}: {
-  data: Array<{ day: string; views: number; sessions: number }>;
-}) {
-  if (data.length === 0) {
-    return <p className="text-sm text-muted-foreground">No data yet.</p>;
-  }
-  const max = Math.max(...data.map((d) => d.views), 1);
-  const widthPct = 100 / data.length;
+function Empty({ text, muted = false }: { text: string; muted?: boolean }) {
   return (
-    <div className="flex items-end gap-1 h-32">
-      {data.map((d) => {
-        const h = (d.views / max) * 100;
-        return (
-          <div
-            key={d.day}
-            className="flex-1 flex flex-col items-center gap-1"
-            title={`${d.day} · ${d.views} views · ${d.sessions} sessions`}
-            style={{ minWidth: `${widthPct}%` }}
-          >
-            <div className="w-full flex-1 flex items-end">
-              <div
-                className="w-full bg-primary/80 hover:bg-primary rounded-t-sm transition-colors"
-                style={{ height: `${Math.max(h, 3)}%` }}
-              />
-            </div>
-            <span className="text-[9px] text-muted-foreground/70 truncate">
-              {d.day.slice(5)}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return (
-    <p className="text-sm text-muted-foreground inline-flex items-center gap-1.5">
-      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+    <p className="text-sm text-muted-foreground inline-flex items-center gap-1.5 py-2">
+      {muted ? <Clock className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
       {text}
     </p>
   );
@@ -479,9 +672,5 @@ function EmptyState({ text }: { text: string }) {
 function fmtCurrency(raw: unknown): string {
   const n = Number(raw);
   if (!Number.isFinite(n)) return "—";
-  return n.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  });
+  return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }

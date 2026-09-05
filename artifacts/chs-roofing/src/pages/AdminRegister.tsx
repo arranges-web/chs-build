@@ -99,7 +99,7 @@ export default function AdminRegisterPage() {
       setSubmitError(res.error);
       return;
     }
-    // Cookie is set — straight to admin.
+    // api.adminRegister stored the bearer token — straight to admin.
     navigate("/admin");
   };
 

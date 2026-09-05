@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import {
   db,
+  jobsTable,
   jobMilestonesTable,
   jobDocumentsTable,
   jobInspectionsTable,
@@ -220,6 +221,40 @@ router.delete("/admin/job-inspections/:id", async (req, res) => {
 });
 
 // ─── Service requests inbox ─────────────────────────────────────
+
+/**
+ * GET /admin/inspections/upcoming — every inspection that still needs
+ * to happen, across all jobs, joined with the job title and customer
+ * so the dashboard can show "what's coming up" without N round trips.
+ * Dates are free text on this table, so we don't sort by date — most
+ * recently added first is the useful order for the office.
+ */
+router.get("/admin/inspections/upcoming", async (_req, res) => {
+  try {
+    const rows = await db
+      .select({
+        id: jobInspectionsTable.id,
+        jobId: jobInspectionsTable.jobId,
+        inspectionType: jobInspectionsTable.inspectionType,
+        status: jobInspectionsTable.status,
+        date: jobInspectionsTable.date,
+        timeWindow: jobInspectionsTable.timeWindow,
+        county: jobInspectionsTable.county,
+        createdAt: jobInspectionsTable.createdAt,
+        jobTitle: jobsTable.title,
+        customerId: jobsTable.customerId,
+        customerName: customersTable.name,
+      })
+      .from(jobInspectionsTable)
+      .leftJoin(jobsTable, eq(jobInspectionsTable.jobId, jobsTable.id))
+      .leftJoin(customersTable, eq(jobsTable.customerId, customersTable.id))
+      .where(sql`${jobInspectionsTable.status} IN ('upcoming', 'reinspection')`)
+      .orderBy(desc(jobInspectionsTable.createdAt));
+    res.json({ rows });
+  } catch (err) {
+    handleError(res, err);
+  }
+});
 
 router.get("/admin/service-requests", async (_req, res) => {
   try {

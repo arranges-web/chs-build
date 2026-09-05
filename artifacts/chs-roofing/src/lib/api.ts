@@ -496,6 +496,21 @@ export type AdminCustomerMessageRow = CustomerMessage & {
   accountNumber: string | null;
 };
 
+/** One row from /admin/inspections/upcoming — inspection + its job + customer. */
+export type UpcomingInspectionRow = {
+  id: number;
+  jobId: number;
+  inspectionType: string;
+  status: string;
+  date: string | null;
+  timeWindow: string | null;
+  county: string | null;
+  createdAt: string;
+  jobTitle: string | null;
+  customerId: number | null;
+  customerName: string | null;
+};
+
 // ─── Admin auth ────────────────────────────────────────────────
 export type AdminProfile = {
   id: number;
@@ -759,6 +774,12 @@ export const api = {
     }),
   deleteJobInspection: (id: number, key: string) =>
     deleteJson(`/admin/job-inspections/${id}`, { headers: { "x-admin-key": key } }),
+
+  // Admin · dashboard "what's coming up"
+  listUpcomingInspections: (key: string) =>
+    getJsonResult<{ rows: UpcomingInspectionRow[] }>("/admin/inspections/upcoming", {
+      headers: { "x-admin-key": key },
+    }),
 
   // Admin · service requests + customer messages
   listServiceRequests: (key: string) =>

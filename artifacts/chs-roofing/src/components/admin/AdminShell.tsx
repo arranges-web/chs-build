@@ -12,6 +12,7 @@ import {
   MessageSquareText,
   RefreshCw,
   Search,
+  Settings as SettingsIcon,
   Sparkles,
   Users,
   X,
@@ -47,7 +48,8 @@ export type AdminSection =
   | "responses"
   | "signature"
   | "links"
-  | "invites";
+  | "invites"
+  | "settings";
 
 export type CustomerPrefill = {
   name?: string;
@@ -56,7 +58,8 @@ export type CustomerPrefill = {
   address?: string;
 };
 
-type Counts = { leads: number; estimates: number; clients?: number };
+/** Badge counts — "what needs attention", not lifetime totals. */
+type Counts = { newLeads: number; inbox: number };
 
 type Props = {
   section: AdminSection;
@@ -69,7 +72,7 @@ type Props = {
 };
 
 const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
-  dashboard: { title: "Dashboard", subtitle: "Snapshot of everything happening across the business." },
+  dashboard: { title: "Today", subtitle: "What needs your attention right now, then the rest at a glance." },
   clients: { title: "Clients", subtitle: "Customer CRM, jobs, updates, and photo log." },
   projects: { title: "Projects", subtitle: "Every active job across every customer in one place." },
   leads: { title: "Leads", subtitle: "Every quote request from the website." },
@@ -81,34 +84,48 @@ const TITLES: Record<AdminSection, { title: string; subtitle: string }> = {
   responses: { title: "AI Chat Responses", subtitle: "Copy-paste answers for common questions." },
   signature: { title: "Email Signature", subtitle: "Generate a branded HTML signature for your team." },
   links: { title: "Quote Links", subtitle: "Build pre-filled /contact links to share with customers." },
-  invites: { title: "Invite Teammates", subtitle: "Send a signup link so your team can create their own admin login." },
+  invites: { title: "Team", subtitle: "Send a signup link so a teammate can create their own admin login." },
+  settings: { title: "Settings & Backup", subtitle: "Backups, demo data, team access, and the recovery key." },
 };
 
-const NAV: { id: AdminSection; label: string; icon: typeof Users; group: "overview" | "crm" | "insights" | "tools" }[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, group: "overview" },
-  { id: "clients", label: "Clients", icon: Users, group: "crm" },
-  { id: "projects", label: "Projects", icon: Briefcase, group: "crm" },
-  { id: "leads", label: "Leads", icon: Inbox, group: "crm" },
-  { id: "estimates", label: "Estimates", icon: Calculator, group: "crm" },
-  // SMS Outreach is parked for now — it needs Twilio + Anthropic secrets
-  // that aren't configured, so surfacing it only shows empty/error
-  // states. The section, route, and component all still exist; add
-  // this line back to re-enable it in the sidebar.
-  // { id: "outreach", label: "SMS Outreach", icon: MessageSquareText, group: "crm" },
-  { id: "portalInbox", label: "Portal Inbox", icon: Inbox, group: "crm" },
-  { id: "analytics", label: "Analytics", icon: BarChart3, group: "insights" },
-  { id: "seo", label: "SEO Activity", icon: Search, group: "insights" },
-  { id: "responses", label: "AI Responses", icon: MessageSquare, group: "tools" },
-  { id: "signature", label: "Email Signature", icon: Mail, group: "tools" },
-  { id: "links", label: "Quote Links", icon: LinkIcon, group: "tools" },
-  { id: "invites", label: "Invite Teammates", icon: UserPlus, group: "tools" },
+type NavGroup = "today" | "sales" | "customers" | "marketing" | "settings";
+
+/**
+ * Grouped the way the office actually works: what's new (Sales),
+ * who we're serving (Customers), how we get found (Marketing), and
+ * housekeeping (Settings). Order within a group = frequency of use.
+ */
+const NAV: { id: AdminSection; label: string; icon: typeof Users; group: NavGroup }[] = [
+  { id: "dashboard", label: "Today", icon: LayoutDashboard, group: "today" },
+
+  { id: "leads", label: "Leads", icon: Inbox, group: "sales" },
+  { id: "estimates", label: "Estimates", icon: Calculator, group: "sales" },
+
+  { id: "clients", label: "Clients", icon: Users, group: "customers" },
+  { id: "projects", label: "Projects", icon: Briefcase, group: "customers" },
+  { id: "portalInbox", label: "Portal Inbox", icon: MessageSquare, group: "customers" },
+  // SMS Outreach is parked — needs Twilio + Anthropic secrets. Section,
+  // route, and component all still exist; restore this line to show it.
+  // { id: "outreach", label: "SMS Outreach", icon: MessageSquareText, group: "customers" },
+
+  { id: "analytics", label: "Analytics", icon: BarChart3, group: "marketing" },
+  { id: "seo", label: "SEO Activity", icon: Search, group: "marketing" },
+  { id: "links", label: "Quote Links", icon: LinkIcon, group: "marketing" },
+  { id: "responses", label: "AI Responses", icon: MessageSquareText, group: "marketing" },
+  { id: "signature", label: "Email Signature", icon: Mail, group: "marketing" },
+
+  { id: "invites", label: "Team", icon: UserPlus, group: "settings" },
+  { id: "settings", label: "Settings & Backup", icon: SettingsIcon, group: "settings" },
 ];
 
-const GROUP_LABEL: Record<string, string> = {
-  overview: "Overview",
-  crm: "CRM",
-  insights: "Insights",
-  tools: "Tools",
+const GROUPS: NavGroup[] = ["today", "sales", "customers", "marketing", "settings"];
+
+const GROUP_LABEL: Record<NavGroup, string> = {
+  today: "",
+  sales: "Sales",
+  customers: "Customers",
+  marketing: "Marketing",
+  settings: "Setup",
 };
 
 export default function AdminShell({
@@ -164,17 +181,20 @@ export default function AdminShell({
           </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 space-y-6">
-          {(["overview", "crm", "insights", "tools"] as const).map((g) => (
+        <nav className="flex-1 overflow-y-auto py-4 space-y-5">
+          {GROUPS.map((g) => (
             <div key={g} className="px-3">
-              <p className="px-3 text-[10px] uppercase tracking-[0.22em] font-semibold text-white/40 mb-2">
-                {GROUP_LABEL[g]}
-              </p>
+              {GROUP_LABEL[g] && (
+                <p className="px-3 text-[10px] uppercase tracking-[0.22em] font-semibold text-white/40 mb-2">
+                  {GROUP_LABEL[g]}
+                </p>
+              )}
               <ul className="space-y-1">
                 {NAV.filter((n) => n.group === g).map((n) => {
                   const isActive = section === n.id;
+                  // Badges mean "needs you", not lifetime totals.
                   const count =
-                    n.id === "leads" ? counts.leads : n.id === "estimates" ? counts.estimates : null;
+                    n.id === "leads" ? counts.newLeads : n.id === "portalInbox" ? counts.inbox : null;
                   return (
                     <li key={n.id}>
                       <button
@@ -196,11 +216,11 @@ export default function AdminShell({
                         <span className="flex-1 text-left">{n.label}</span>
                         {typeof count === "number" && count > 0 && (
                           <span
-                            className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                              isActive ? "bg-white/15 text-white" : "bg-white/[0.05] text-white/70"
+                            className={`min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold inline-flex items-center justify-center ${
+                              isActive ? "bg-white text-primary" : "bg-primary text-white"
                             }`}
                           >
-                            {count}
+                            {count > 99 ? "99+" : count}
                           </span>
                         )}
                       </button>

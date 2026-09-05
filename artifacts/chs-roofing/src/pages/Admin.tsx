@@ -6,7 +6,9 @@ import {
   clearAdminAuth,
   getAdminKey,
   setAdminKey as storeAdminKey,
+  type AdminCustomerMessageRow,
   type AdminProfile,
+  type AdminServiceRequestRow,
 } from "@/lib/api";
 import { SITE } from "@/lib/site-config";
 import Seo from "@/components/Seo";
@@ -26,6 +28,7 @@ import Analytics from "@/components/admin/Analytics";
 import SeoActivity from "@/components/admin/SeoActivity";
 import JobDetail from "@/components/admin/JobDetail";
 import InviteTeammates from "@/components/admin/InviteTeammates";
+import SettingsPanel from "@/components/admin/Settings";
 
 type AnyRow = Record<string, unknown>;
 
@@ -63,6 +66,10 @@ export default function AdminPage() {
   // App state
   const [leads, setLeads] = useState<AnyRow[] | null>(null);
   const [estimates, setEstimates] = useState<AnyRow[] | null>(null);
+  // Portal inbox data lives here (not in the Dashboard) so the sidebar
+  // badge and the dashboard share one fetch.
+  const [requests, setRequests] = useState<AdminServiceRequestRow[] | null>(null);
+  const [messages, setMessages] = useState<AdminCustomerMessageRow[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [section, setSection] = useState<AdminSection>("dashboard");
@@ -79,6 +86,8 @@ export default function AdminPage() {
     setPassword("");
     setLeads(null);
     setEstimates(null);
+    setRequests(null);
+    setMessages(null);
     setOpenJob(null);
     setError(null);
     if (message) setLoginError(message);
@@ -164,9 +173,11 @@ export default function AdminPage() {
   const loadAll = async (key: string) => {
     setLoading(true);
     setError(null);
-    const [leadsRes, estRes] = await Promise.all([
+    const [leadsRes, estRes, reqRes, msgRes] = await Promise.all([
       api.listLeads(key),
       api.listEstimates(key),
+      api.listServiceRequests(key),
+      api.listCustomerMessages(key),
     ]);
     const errors: string[] = [];
     if ("data" in leadsRes) setLeads(leadsRes.data.rows);
@@ -179,6 +190,12 @@ export default function AdminPage() {
       setEstimates(null);
       errors.push(`Estimates: ${estRes.error}`);
     }
+    // Inbox feeds the badge + dashboard. A failure here shouldn't block
+    // the rest of the admin, so it's reported but not fatal.
+    if ("data" in reqRes) setRequests(reqRes.data.rows);
+    else errors.push(`Requests: ${reqRes.error}`);
+    if ("data" in msgRes) setMessages(msgRes.data.rows);
+    else errors.push(`Messages: ${msgRes.error}`);
     if (errors.length) setError(errors.join(" · "));
     setLoading(false);
   };
@@ -493,7 +510,15 @@ export default function AdminPage() {
         loading={loading}
         onRefresh={() => isAuthed && void loadAll(effectiveKey)}
         onSignOut={signOut}
-        counts={{ leads: leads?.length ?? 0, estimates: estimates?.length ?? 0 }}
+        counts={{
+          newLeads: (leads ?? []).filter((r) => {
+            const t = new Date(String(r.createdAt ?? "")).getTime();
+            return Number.isFinite(t) && Date.now() - t <= 7 * 86_400_000;
+          }).length,
+          inbox:
+            (messages ?? []).filter((m) => m.sender === "customer" && !m.readByTeam).length +
+            (requests ?? []).filter((r) => r.status === "new").length,
+        }}
       >
         {error && (
           <div className="mb-6 p-4 rounded-xl border border-destructive/40 bg-destructive/5 text-destructive text-sm">
@@ -514,6 +539,8 @@ export default function AdminPage() {
                 adminKey={effectiveKey}
                 leads={leads}
                 estimates={estimates}
+                requests={requests}
+                messages={messages}
                 onNavigate={setSection}
                 onOpenJob={(jobId, customerId) => setOpenJob({ jobId, customerId })}
               />
@@ -548,6 +575,9 @@ export default function AdminPage() {
             {section === "signature" && <EmailSignature />}
             {section === "links" && <QuoteLinks />}
             {section === "invites" && <InviteTeammates adminKey={effectiveKey} />}
+            {section === "settings" && (
+              <SettingsPanel adminKey={effectiveKey} onNavigate={setSection} />
+            )}
           </>
         )}
       </AdminShell>
