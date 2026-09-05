@@ -6,6 +6,11 @@
  */
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? "/api").replace(/\/$/, "");
 
+/** Tagged result every *Result helper returns. `status` rides along on
+ *  the error branch so callers can tell a 401 (credentials dead) from
+ *  a 500 (server hiccup) without re-fetching. */
+export type ApiResult<T> = { data: T } | { error: string; status?: number };
+
 async function readError(res: Response): Promise<string> {
   try {
     const body = (await res.json()) as { error?: string };
@@ -132,14 +137,14 @@ async function postJsonResult<T extends object>(
   path: string,
   body: unknown,
   headers: Record<string, string> = {},
-): Promise<{ data: T } | { error: string }> {
+): Promise<ApiResult<T>> {
   try {
     const res = await request(path, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...headers },
       body: JSON.stringify(body),
     });
-    if (!res.ok) return { error: await readError(res) };
+    if (!res.ok) return { error: await readError(res), status: res.status };
     return { data: (await res.json()) as T };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };
@@ -150,14 +155,14 @@ async function patchJsonResult<T extends object>(
   path: string,
   body: unknown,
   headers: Record<string, string> = {},
-): Promise<{ data: T } | { error: string }> {
+): Promise<ApiResult<T>> {
   try {
     const res = await request(path, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", ...headers },
       body: JSON.stringify(body),
     });
-    if (!res.ok) return { error: await readError(res) };
+    if (!res.ok) return { error: await readError(res), status: res.status };
     return { data: (await res.json()) as T };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };
@@ -182,10 +187,10 @@ async function getJson<T extends object>(
 async function getJsonResult<T extends object>(
   path: string,
   init?: RequestInit,
-): Promise<{ data: T } | { error: string }> {
+): Promise<ApiResult<T>> {
   try {
     const res = await request(path, init);
-    if (!res.ok) return { error: await readError(res) };
+    if (!res.ok) return { error: await readError(res), status: res.status };
     return { data: (await res.json()) as T };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Network error" };
@@ -524,8 +529,11 @@ export const api = {
     postJson<{ ok: true }>("/track", payload),
 
   // Public portal
+  // Tagged result so the portal can show the server's real reason
+  // ("We couldn't find an account…", "ambiguous email", DB down) instead
+  // of one hardcoded message for every failure.
   portalLookup: (identifier: string) =>
-    postJson<PortalLookupResponse>("/portal/lookup", { identifier }),
+    postJsonResult<PortalLookupResponse>("/portal/lookup", { identifier }),
   portalSubmitRequest: (payload: {
     identifier: string;
     requestType: string;

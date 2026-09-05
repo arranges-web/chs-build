@@ -20,21 +20,18 @@ import {
   UserPlus,
 } from "lucide-react";
 import { SITE } from "@/lib/site-config";
+import { getAdminKey } from "@/lib/api";
 import Outreach from "./Outreach";
 import PortalInbox from "./PortalInbox";
 
 /**
- * Mirror of Admin.tsx's `effectiveKey` logic: the legacy admin key is
- * kept in sessionStorage when key-auth was used; cookie-authed sessions
- * send an empty string and the server's adminAuth middleware accepts
- * the session cookie instead.
+ * The legacy admin key, if key-auth was used. Read through the api
+ * client's store (single source of truth) rather than hardcoding the
+ * storage key here. Bearer-token sessions return "" — the api client
+ * attaches the token itself, so an empty key is fine.
  */
 export function getStoredAdminKey(): string {
-  try {
-    return sessionStorage.getItem("chs.admin.key.v1") ?? "";
-  } catch {
-    return "";
-  }
+  return getAdminKey() ?? "";
 }
 
 export type AdminSection =

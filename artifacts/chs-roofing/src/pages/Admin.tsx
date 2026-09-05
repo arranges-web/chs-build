@@ -101,10 +101,15 @@ export default function AdminPage() {
       if ("data" in res) {
         if (res.data.admin) setMe(res.data.admin);
         if (res.data.via === "admin-key") setAuthedKey(getAdminKey());
-      } else {
-        // Whatever we had stored no longer works — forget it so the
-        // user gets a clean login screen instead of a stale session.
+      } else if (res.status === 401) {
+        // Credentials are genuinely dead — forget them so the user
+        // gets a clean login screen instead of a stale session.
         clearAdminAuth();
+      } else {
+        // A server/DB hiccup (500, network). KEEP the stored token —
+        // clearing it here would log the owner out over a blip. Show
+        // the reason on the login screen; a reload retries.
+        setLoginError(`Couldn't verify your session: ${res.error}. Reload to try again.`);
       }
       setChecking(false);
     })();

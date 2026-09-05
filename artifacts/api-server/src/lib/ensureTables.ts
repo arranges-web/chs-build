@@ -164,6 +164,16 @@ export async function ensureTables(): Promise<void> {
     );
   }
 
+  // Email is the customer's portal login, so it must be unique
+  // (case-insensitively). Partial index ignores NULL emails. If the
+  // live DB already contains duplicates this CREATE fails and is
+  // logged — the app-level guards in adminCustomers.ts and the
+  // ambiguity check in portal.ts still protect the portal meanwhile.
+  await step(
+    "customers_email_lower_uq",
+    sql`CREATE UNIQUE INDEX IF NOT EXISTS "customers_email_lower_uq" ON "customers" (lower("email")) WHERE "email" IS NOT NULL;`,
+  );
+
   await step(
     "jobs",
     sql`

@@ -707,7 +707,12 @@ function JobAdminCard({
           <button
             type="button"
             onClick={async () => {
-              if (!confirm("Delete this job? This will also delete its updates and photos.")) return;
+              if (
+                !confirm(
+                  `Delete "${job.title}"?\n\nThis permanently removes the job and everything attached to it: updates, photo albums, milestones, documents, and inspections. The customer record itself is kept.\n\nThis cannot be undone.`,
+                )
+              )
+                return;
               await api.deleteJob(job.id, adminKey);
               onChanged();
             }}

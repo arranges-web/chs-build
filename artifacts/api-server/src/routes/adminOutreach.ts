@@ -281,8 +281,12 @@ router.post("/admin/outreach/drafts/:id/approve", async (req, res) => {
       return;
     }
     const body = req.body?.body ? String(req.body.body).trim() : draft.body;
-    await db.delete(smsMessagesTable).where(eq(smsMessagesTable.id, id));
+    // Send FIRST, then retire the draft. If sendToContact throws, the
+    // approved text is still sitting in the draft row instead of being
+    // gone forever. (A returned `failed` row still records the attempt,
+    // so deleting the draft after that is safe.)
     const row = await sendToContact(contact, body, "AI Agent (approved)");
+    await db.delete(smsMessagesTable).where(eq(smsMessagesTable.id, id));
     res.json({ row });
   } catch (err) {
     handleError(res, err);

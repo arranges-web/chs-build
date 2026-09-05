@@ -15,6 +15,7 @@ import {
   jobMilestonesTable,
   jobDocumentsTable,
   jobInspectionsTable,
+  serviceRequestsTable,
 } from "@workspace/db";
 import { asc } from "drizzle-orm";
 import { adminAuth } from "../middlewares/adminAuth";
@@ -145,6 +146,21 @@ router.post("/admin/customers", async (req, res) => {
         .json({ error: "Invalid customer payload.", issues: parsed.error.issues });
       return;
     }
+    // Email is the portal login. Two customers sharing one would let
+    // one household see the other's portal, so refuse up front.
+    if (parsed.data.email) {
+      const [dupe] = await db
+        .select({ id: customersTable.id, name: customersTable.name })
+        .from(customersTable)
+        .where(sql`lower(${customersTable.email}) = ${parsed.data.email.toLowerCase()}`)
+        .limit(1);
+      if (dupe) {
+        res.status(409).json({
+          error: `That email is already on file for "${dupe.name}". Each customer needs a unique email (it's their portal login) — open the existing customer instead, or use a different email.`,
+        });
+        return;
+      }
+    }
     const [row] = await db.insert(customersTable).values(parsed.data).returning();
     res.status(201).json({ row });
   } catch (err) {
@@ -164,6 +180,22 @@ router.patch("/admin/customers/:id", async (req, res) => {
       if (k in req.body) update[k] = req.body[k] ?? null;
     }
     if (typeof update.email === "string") update.email = (update.email as string).toLowerCase();
+    // Same uniqueness rule as create — but ignore this customer's own row.
+    if (typeof update.email === "string" && update.email) {
+      const [dupe] = await db
+        .select({ id: customersTable.id, name: customersTable.name })
+        .from(customersTable)
+        .where(
+          sql`lower(${customersTable.email}) = ${update.email} AND ${customersTable.id} <> ${id}`,
+        )
+        .limit(1);
+      if (dupe) {
+        res.status(409).json({
+          error: `That email is already on file for "${dupe.name}". Each customer needs a unique email (it's their portal login).`,
+        });
+        return;
+      }
+    }
     const [row] = await db
       .update(customersTable)
       .set(update)
@@ -281,6 +313,12 @@ router.delete("/admin/jobs/:id", async (req, res) => {
       res.status(400).json({ error: "Invalid id" });
       return;
     }
+    // service_requests.job_id has no FK, so it wouldn't cascade — null
+    // it out first so the request survives with no dangling job id.
+    await db
+      .update(serviceRequestsTable)
+      .set({ jobId: null })
+      .where(eq(serviceRequestsTable.jobId, id));
     await db.delete(jobsTable).where(eq(jobsTable.id, id));
     res.json({ ok: true });
   } catch (err) {

@@ -300,11 +300,22 @@ export default function PortalPage() {
     setLoading(true);
     void api.portalLookup(value).then((res) => {
       if (cancelled) return;
-      if (res) {
-        setData(res);
+      if ("data" in res) {
+        setData(res.data);
         // Persist so they don't have to repaste next time.
         try {
           localStorage.setItem(STORAGE_KEY, value);
+        } catch {
+          // ignore
+        }
+      } else {
+        // A bad ?account= link or a stale remembered identifier used
+        // to fail silently — the form just sat there prefilled with a
+        // value that didn't work. Surface the server's reason and drop
+        // the remembered value so the next visit starts clean.
+        setError(res.error);
+        try {
+          localStorage.removeItem(STORAGE_KEY);
         } catch {
           // ignore
         }
@@ -335,18 +346,22 @@ export default function PortalPage() {
     setError(null);
     const res = await api.portalLookup(value);
     setLoading(false);
-    if (res) {
-      setData(res);
+    if ("data" in res) {
+      setData(res.data);
       try {
         localStorage.setItem(STORAGE_KEY, value);
       } catch {
         // ignore
       }
     } else {
+      // Server message first (it knows whether the account is missing
+      // or the DB is down); fall back to the friendly default.
       setError(
-        "We couldn't find an account with that email or account number. Double-check the spelling, or call us at " +
-          SITE.phoneDisplay +
-          ".",
+        res.status === 404 || !res.error
+          ? "We couldn't find an account with that email or account number. Double-check the spelling, or call us at " +
+              SITE.phoneDisplay +
+              "."
+          : res.error,
       );
     }
   };

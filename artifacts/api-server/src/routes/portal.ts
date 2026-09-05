@@ -28,7 +28,12 @@ const router: IRouter = Router();
 async function findCustomer(identifier: string): Promise<Customer | null> {
   const id = identifier.trim();
   if (!id) return null;
-  const [customer] = await db
+  // Fetch up to TWO rows so we can detect an ambiguous email. If two
+  // customers share an email we must NOT hand back whichever row
+  // Postgres found first — that would show one household another's
+  // jobs, documents, and message thread. Account numbers are unique
+  // by constraint, so ambiguity is only possible on the email path.
+  const rows = await db
     .select()
     .from(customersTable)
     .where(
@@ -36,8 +41,9 @@ async function findCustomer(identifier: string): Promise<Customer | null> {
         ? sql`lower(${customersTable.email}) = ${id.toLowerCase()}`
         : eq(customersTable.accountNumber, normalizeAccount(id)),
     )
-    .limit(1);
-  return customer ?? null;
+    .limit(2);
+  if (rows.length !== 1) return null;
+  return rows[0];
 }
 
 /** Text the office when a customer submits a request or message. */
@@ -172,11 +178,24 @@ router.post("/portal/requests", async (req, res) => {
       res.status(404).json({ error: "Account not found." });
       return;
     }
+    // Only attach a job the customer actually owns. A stray or
+    // non-numeric id becomes null rather than a NaN insert (500) or a
+    // request filed under someone else's job.
+    let jobId: number | null = null;
+    const rawJobId = Number(req.body?.jobId);
+    if (Number.isInteger(rawJobId) && rawJobId > 0) {
+      const [owned] = await db
+        .select({ id: jobsTable.id })
+        .from(jobsTable)
+        .where(sql`${jobsTable.id} = ${rawJobId} AND ${jobsTable.customerId} = ${customer.id}`)
+        .limit(1);
+      if (owned) jobId = owned.id;
+    }
     const [row] = await db
       .insert(serviceRequestsTable)
       .values({
         customerId: customer.id,
-        jobId: req.body?.jobId ? Number(req.body.jobId) : null,
+        jobId,
         requestType,
         message,
       })
