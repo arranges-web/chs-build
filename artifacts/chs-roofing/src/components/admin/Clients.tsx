@@ -1,12 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
+  Briefcase,
   Camera,
   ChevronRight,
   Clock,
   Hammer,
   Pause,
+  Phone,
   Plus,
+  Search,
   Trash2,
   Upload,
   CheckCircle2,
@@ -17,17 +20,20 @@ import {
   RefreshCw,
   Copy,
   KeyRound,
+  Users as UsersIcon,
   Link as LinkIcon,
   Mail as MailIcon,
 } from "lucide-react";
 import {
   api,
+  type AdminJob,
   type Customer,
   type Job,
   type JobUpdate,
 } from "@/lib/api";
 import { compressImage } from "@/lib/imageUpload";
 import QRCode from "qrcode";
+import { isDemoAccount } from "@/lib/demo";
 import type { CustomerPrefill } from "./AdminShell";
 
 type Detail = { customer: Customer; jobs: Job[] };
@@ -55,6 +61,10 @@ export default function Clients({
   onOpenJob?: (jobId: number, customerId: number) => void;
 }) {
   const [list, setList] = useState<Customer[] | null>(null);
+  // Jobs are loaded alongside the customer list so each card can show
+  // "2 active · 1 complete" instead of a bare row of contact fields.
+  const [jobs, setJobs] = useState<AdminJob[] | null>(null);
+  const [query, setQuery] = useState("");
   const [activeId, setActiveId] = useState<number | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
@@ -87,11 +97,15 @@ export default function Clients({
 
   const loadList = async () => {
     setLoading(true);
-    const res = await api.listCustomers(adminKey);
+    const [res, jobsRes] = await Promise.all([
+      api.listCustomers(adminKey),
+      api.listAllJobs(adminKey),
+    ]);
     if ("data" in res) setList(res.data.rows);
     // else: keep whatever we had; api.listCustomers now surfaces
     // the real server error via getJsonResult, so if we ever want
     // to render a banner here we can flip on `res.error`.
+    if ("data" in jobsRes) setJobs(jobsRes.data.rows);
     setLoading(false);
   };
 
@@ -155,31 +169,63 @@ export default function Clients({
   }
 
   // ─── List view ────────────────────────────────────────────────
+  const jobsByCustomer = new Map<number, AdminJob[]>();
+  for (const j of jobs ?? []) {
+    const arr = jobsByCustomer.get(j.customerId);
+    if (arr) arr.push(j);
+    else jobsByCustomer.set(j.customerId, [j]);
+  }
+
+  const q = query.trim().toLowerCase();
+  const filtered = (list ?? []).filter((c) => {
+    if (!q) return true;
+    return (
+      c.name.toLowerCase().includes(q) ||
+      (c.email ?? "").toLowerCase().includes(q) ||
+      (c.phone ?? "").toLowerCase().includes(q) ||
+      (c.address ?? "").toLowerCase().includes(q) ||
+      c.accountNumber.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted-foreground">
-          {list ? `${list.length} customer${list.length === 1 ? "" : "s"}` : ""}
-        </p>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => void loadList()}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-semibold text-foreground bg-card border border-border/60 hover:border-primary/40"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
-          <button
-            type="button"
-            onClick={() => setCreating(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white bg-primary hover:bg-primary/90 shadow-md shadow-primary/30"
-          >
-            <Plus className="w-4 h-4" />
-            New customer
-          </button>
+      {/* Toolbar — mirrors the Projects page so the two read as one tool */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[200px] max-w-md">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search name, email, phone, address, or account #…"
+            className="w-full h-10 pl-9 pr-3 rounded-xl border border-border/60 bg-card text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
         </div>
+        <button
+          type="button"
+          onClick={() => void loadList()}
+          className="inline-flex items-center gap-1.5 px-3 h-10 rounded-full text-xs font-semibold text-foreground bg-card border border-border/60 hover:border-primary/40"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+          Refresh
+        </button>
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="inline-flex items-center gap-1.5 px-4 h-10 rounded-full text-sm font-semibold text-white bg-primary hover:bg-primary/90 shadow-md shadow-primary/30"
+        >
+          <Plus className="w-4 h-4" />
+          New customer
+        </button>
       </div>
+
+      {list && (
+        <p className="mb-4 text-sm text-muted-foreground">
+          {q
+            ? `${filtered.length} of ${list.length} customer${list.length === 1 ? "" : "s"}`
+            : `${list.length} customer${list.length === 1 ? "" : "s"}`}
+        </p>
+      )}
 
       {creating && (
         <NewCustomerForm
@@ -197,44 +243,133 @@ export default function Clients({
         />
       )}
 
-      {list && list.length === 0 && !creating ? (
+      {loading && !list ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : list && list.length === 0 && !creating ? (
         <div className="bg-card border border-border/60 rounded-2xl p-10 text-center">
+          <UsersIcon className="w-8 h-8 mx-auto text-muted-foreground/60 mb-3" />
           <p className="font-semibold text-foreground">No customers yet.</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Add your first customer — they'll get an account number they can
-            use to sign in to the customer portal.
+          <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+            Add your first customer — they'll get an account number they can use
+            to sign in to the customer portal.
           </p>
+          <button
+            type="button"
+            onClick={() => setCreating(true)}
+            className="mt-4 inline-flex items-center gap-1.5 px-4 h-10 rounded-full text-sm font-semibold text-white bg-primary hover:bg-primary/90 shadow-md shadow-primary/30"
+          >
+            <Plus className="w-4 h-4" />
+            New customer
+          </button>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-card border border-border/60 rounded-2xl p-10 text-center">
+          <Search className="w-8 h-8 mx-auto text-muted-foreground/60 mb-3" />
+          <p className="font-semibold text-foreground">No customers match "{query}".</p>
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            className="mt-3 text-sm font-semibold text-primary hover:underline"
+          >
+            Clear search
+          </button>
         </div>
       ) : (
-        <div className="bg-card border border-border/60 rounded-2xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-muted/40 text-foreground/70 text-[11px] uppercase tracking-wider">
-                <th className="text-left font-semibold px-4 py-3">Name</th>
-                <th className="text-left font-semibold px-4 py-3">Account #</th>
-                <th className="text-left font-semibold px-4 py-3">Email</th>
-                <th className="text-left font-semibold px-4 py-3">Phone</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {(list ?? []).map((c) => (
-                <tr
-                  key={c.id}
-                  onClick={() => setActiveId(c.id)}
-                  className="hover:bg-muted/20 cursor-pointer"
-                >
-                  <td className="px-4 py-3 font-semibold text-foreground">{c.name}</td>
-                  <td className="px-4 py-3 font-mono text-foreground/80">{c.accountNumber}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.email ?? "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{c.phone ?? "—"}</td>
-                  <td className="px-4 py-3 text-right text-muted-foreground">
-                    <ChevronRight className="w-4 h-4 inline" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid gap-3 md:grid-cols-2">
+          {filtered.map((c) => {
+            const cJobs = jobsByCustomer.get(c.id) ?? [];
+            const active = cJobs.filter(
+              (j) => j.status === "in_progress" || j.status === "scheduled",
+            ).length;
+            const done = cJobs.filter((j) => j.status === "complete").length;
+            const demo = isDemoAccount(c.accountNumber);
+            return (
+              <article
+                key={c.id}
+                className="bg-card border border-border/60 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/40 transition-all"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setActiveId(c.id)}
+                    className="min-w-0 flex-1 text-left group"
+                  >
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-display font-bold text-foreground text-lg leading-tight group-hover:text-primary transition-colors truncate">
+                        {c.name}
+                      </h3>
+                      {demo && (
+                        <span className="text-[10px] uppercase tracking-[0.16em] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                          Demo
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-mono text-[12px] text-muted-foreground mt-0.5">
+                      {c.accountNumber}
+                    </p>
+                  </button>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1.5" />
+                </div>
+
+                {/* Project mix — the thing you actually want to know */}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {cJobs.length === 0 ? (
+                    <span className="text-[12px] text-muted-foreground inline-flex items-center gap-1.5">
+                      <Briefcase className="w-3.5 h-3.5" />
+                      No projects yet
+                    </span>
+                  ) : (
+                    <>
+                      {active > 0 && (
+                        <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-primary/10 text-primary inline-flex items-center gap-1.5">
+                          <Hammer className="w-3 h-3" />
+                          {active} active
+                        </span>
+                      )}
+                      {done > 0 && (
+                        <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 inline-flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {done} complete
+                        </span>
+                      )}
+                      {active === 0 && done === 0 && (
+                        <span className="text-[11px] font-semibold px-2 py-1 rounded-full bg-foreground/[0.05] text-foreground/70">
+                          {cJobs.length} project{cJobs.length === 1 ? "" : "s"}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Contact — tap to act, not just to read */}
+                <div className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px]">
+                  {c.phone ? (
+                    <a
+                      href={`tel:${c.phone}`}
+                      className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary font-medium"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      {c.phone}
+                    </a>
+                  ) : null}
+                  {c.email ? (
+                    <a
+                      href={`mailto:${c.email}`}
+                      className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary truncate max-w-[220px] font-medium"
+                    >
+                      <MailIcon className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{c.email}</span>
+                    </a>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-amber-700 font-medium">
+                      <MailIcon className="w-3.5 h-3.5" />
+                      No email — can't use the portal
+                    </span>
+                  )}
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </div>

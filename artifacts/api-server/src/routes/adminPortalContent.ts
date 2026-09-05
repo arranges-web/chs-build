@@ -244,6 +244,9 @@ router.get("/admin/inspections/upcoming", async (_req, res) => {
         jobTitle: jobsTable.title,
         customerId: jobsTable.customerId,
         customerName: customersTable.name,
+        // Lets the dashboard exclude the seeded demo customer from
+        // "needs attention" without a second lookup.
+        accountNumber: customersTable.accountNumber,
       })
       .from(jobInspectionsTable)
       .leftJoin(jobsTable, eq(jobInspectionsTable.jobId, jobsTable.id))

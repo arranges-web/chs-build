@@ -29,6 +29,7 @@ import SeoActivity from "@/components/admin/SeoActivity";
 import JobDetail from "@/components/admin/JobDetail";
 import InviteTeammates from "@/components/admin/InviteTeammates";
 import SettingsPanel from "@/components/admin/Settings";
+import { withoutDemo } from "@/lib/demo";
 
 type AnyRow = Record<string, unknown>;
 
@@ -515,9 +516,10 @@ export default function AdminPage() {
             const t = new Date(String(r.createdAt ?? "")).getTime();
             return Number.isFinite(t) && Date.now() - t <= 7 * 86_400_000;
           }).length,
+          // Badges exclude the seeded demo customer — see lib/demo.ts.
           inbox:
-            (messages ?? []).filter((m) => m.sender === "customer" && !m.readByTeam).length +
-            (requests ?? []).filter((r) => r.status === "new").length,
+            withoutDemo(messages ?? []).filter((m) => m.sender === "customer" && !m.readByTeam)
+              .length + withoutDemo(requests ?? []).filter((r) => r.status === "new").length,
         }}
       >
         {error && (

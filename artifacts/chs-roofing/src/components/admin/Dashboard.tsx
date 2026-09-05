@@ -27,6 +27,7 @@ import {
   type UpcomingInspectionRow,
 } from "@/lib/api";
 import type { AdminSection } from "./AdminShell";
+import { isDemoAccount, withoutDemo } from "@/lib/demo";
 
 type AnyRow = Record<string, unknown>;
 
@@ -119,6 +120,9 @@ export default function Dashboard({
   }, [adminKey]);
 
   // ─── Derived "needs attention" ─────────────────────────────────
+  // Everything below EXCLUDES the seeded demo customer. Demo data is
+  // still browsable in Clients/Projects, but it must never masquerade
+  // as real work that needs doing.
   const now = Date.now();
 
   const newLeads = useMemo(
@@ -134,6 +138,7 @@ export default function Dashboard({
     const map = new Map<number, AdminCustomerMessageRow & { count: number }>();
     for (const m of messages ?? []) {
       if (m.sender !== "customer" || m.readByTeam) continue;
+      if (isDemoAccount(m.accountNumber)) continue;
       const existing = map.get(m.customerId);
       if (!existing || new Date(m.createdAt) > new Date(existing.createdAt)) {
         map.set(m.customerId, { ...m, count: (existing?.count ?? 0) + 1 });
@@ -149,29 +154,34 @@ export default function Dashboard({
 
   const openRequests = useMemo(
     () =>
-      (requests ?? [])
+      withoutDemo(requests ?? [])
         .filter((r) => r.status === "new" || r.status === "in_progress")
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [requests],
   );
   const newRequestCount = openRequests.filter((r) => r.status === "new").length;
 
+  // Jobs list keeps demo rows (they're legitimate to browse), but the
+  // ALERT derivations below run on the demo-free set.
   const activeJobs = useMemo(
     () => (jobs ?? []).filter((j) => j.status === "in_progress" || j.status === "scheduled"),
     [jobs],
   );
-  const onHoldJobs = useMemo(() => (jobs ?? []).filter((j) => j.status === "on_hold"), [jobs]);
+  const realJobs = useMemo(() => withoutDemo(jobs ?? []), [jobs]);
+  const onHoldJobs = useMemo(() => realJobs.filter((j) => j.status === "on_hold"), [realJobs]);
   const pastDueJobs = useMemo(
     () =>
-      activeJobs.filter((j) => {
-        if (!j.estimatedCompletion) return false;
-        const t = new Date(j.estimatedCompletion).getTime();
-        return Number.isFinite(t) && t < now - DAY; // a full day past ETA
-      }),
-    [activeJobs, now],
+      realJobs
+        .filter((j) => j.status === "in_progress" || j.status === "scheduled")
+        .filter((j) => {
+          if (!j.estimatedCompletion) return false;
+          const t = new Date(j.estimatedCompletion).getTime();
+          return Number.isFinite(t) && t < now - DAY; // a full day past ETA
+        }),
+    [realJobs, now],
   );
 
-  const upcoming = inspections ?? [];
+  const upcoming = useMemo(() => withoutDemo(inspections ?? []), [inspections]);
   const attentionTotal =
     newLeads.length + unreadCount + newRequestCount + pastDueJobs.length + onHoldJobs.length;
 

@@ -509,6 +509,7 @@ export type UpcomingInspectionRow = {
   jobTitle: string | null;
   customerId: number | null;
   customerName: string | null;
+  accountNumber: string | null;
 };
 
 // ─── Admin auth ────────────────────────────────────────────────
