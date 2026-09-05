@@ -651,6 +651,34 @@ export const api = {
       headers: { "x-admin-key": key },
     }),
 
+  /**
+   * Download a full JSON backup of every business table. Streams the
+   * file straight to the browser's download tray. Resolves with the
+   * filename on success or `{ error }` so the UI can show a reason.
+   */
+  downloadBackup: async (): Promise<{ filename: string } | { error: string }> => {
+    try {
+      const res = await request("/admin/backup", { method: "GET" });
+      if (!res.ok) return { error: await readError(res) };
+      const disposition = res.headers.get("Content-Disposition") ?? "";
+      const match = /filename="([^"]+)"/.exec(disposition);
+      const filename = match?.[1] ?? `chs-roofing-backup-${Date.now()}.json`;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Give the browser a tick to start the download before revoking.
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+      return { filename };
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : "Download failed" };
+    }
+  },
+
   // One-click demo seed. `reset: true` wipes the DEMO account first
   // so the admin can go back to a fresh example after clicking around.
   loadDemo: (key: string, reset = false) =>

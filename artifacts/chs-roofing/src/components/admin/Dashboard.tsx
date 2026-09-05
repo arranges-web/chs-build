@@ -19,6 +19,7 @@ import {
   type Customer,
 } from "@/lib/api";
 import type { AdminSection } from "./AdminShell";
+import BackupCard from "./BackupCard";
 
 type AnyRow = Record<string, unknown>;
 
@@ -167,6 +168,12 @@ export default function Dashboard({ adminKey, leads, estimates, onNavigate, onOp
           </div>
         )}
       </section>
+
+      {/* Data safety — one-click full backup. Every customer, job,
+          lead, estimate, portal record, message, and SMS row in one
+          dated JSON file the owner keeps wherever they like, independent
+          of the hosting provider. */}
+      <BackupCard />
 
       {/* Metric cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
