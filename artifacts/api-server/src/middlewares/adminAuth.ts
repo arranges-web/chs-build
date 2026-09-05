@@ -1,73 +1,63 @@
 import type { RequestHandler } from "express";
-import { eq } from "drizzle-orm";
-import { db, adminSessionsTable, adminsTable } from "@workspace/db";
+import { logger } from "../lib/logger";
+import { envKeyMatches, extractSessionToken, resolveAdminSession } from "../lib/adminSession";
 
 /**
- * Admin gate. Accepts either:
+ * Admin gate. Accepts, in order:
  *
- *   1. The legacy `x-admin-key` header matching the ADMIN_KEY env
- *      var (used for bootstrap and recovery).
- *   2. A valid `chs_admin_session` cookie tied to a non-expired
- *      session row in the DB (used by every signed-in admin user).
+ *   1. `Authorization: Bearer <token>` — a session token issued by
+ *      /admin/auth/login or /admin/auth/register. PRIMARY path.
+ *   2. `chs_admin_session` cookie carrying the same token.
+ *   3. `x-admin-key` header matching the ADMIN_KEY env var — the
+ *      bootstrap / recovery path so the first owner can get in before
+ *      any account exists.
  *
- * On success we set `res.locals.admin` to the resolved admin record
- * (or null when the request came via the env-key fallback), so route
- * handlers can attribute changes.
+ * On success `res.locals.admin` is the resolved admin (or null when
+ * the request came in via the env key). A DB failure while resolving
+ * the session is LOGGED and surfaced as a 500 with the real reason —
+ * the previous version swallowed it and answered "Unauthorized", which
+ * hid a broken admin_sessions table behind a misleading message.
  */
-const COOKIE_NAME = "chs_admin_session";
-
-// `res.locals` is loosely typed as `Record<string, any>` upstream; we
-// just write to it here and route handlers can read it back as
-// `(res.locals.admin as AdminContext | null)` if they need to.
-
 export const adminAuth: RequestHandler = async (req, res, next) => {
-  // 1. Session cookie path
-  const token = (req.cookies?.[COOKIE_NAME] as string | undefined) ?? null;
+  const token = extractSessionToken(req);
+
   if (token) {
     try {
-      const [session] = await db
-        .select()
-        .from(adminSessionsTable)
-        .where(eq(adminSessionsTable.token, token))
-        .limit(1);
-      if (session && new Date(session.expiresAt).getTime() > Date.now()) {
-        const [admin] = await db
-          .select()
-          .from(adminsTable)
-          .where(eq(adminsTable.id, session.adminId))
-          .limit(1);
-        if (admin) {
-          res.locals.admin = {
-            id: admin.id,
-            email: admin.email,
-            name: admin.name,
-            role: admin.role,
-          };
-          next();
-          return;
-        }
+      const admin = await resolveAdminSession(token);
+      if (admin) {
+        res.locals.admin = admin;
+        next();
+        return;
       }
-    } catch {
-      // Fall through to the env-key check rather than 500.
+      // Token present but unknown/expired — fall through to the env
+      // key in case the caller also sent it, then 401.
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      logger.error({ err: msg }, "[adminAuth] session lookup failed");
+      res.status(500).json({
+        error: `Couldn't verify your session (database error: ${msg}). Reload the page; if it persists, sign out and back in.`,
+      });
+      return;
     }
   }
 
-  // 2. Legacy env key — kept so the bootstrap flow keeps working
-  // before any admin accounts exist.
-  const expected = process.env["ADMIN_KEY"];
-  const provided = req.header("x-admin-key");
-  if (expected && provided && provided === expected) {
+  if (envKeyMatches(req)) {
     res.locals.admin = null;
     next();
     return;
   }
 
-  // No valid auth — distinguish between "not configured" and "not signed in".
+  const expected = process.env["ADMIN_KEY"];
   if (!expected && !token) {
     res.status(503).json({
-      error: "Admin API is not configured yet. Set ADMIN_KEY or register an admin account.",
+      error: "Admin API is not configured yet. Set ADMIN_KEY in Replit Secrets or register an admin account via an invite link.",
     });
     return;
   }
-  res.status(401).json({ error: "Unauthorized" });
+
+  res.status(401).json({
+    error: token
+      ? "Your session has expired. Sign out and sign back in."
+      : "Not signed in. Sign in to continue.",
+  });
 };

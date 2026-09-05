@@ -1,34 +1,41 @@
 import { Router, type IRouter } from "express";
-import { eq, sql } from "drizzle-orm";
-import {
-  db,
-  adminsTable,
-  adminInvitesTable,
-  adminSessionsTable,
-} from "@workspace/db";
+import { eq } from "drizzle-orm";
+import { db, adminsTable, adminInvitesTable } from "@workspace/db";
 import { adminAuth } from "../middlewares/adminAuth";
 import { handleError } from "../lib/handleError";
 import { generateToken, hashPassword, passwordTooWeak, verifyPassword } from "../lib/passwords";
+import {
+  COOKIE_NAME,
+  SESSION_DAYS,
+  createAdminSession,
+  destroyAdminSession,
+  envKeyMatches,
+  extractSessionToken,
+  resolveAdminSession,
+} from "../lib/adminSession";
 
 const router: IRouter = Router();
 
-// Browser session lifetime — 30 days. Long enough that the team isn't
-// constantly retyping passwords, short enough that a stolen device
-// gets booted eventually.
-const SESSION_DAYS = 30;
 // Invite link lifetime — 7 days. Plenty of time for the recipient
 // to set up an account; not so long that a stale link is a risk.
 const INVITE_DAYS = 7;
 
-const COOKIE_NAME = "chs_admin_session";
-
-function setSessionCookie(res: import("express").Response, token: string) {
-  // SameSite=Lax + HttpOnly + Secure — works across same-origin, can't
-  // be read from JS, only sent over HTTPS in production.
+/**
+ * Cookie is a convenience only. The SPA stores the token returned in
+ * the JSON body and sends it as `Authorization: Bearer` on every
+ * request — that's what actually authenticates it. We still set the
+ * cookie so same-origin browsers get it for free, but with
+ * SameSite=None+Secure when we're behind HTTPS so it also survives
+ * cross-site fetches where possible.
+ */
+function setSessionCookie(req: import("express").Request, res: import("express").Response, token: string) {
+  const isHttps =
+    req.secure ||
+    (req.header("x-forwarded-proto") ?? "").split(",")[0].trim() === "https";
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isHttps,
+    sameSite: isHttps ? "none" : "lax",
     maxAge: SESSION_DAYS * 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -198,19 +205,17 @@ router.post("/admin/auth/register", async (req, res) => {
       .set({ usedAt: new Date() })
       .where(eq(adminInvitesTable.id, invite.id));
 
-    // Drop a session cookie.
-    const sessionToken = generateToken();
-    const sessionExpires = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-    await db.insert(adminSessionsTable).values({
-      token: sessionToken,
-      adminId: admin.id,
-      expiresAt: sessionExpires,
-      userAgent: (req.header("user-agent") ?? "").slice(0, 512),
-    });
-    setSessionCookie(res, sessionToken);
+    const { token: sessionToken, expiresAt } = await createAdminSession(
+      admin.id,
+      req.header("user-agent"),
+    );
+    setSessionCookie(req, res, sessionToken);
 
     res.status(201).json({
       ok: true,
+      // The SPA stores this and sends it as `Authorization: Bearer`.
+      token: sessionToken,
+      expiresAt,
       admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
     });
   } catch (err) {
@@ -251,18 +256,17 @@ router.post("/admin/auth/login", async (req, res) => {
       .set({ lastLoginAt: new Date() })
       .where(eq(adminsTable.id, admin.id));
 
-    const sessionToken = generateToken();
-    const sessionExpires = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-    await db.insert(adminSessionsTable).values({
-      token: sessionToken,
-      adminId: admin.id,
-      expiresAt: sessionExpires,
-      userAgent: (req.header("user-agent") ?? "").slice(0, 512),
-    });
-    setSessionCookie(res, sessionToken);
+    const { token: sessionToken, expiresAt } = await createAdminSession(
+      admin.id,
+      req.header("user-agent"),
+    );
+    setSessionCookie(req, res, sessionToken);
 
     res.json({
       ok: true,
+      // The SPA stores this and sends it as `Authorization: Bearer`.
+      token: sessionToken,
+      expiresAt,
       admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
     });
   } catch (err) {
@@ -273,15 +277,13 @@ router.post("/admin/auth/login", async (req, res) => {
 /**
  * POST /api/admin/auth/logout — public.
  *
- * Deletes the session row and clears the cookie. Safe to call even
- * if there's no active session.
+ * Deletes the session row (from bearer OR cookie) and clears the
+ * cookie. Safe to call even if there's no active session.
  */
 router.post("/admin/auth/logout", async (req, res) => {
   try {
-    const token = (req.cookies?.[COOKIE_NAME] as string | undefined) ?? null;
-    if (token) {
-      await db.delete(adminSessionsTable).where(eq(adminSessionsTable.token, token));
-    }
+    const token = extractSessionToken(req);
+    if (token) await destroyAdminSession(token);
     clearSessionCookie(res);
     res.json({ ok: true });
   } catch (err) {
@@ -291,39 +293,20 @@ router.post("/admin/auth/logout", async (req, res) => {
 
 /**
  * GET /api/admin/auth/me — returns who is logged in. Used by the
- * admin SPA to show "Hi, Gustavo" + role-gated UI. Also accepts the
- * legacy ADMIN_KEY header so the bootstrap workflow keeps working.
+ * admin SPA on boot to restore a session from the stored token.
+ * Also accepts the ADMIN_KEY header for the bootstrap workflow.
  */
 router.get("/admin/auth/me", async (req, res) => {
   try {
-    // Session cookie path
-    const token = (req.cookies?.[COOKIE_NAME] as string | undefined) ?? null;
+    const token = extractSessionToken(req);
     if (token) {
-      const [session] = await db
-        .select()
-        .from(adminSessionsTable)
-        .where(eq(adminSessionsTable.token, token))
-        .limit(1);
-      if (session && new Date(session.expiresAt).getTime() > Date.now()) {
-        const [admin] = await db
-          .select()
-          .from(adminsTable)
-          .where(eq(adminsTable.id, session.adminId))
-          .limit(1);
-        if (admin) {
-          res.json({
-            ok: true,
-            via: "session",
-            admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
-          });
-          return;
-        }
+      const admin = await resolveAdminSession(token);
+      if (admin) {
+        res.json({ ok: true, via: "session", admin });
+        return;
       }
     }
-    // ADMIN_KEY header fallback (root / bootstrap user)
-    const header = req.header("x-admin-key");
-    const expected = process.env["ADMIN_KEY"];
-    if (header && expected && header === expected) {
+    if (envKeyMatches(req)) {
       res.json({ ok: true, via: "admin-key", admin: null });
       return;
     }
@@ -332,9 +315,5 @@ router.get("/admin/auth/me", async (req, res) => {
     handleError(res, err);
   }
 });
-
-// Suppress unused import warning for sql — kept in case we add
-// stricter session cleanup later.
-void sql;
 
 export default router;

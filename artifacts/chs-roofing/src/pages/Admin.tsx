@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, KeyRound, Lock } from "lucide-react";
-import { api, type AdminProfile } from "@/lib/api";
+import {
+  ADMIN_UNAUTHORIZED_EVENT,
+  api,
+  clearAdminAuth,
+  getAdminKey,
+  setAdminKey as storeAdminKey,
+  type AdminProfile,
+} from "@/lib/api";
 import { SITE } from "@/lib/site-config";
 import Seo from "@/components/Seo";
 import AdminShell, {
@@ -22,17 +29,20 @@ import InviteTeammates from "@/components/admin/InviteTeammates";
 
 type AnyRow = Record<string, unknown>;
 
-const ADMIN_KEY_STORAGE = "chs.admin.key.v1";
 const SECTION_STORAGE = "chs.admin.section.v1";
 
 export default function AdminPage() {
   // ─── Auth state ────────────────────────────────────────────────
-  // We support TWO sign-in paths that coexist:
-  //   1. Email + password → sets an httpOnly cookie. Preferred.
-  //   2. ADMIN_KEY header → legacy bootstrap path so the very first
-  //      owner can sign in before any DB-backed admin exists. We still
-  //      attach it as the `x-admin-key` header on existing endpoints
-  //      that haven't been migrated to cookie auth yet.
+  // Two sign-in paths, both handled by the api client's token store
+  // (see lib/api.ts):
+  //   1. Email + password → server returns a bearer token, stored in
+  //      localStorage and sent as `Authorization: Bearer` on every
+  //      admin request. Preferred. Works through any proxy.
+  //   2. ADMIN_KEY → stored in sessionStorage and sent as
+  //      `x-admin-key`. Bootstrap / recovery path for the owner
+  //      before any account exists.
+  // Every helper in api.ts attaches whichever credential is stored,
+  // so components don't need to thread anything through.
   const [me, setMe] = useState<AdminProfile | null>(null);
   const [authedKey, setAuthedKey] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
@@ -55,6 +65,20 @@ export default function AdminPage() {
   const [openJob, setOpenJob] = useState<{ jobId: number; customerId: number } | null>(null);
   const [clientPrefill, setClientPrefill] = useState<CustomerPrefill | null>(null);
 
+  // ─── Sign-out (shared by the button and the 401 auto-recovery) ──
+  const resetToLogin = useCallback((message?: string) => {
+    clearAdminAuth();
+    setMe(null);
+    setAuthedKey(null);
+    setAdminKey("");
+    setPassword("");
+    setLeads(null);
+    setEstimates(null);
+    setOpenJob(null);
+    setError(null);
+    if (message) setLoginError(message);
+  }, []);
+
   // ─── Boot: restore + verify ────────────────────────────────────
   useEffect(() => {
     const previous = document.title;
@@ -62,29 +86,25 @@ export default function AdminPage() {
 
     let cancelled = false;
     (async () => {
-      let savedKey: string | null = null;
       let lastSection: AdminSection | null = null;
       try {
-        savedKey = sessionStorage.getItem(ADMIN_KEY_STORAGE);
         lastSection = localStorage.getItem(SECTION_STORAGE) as AdminSection | null;
       } catch {
         // ignore
       }
       if (lastSection && !cancelled) setSection(lastSection);
 
-      // Try cookie first (with optional key fallback).
-      const res = await api.whoAmI(savedKey ?? undefined);
+      // whoAmI sends whatever credential is stored (bearer token
+      // and/or admin key). One round trip tells us if we're in.
+      const res = await api.whoAmI();
       if (cancelled) return;
       if ("data" in res) {
         if (res.data.admin) setMe(res.data.admin);
-        if (res.data.via === "admin-key" && savedKey) setAuthedKey(savedKey);
-      } else if (savedKey) {
-        // Cookie call failed and key fallback also failed — drop it.
-        try {
-          sessionStorage.removeItem(ADMIN_KEY_STORAGE);
-        } catch {
-          // ignore
-        }
+        if (res.data.via === "admin-key") setAuthedKey(getAdminKey());
+      } else {
+        // Whatever we had stored no longer works — forget it so the
+        // user gets a clean login screen instead of a stale session.
+        clearAdminAuth();
       }
       setChecking(false);
     })();
@@ -95,6 +115,19 @@ export default function AdminPage() {
     };
   }, []);
 
+  // ─── 401 auto-recovery ─────────────────────────────────────────
+  // If any admin request comes back Unauthorized (expired session,
+  // server restart wiped sessions, etc.) drop straight back to the
+  // login screen with a clear message instead of rendering a wall of
+  // "Unauthorized" tiles.
+  useEffect(() => {
+    const onUnauthorized = () => {
+      resetToLogin("Your session expired. Please sign in again.");
+    };
+    window.addEventListener(ADMIN_UNAUTHORIZED_EVENT, onUnauthorized);
+    return () => window.removeEventListener(ADMIN_UNAUTHORIZED_EVENT, onUnauthorized);
+  }, [resetToLogin]);
+
   useEffect(() => {
     try {
       localStorage.setItem(SECTION_STORAGE, section);
@@ -104,10 +137,10 @@ export default function AdminPage() {
   }, [section]);
 
   const isAuthed = !!me || !!authedKey;
-  // For legacy endpoints still expecting x-admin-key. When signed in
-  // via cookie only, we send an empty string and the middleware accepts
-  // the cookie path. NOTE: existing endpoints have `adminAuth` middleware
-  // that accepts EITHER, so this works either way.
+  // Components still take an `adminKey` prop and pass it as
+  // `x-admin-key`. The api client now auto-attaches the stored bearer
+  // token and stored key on every request, so this value is purely
+  // informational — an empty string is fine when signed in by password.
   const effectiveKey = authedKey ?? "";
 
   // ─── Data loading ─────────────────────────────────────────────
@@ -161,32 +194,32 @@ export default function AdminPage() {
     setPassword("");
   };
 
-  const submitKey = (e: React.FormEvent) => {
+  const submitKey = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError(null);
-    if (!adminKey.trim()) return;
-    try {
-      sessionStorage.setItem(ADMIN_KEY_STORAGE, adminKey.trim());
-    } catch {
-      // ignore
+    const key = adminKey.trim();
+    if (!key) return;
+    setSubmitting(true);
+    // Store it, then VERIFY it against the server before we show the
+    // dashboard. Previously we trusted the key blindly and let every
+    // tile fail with "Unauthorized" if it was wrong.
+    storeAdminKey(key);
+    const res = await api.whoAmI();
+    setSubmitting(false);
+    if ("error" in res || res.data.via !== "admin-key") {
+      storeAdminKey(null);
+      setLoginError(
+        "That admin key wasn't accepted. Check the ADMIN_KEY value in Replit Secrets and try again.",
+      );
+      return;
     }
-    setAuthedKey(adminKey.trim());
+    setAuthedKey(key);
   };
 
   const signOut = async () => {
-    try {
-      sessionStorage.removeItem(ADMIN_KEY_STORAGE);
-    } catch {
-      // ignore
-    }
-    await api.adminLogout();
-    setMe(null);
-    setAuthedKey(null);
-    setAdminKey("");
+    await api.adminLogout(); // clears the stored token/key too
+    resetToLogin();
     setEmail("");
-    setPassword("");
-    setLeads(null);
-    setEstimates(null);
   };
 
   const onConvertLead = (prefill: CustomerPrefill) => {

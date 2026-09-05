@@ -16,17 +16,108 @@ async function readError(res: Response): Promise<string> {
   return `Request failed (${res.status})`;
 }
 
-// All admin requests opt into sending the chs_admin_session cookie.
-// The server's adminAuth middleware accepts either the cookie or the
-// x-admin-key header, so legacy key-based callers still work too.
+// ─── Admin auth token store ────────────────────────────────────
+//
+// The admin session token lives in localStorage and is sent as
+// `Authorization: Bearer <token>` on EVERY request from this client.
+// That's the primary auth path — it works through any proxy and
+// across origins, unlike the cookie-only approach that was leaving
+// the dashboard signed-in-but-unauthorized on Replit.
+//
+// The legacy ADMIN_KEY is kept in sessionStorage (tab-scoped) and
+// sent as `x-admin-key` when present, so the bootstrap flow still
+// works before any account exists.
+
+const TOKEN_KEY = "chs.admin.token.v1";
+const ADMIN_KEY_KEY = "chs.admin.key.v1";
+
+function safeGet(storage: Storage | undefined, k: string): string | null {
+  try {
+    return storage?.getItem(k) ?? null;
+  } catch {
+    return null;
+  }
+}
+function safeSet(storage: Storage | undefined, k: string, v: string | null): void {
+  try {
+    if (v == null || v === "") storage?.removeItem(k);
+    else storage?.setItem(k, v);
+  } catch {
+    // ignore (private mode, quota, SSR)
+  }
+}
+const ls = () => (typeof window !== "undefined" ? window.localStorage : undefined);
+const ss = () => (typeof window !== "undefined" ? window.sessionStorage : undefined);
+
+export function getAdminToken(): string | null {
+  return safeGet(ls(), TOKEN_KEY);
+}
+export function setAdminToken(token: string | null): void {
+  safeSet(ls(), TOKEN_KEY, token);
+}
+export function getAdminKey(): string | null {
+  return safeGet(ss(), ADMIN_KEY_KEY);
+}
+export function setAdminKey(key: string | null): void {
+  safeSet(ss(), ADMIN_KEY_KEY, key);
+}
+/** Forget every admin credential this browser is holding. */
+export function clearAdminAuth(): void {
+  setAdminToken(null);
+  setAdminKey(null);
+}
+
+/** Headers that authenticate an admin request. Callers may still pass
+ *  an explicit `x-admin-key`; it's merged on top. */
+function authHeaders(): Record<string, string> {
+  const h: Record<string, string> = {};
+  const token = getAdminToken();
+  if (token) h["Authorization"] = `Bearer ${token}`;
+  const key = getAdminKey();
+  if (key) h["x-admin-key"] = key;
+  return h;
+}
+
+/** Fired on `window` when an /admin request comes back 401 so the
+ *  admin page can drop to the login screen instead of rendering a
+ *  wall of "Unauthorized" tiles. */
+export const ADMIN_UNAUTHORIZED_EVENT = "chs:admin-unauthorized";
+
+// Cookies are still sent when the browser has one (same-origin), but
+// nothing depends on them anymore.
 const CREDS: RequestCredentials = "include";
+
+/**
+ * The single fetch core every helper below goes through. Attaches
+ * auth headers, normalises errors, and emits the unauthorized event
+ * for admin paths.
+ */
+async function request(path: string, init: RequestInit = {}): Promise<Response> {
+  const extra = (init.headers ?? {}) as Record<string, string>;
+  // Explicit caller headers win over the stored ones — except an
+  // EMPTY x-admin-key from a caller (the old "" placeholder) must not
+  // clobber a real stored key.
+  const merged: Record<string, string> = { ...authHeaders() };
+  for (const [k, v] of Object.entries(extra)) {
+    if (k.toLowerCase() === "x-admin-key" && !v) continue;
+    merged[k] = v;
+  }
+  const res = await fetch(`${BASE}${path}`, { credentials: CREDS, ...init, headers: merged });
+  if (res.status === 401 && path.startsWith("/admin") && !path.startsWith("/admin/auth/")) {
+    try {
+      window.dispatchEvent(new CustomEvent(ADMIN_UNAUTHORIZED_EVENT));
+    } catch {
+      // ignore
+    }
+  }
+  return res;
+}
 
 async function postJson<T extends object>(path: string, body: unknown): Promise<T | null> {
   try {
-    const res = await fetch(`${BASE}${path}`, {
+    const res = await request(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: CREDS,
       body: JSON.stringify(body),
     });
     if (!res.ok) return null;
@@ -43,10 +134,9 @@ async function postJsonResult<T extends object>(
   headers: Record<string, string> = {},
 ): Promise<{ data: T } | { error: string }> {
   try {
-    const res = await fetch(`${BASE}${path}`, {
+    const res = await request(path, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...headers },
-      credentials: CREDS,
       body: JSON.stringify(body),
     });
     if (!res.ok) return { error: await readError(res) };
@@ -62,10 +152,9 @@ async function patchJsonResult<T extends object>(
   headers: Record<string, string> = {},
 ): Promise<{ data: T } | { error: string }> {
   try {
-    const res = await fetch(`${BASE}${path}`, {
+    const res = await request(path, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", ...headers },
-      credentials: CREDS,
       body: JSON.stringify(body),
     });
     if (!res.ok) return { error: await readError(res) };
@@ -80,7 +169,7 @@ async function getJson<T extends object>(
   init?: RequestInit,
 ): Promise<T | null> {
   try {
-    const res = await fetch(`${BASE}${path}`, { credentials: CREDS, ...init });
+    const res = await request(path, init);
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
@@ -95,7 +184,7 @@ async function getJsonResult<T extends object>(
   init?: RequestInit,
 ): Promise<{ data: T } | { error: string }> {
   try {
-    const res = await fetch(`${BASE}${path}`, { credentials: CREDS, ...init });
+    const res = await request(path, init);
     if (!res.ok) return { error: await readError(res) };
     return { data: (await res.json()) as T };
   } catch (err) {
@@ -109,14 +198,13 @@ async function patchJson<T extends object>(
   init?: RequestInit,
 ): Promise<T | null> {
   try {
-    const res = await fetch(`${BASE}${path}`, {
+    const res = await request(path, {
       ...init,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(init?.headers ?? {}),
+        ...((init?.headers as Record<string, string> | undefined) ?? {}),
       },
-      credentials: CREDS,
       body: JSON.stringify(body),
     });
     if (!res.ok) return null;
@@ -128,7 +216,7 @@ async function patchJson<T extends object>(
 
 async function deleteJson(path: string, init?: RequestInit): Promise<boolean> {
   try {
-    const res = await fetch(`${BASE}${path}`, { ...init, credentials: CREDS, method: "DELETE" });
+    const res = await request(path, { ...init, method: "DELETE" });
     return res.ok;
   } catch {
     return false;
@@ -141,7 +229,7 @@ async function postJsonAuthed<T extends object>(
   key: string,
 ): Promise<T | null> {
   try {
-    const res = await fetch(`${BASE}${path}`, {
+    const res = await request(path, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-admin-key": key },
       body: JSON.stringify(body),
@@ -411,35 +499,18 @@ export type AdminProfile = {
   role: string;
 };
 
-async function postJsonCookie<T extends object>(
-  path: string,
-  body: unknown,
-): Promise<{ data: T } | { error: string }> {
-  try {
-    const res = await fetch(`${BASE}${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) return { error: await readError(res) };
-    return { data: (await res.json()) as T };
-  } catch (err) {
-    return { error: err instanceof Error ? err.message : "Network error" };
-  }
-}
+export type WhoAmI = {
+  ok: true;
+  via: "session" | "admin-key";
+  admin: AdminProfile | null;
+};
 
-async function getJsonCookie<T extends object>(
-  path: string,
-): Promise<{ data: T } | { error: string }> {
-  try {
-    const res = await fetch(`${BASE}${path}`, { credentials: "include" });
-    if (!res.ok) return { error: await readError(res) };
-    return { data: (await res.json()) as T };
-  } catch (err) {
-    return { error: err instanceof Error ? err.message : "Network error" };
-  }
-}
+export type AuthSuccess = {
+  ok: true;
+  token: string;
+  expiresAt: string;
+  admin: AdminProfile;
+};
 
 export const api = {
   submitLead: (payload: LeadPayload) =>
@@ -464,26 +535,35 @@ export const api = {
   portalSendMessage: (payload: { identifier: string; body: string }) =>
     postJsonResult<{ row: CustomerMessage }>("/portal/messages", payload),
 
-  // Admin (key required)
   // ─── Admin auth ───────────────────────────────────────────────
-  whoAmI: (key?: string) =>
-    getJsonCookie<{ ok: true; via: "session" | "admin-key"; admin: AdminProfile | null }>(
-      "/admin/auth/me",
-    ).then(async (r) => {
-      // If cookie route failed AND we have a key, fall back to a key probe.
-      if ("error" in r && key) {
-        const fb = await fetch(`${BASE}/admin/auth/me`, { headers: { "x-admin-key": key } });
-        if (fb.ok) return { data: (await fb.json()) as { ok: true; via: "session" | "admin-key"; admin: AdminProfile | null } };
-      }
-      return r;
-    }),
-  adminLogin: (email: string, password: string) =>
-    postJsonCookie<{ ok: true; admin: AdminProfile }>("/admin/auth/login", { email, password }),
-  adminLogout: () => postJsonCookie<{ ok: true }>("/admin/auth/logout", {}),
-  adminRegister: (payload: { token: string; name: string; email: string; password: string }) =>
-    postJsonCookie<{ ok: true; admin: AdminProfile }>("/admin/auth/register", payload),
+  // Stored bearer token + stored admin key are attached automatically
+  // by `request()`. `whoAmI` restores a session on boot from whatever
+  // this browser is holding.
+  whoAmI: () => getJsonResult<WhoAmI>("/admin/auth/me"),
+
+  /** Email + password → stores the returned bearer token on success. */
+  adminLogin: async (email: string, password: string) => {
+    const r = await postJsonResult<AuthSuccess>("/admin/auth/login", { email, password });
+    if ("data" in r) setAdminToken(r.data.token);
+    return r;
+  },
+
+  /** Clears the stored token even if the server call fails. */
+  adminLogout: async () => {
+    const r = await postJsonResult<{ ok: true }>("/admin/auth/logout", {});
+    clearAdminAuth();
+    return r;
+  },
+
+  /** Invite token + chosen credentials → account + stored bearer token. */
+  adminRegister: async (payload: { token: string; name: string; email: string; password: string }) => {
+    const r = await postJsonResult<AuthSuccess>("/admin/auth/register", payload);
+    if ("data" in r) setAdminToken(r.data.token);
+    return r;
+  },
+
   adminInviteLookup: (token: string) =>
-    getJsonCookie<{ invite: { email: string | null; name: string | null; role: string } }>(
+    getJsonResult<{ invite: { email: string | null; name: string | null; role: string } }>(
       `/admin/auth/invites/${encodeURIComponent(token)}`,
     ),
   adminCreateInvite: (
