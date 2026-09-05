@@ -12,7 +12,12 @@ export const customersTable = pgTable("customers", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   accountNumber: text("account_number").notNull().unique(),
   name: text("name").notNull(),
-  email: text("email"), // optional but indexed via unique() below
+  // Optional, but must be unique case-insensitively when present —
+  // it's the portal login. The constraint is NOT declared here: it's
+  // a partial expression index (lower(email) WHERE email IS NOT NULL)
+  // that Drizzle can't express, created in the API server's
+  // ensureTables.ts as "customers_email_lower_uq".
+  email: text("email"),
   phone: text("phone"),
   address: text("address"),
   notes: text("notes"), // admin-only notes about the customer
