@@ -27,6 +27,74 @@ export type SeoChange = {
 
 export const SEO_CHANGES: SeoChange[] = [
   {
+    date: "2026-09-05",
+    category: "Internal Linking",
+    title: "Site-wide footer now links all 11 city pages",
+    description:
+      "The footer service-area block had gone stale \u2014 it listed only 4 cities and still pointed \"Cape Coral\" at the homepage rather than the new Cape Coral landing page. It now links every city page plus /service-area from the footer of every page on the site, which is the single biggest crawl-depth lever for the new location pages.",
+    pages: ["/"],
+  },
+  {
+    date: "2026-09-05",
+    category: "New Page",
+    title: "Published Lehigh Acres and Sarasota location pages",
+    description:
+      "Two markets the business cares about that had no landing page. /roofing-lehigh-acres targets the shingle-dominant, insurance-certification-driven Lee County market (Mirror Lakes, Westminster, Harns Marsh, Buckingham) across 6 ZIPs. /roofing-sarasota covers the northern anchor of the service area \u2014 barrier-island salt exposure on Siesta/Lido/Bird Key, historic-district review in Laurel Park, and mid-century low-slope roofs \u2014 across 10 ZIPs. Both carry unique local copy, 5 city-specific FAQs, per-city LocalBusiness + GeoCircle + Review schema, and the FL license credential.",
+    pages: ["/roofing-lehigh-acres", "/roofing-sarasota"],
+  },
+  {
+    date: "2026-09-05",
+    category: "Internal Linking",
+    title: "Cross-linked the two new cities into the service-area graph",
+    description:
+      "Lehigh Acres added to the nearby-cities blocks on Fort Myers and Cape Coral; Sarasota added to North Port and Port Charlotte. Both promoted from plain text chips into full cards on /service-area (now 11 cities), and the \"also serving\" list extended with Buckingham, Osprey, Venice, and Nokomis. Also updated llms.txt with both pages and corrected the permitting section \u2014 the City of Sarasota permits separately from Sarasota County.",
+    pages: ["/service-area", "/roofing-fort-myers", "/roofing-cape-coral", "/roofing-north-port", "/roofing-port-charlotte"],
+  },
+  {
+    date: "2026-09-05",
+    category: "Sitemap",
+    title: "Sitemap expanded to 37 URLs",
+    description:
+      "Added all 8 new location pages plus the /service-area hub at 0.85\u20130.9 priority so crawlers pick up the expanded local footprint quickly.",
+  },
+  {
+    date: "2026-09-05",
+    category: "New Page",
+    title: "Local/GEO expansion \u2014 6 new city pages and a /service-area hub",
+    description:
+      "Published dedicated pages for Cape Coral (the home city, which had no page at all despite being the highest-intent local search), North Fort Myers, Estero, Punta Gorda, Port Charlotte, and North Port. Each has unique local copy, city-specific FAQs, neighborhood lists, and ZIP coverage. Added /service-area as a hub so no city page is more than one click from the nav \u2014 orphaned location pages get indexed slowly and rank poorly.",
+    pages: [
+      "/service-area",
+      "/roofing-cape-coral",
+      "/roofing-north-fort-myers",
+      "/roofing-estero",
+      "/roofing-punta-gorda",
+      "/roofing-port-charlotte",
+      "/roofing-north-port",
+    ],
+  },
+  {
+    date: "2026-09-05",
+    category: "Structured Data",
+    title: "Per-city LocalBusiness, GeoCircle, and Review schema on every location page",
+    description:
+      "Added localBusinessSchema() and reviewSchema() helpers. Every city page now emits a RoofingContractor/LocalBusiness node with its own @id, real lat/long coordinates, a GeoCircle areaServed sized to that market, the CCC1333902 license as an EducationalOccupationalCredential, consistent NAP, and parentOrganization linkage back to the main entity \u2014 plus individual Review nodes rather than an aggregate-only rating. This is what lets Google and AI answer engines associate the business with each specific city rather than one generic location.",
+    pages: [
+      "/roofing-cape-coral",
+      "/roofing-fort-myers",
+      "/roofing-naples",
+      "/roofing-bonita-springs",
+      "/roofing-north-fort-myers",
+      "/roofing-estero",
+      "/roofing-punta-gorda",
+      "/roofing-port-charlotte",
+      "/roofing-north-port",
+      "/roofing-lehigh-acres",
+      "/roofing-sarasota",
+      "/service-area",
+    ],
+  },
+  {
     date: "2026-08-12",
     category: "Structured Data",
     title: "AI/LLM discoverability layer — llms.txt, ai.txt, richer JSON-LD",

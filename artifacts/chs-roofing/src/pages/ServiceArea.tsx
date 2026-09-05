@@ -59,6 +59,13 @@ const AREAS: Area[] = [
     blurb: "Gated and golf-community coordination, canal-front flashing detail.",
   },
   {
+    city: "Lehigh Acres",
+    href: "/roofing-lehigh-acres",
+    county: "Lee County",
+    zips: ["33936", "33971", "33972", "33973", "33974", "33976"],
+    blurb: "Shingle specialists, insurance roof certifications, and landlord-friendly scheduling.",
+  },
+  {
     city: "Naples",
     href: "/roofing-naples",
     county: "Collier County",
@@ -86,22 +93,32 @@ const AREAS: Area[] = [
     zips: ["34286", "34287", "34288", "34289", "34291"],
     blurb: "Sarasota County permitting. We check builder warranties before quoting.",
   },
+  {
+    city: "Sarasota",
+    href: "/roofing-sarasota",
+    county: "Sarasota County",
+    zips: ["34231", "34232", "34236", "34238", "34239", "34240", "34242"],
+    blurb: "Barrier-island salt exposure, historic-district review, tile / metal / flat.",
+  },
 ];
 
 /** Communities we serve that don't have a dedicated page yet. */
 const ALSO_SERVED = [
-  "Lehigh Acres",
   "Sanibel",
   "Captiva",
   "Marco Island",
   "Babcock Ranch",
   "Alva",
+  "Buckingham",
   "Matlacha",
   "Pine Island",
   "Fort Myers Beach",
   "Golden Gate",
   "Immokalee",
   "Englewood",
+  "Osprey",
+  "Venice",
+  "Nokomis",
 ];
 
 export default function ServiceArea() {

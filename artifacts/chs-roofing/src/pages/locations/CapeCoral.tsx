@@ -30,6 +30,7 @@ export default function CapeCoral() {
       nearbyCities={[
         { name: "Fort Myers", href: "/roofing-fort-myers" },
         { name: "North Fort Myers", href: "/roofing-north-fort-myers" },
+        { name: "Lehigh Acres", href: "/roofing-lehigh-acres" },
         { name: "Punta Gorda", href: "/roofing-punta-gorda" },
       ]}
       localPoints={[

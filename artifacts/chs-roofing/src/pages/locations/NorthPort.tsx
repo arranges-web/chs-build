@@ -21,6 +21,7 @@ export default function NorthPort() {
         "Sumter Boulevard corridor",
       ]}
       nearbyCities={[
+        { name: "Sarasota", href: "/roofing-sarasota" },
         { name: "Port Charlotte", href: "/roofing-port-charlotte" },
         { name: "Punta Gorda", href: "/roofing-punta-gorda" },
         { name: "Cape Coral", href: "/roofing-cape-coral" },

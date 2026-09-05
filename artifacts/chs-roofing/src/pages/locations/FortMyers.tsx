@@ -24,6 +24,7 @@ export default function FortMyers() {
       nearbyCities={[
         { name: "Cape Coral", href: "/roofing-cape-coral" },
         { name: "North Fort Myers", href: "/roofing-north-fort-myers" },
+        { name: "Lehigh Acres", href: "/roofing-lehigh-acres" },
         { name: "Estero", href: "/roofing-estero" },
         { name: "Bonita Springs", href: "/roofing-bonita-springs" },
       ]}

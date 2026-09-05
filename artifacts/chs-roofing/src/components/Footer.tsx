@@ -5,6 +5,26 @@ import { SITE, SERVICES, MATERIALS } from "@/lib/site-config";
 import BBBBadges from "@/components/BBBBadges";
 import { GoogleLogo, GoogleReviewsBadge } from "@/components/GoogleLogo";
 
+/**
+ * Every city landing page, linked site-wide. This block is the main
+ * internal-linking lever for local SEO — a city page reachable only
+ * from /service-area gets crawled far less often than one linked from
+ * the footer of every page.
+ */
+const FOOTER_CITIES = [
+  { name: "Cape Coral", href: "/roofing-cape-coral" },
+  { name: "Fort Myers", href: "/roofing-fort-myers" },
+  { name: "North Fort Myers", href: "/roofing-north-fort-myers" },
+  { name: "Lehigh Acres", href: "/roofing-lehigh-acres" },
+  { name: "Estero", href: "/roofing-estero" },
+  { name: "Bonita Springs", href: "/roofing-bonita-springs" },
+  { name: "Naples", href: "/roofing-naples" },
+  { name: "Punta Gorda", href: "/roofing-punta-gorda" },
+  { name: "Port Charlotte", href: "/roofing-port-charlotte" },
+  { name: "North Port", href: "/roofing-north-port" },
+  { name: "Sarasota", href: "/roofing-sarasota" },
+];
+
 export default function Footer() {
   const { t } = useTranslation();
 
@@ -154,10 +174,14 @@ export default function Footer() {
             {t("footer.serviceAreas", { defaultValue: "Service Areas" })}
           </h4>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-secondary-foreground/80">
-            <Link href="/" className="hover:text-primary transition-colors">Cape Coral, FL</Link>
-            <Link href="/roofing-fort-myers" className="hover:text-primary transition-colors">Fort Myers, FL</Link>
-            <Link href="/roofing-naples" className="hover:text-primary transition-colors">Naples, FL</Link>
-            <Link href="/roofing-bonita-springs" className="hover:text-primary transition-colors">Bonita Springs, FL</Link>
+            {FOOTER_CITIES.map((c) => (
+              <Link key={c.href} href={c.href} className="hover:text-primary transition-colors">
+                {c.name}, FL
+              </Link>
+            ))}
+            <Link href="/service-area" className="text-primary font-semibold hover:underline">
+              All service areas &rarr;
+            </Link>
           </div>
         </div>
       </div>

@@ -51,6 +51,8 @@ const RoofingEstero = lazy(() => import("@/pages/locations/Estero"));
 const RoofingPuntaGorda = lazy(() => import("@/pages/locations/PuntaGorda"));
 const RoofingPortCharlotte = lazy(() => import("@/pages/locations/PortCharlotte"));
 const RoofingNorthPort = lazy(() => import("@/pages/locations/NorthPort"));
+const RoofingLehighAcres = lazy(() => import("@/pages/locations/LehighAcres"));
+const RoofingSarasota = lazy(() => import("@/pages/locations/Sarasota"));
 const ServiceArea = lazy(() => import("@/pages/ServiceArea"));
 const Brochure = lazy(() => import("@/pages/Brochure"));
 
@@ -112,6 +114,8 @@ function MainSiteRoutes() {
         <Route path="/roofing-punta-gorda">{lazyEl(RoofingPuntaGorda)}</Route>
         <Route path="/roofing-port-charlotte">{lazyEl(RoofingPortCharlotte)}</Route>
         <Route path="/roofing-north-port">{lazyEl(RoofingNorthPort)}</Route>
+        <Route path="/roofing-lehigh-acres">{lazyEl(RoofingLehighAcres)}</Route>
+        <Route path="/roofing-sarasota">{lazyEl(RoofingSarasota)}</Route>
         <Route path="/service-area">{lazyEl(ServiceArea)}</Route>
         <Route path="/brochure">{lazyEl(Brochure)}</Route>
         <Route>{lazyEl(NotFound)}</Route>

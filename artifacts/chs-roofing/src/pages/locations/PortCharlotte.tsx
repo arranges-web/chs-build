@@ -23,6 +23,7 @@ export default function PortCharlotte() {
       nearbyCities={[
         { name: "Punta Gorda", href: "/roofing-punta-gorda" },
         { name: "North Port", href: "/roofing-north-port" },
+        { name: "Sarasota", href: "/roofing-sarasota" },
         { name: "Cape Coral", href: "/roofing-cape-coral" },
       ]}
       localPoints={[
